@@ -314,57 +314,75 @@ regFoto.addEventListener('change', (e) => {
 });
 
 // GUARDAR USUARIO Y FOTO EN SUPABASE
+// GUARDAR USUARIO Y FOTO EN SUPABASE CON TABLAS REALES
 formRegistro.addEventListener('submit', async (e) => {
   e.preventDefault();
 
   const btnGuardar = document.getElementById('btn-guardar-registro');
+  const regEmail = document.getElementById('reg-email');
+
   btnGuardar.disabled = true;
   btnGuardar.innerText = "Guardando...";
 
+  // 1. Objeto para la tabla 'usuarios'
   const datosUsuario = {
     nombre: regNombre.value,
     telefono: regTelefono.value,
-    rol: rolSeleccionado,
-    foto_url: fotoBase64,
-    detalles: {}
+    email: regEmail ? regEmail.value : '',
+    tipo_usuario: rolSeleccionado,
+    foto: fotoBase64
   };
 
-  if (rolSeleccionado === 'conductor') {
-    datosUsuario.detalles = {
-      vehiculo: document.getElementById('reg-vehiculo')?.value,
-      placa: document.getElementById('reg-placa')?.value
-    };
-  } else if (rolSeleccionado === 'comercio') {
-    datosUsuario.detalles = {
-      negocio: document.getElementById('reg-comercio-nombre')?.value,
-      categoria: document.getElementById('reg-comercio-categoria')?.value
-    };
-  }
-
-  const { data, error } = await supabaseClient
+  // Insertar en tabla usuarios
+  const { data: usuarioInsertado, error: errorUsuario } = await supabaseClient
     .from('usuarios')
     .insert([datosUsuario])
     .select();
 
+  if (errorUsuario) {
+    console.error(errorUsuario);
+    alert("Error al guardar en la tabla 'usuarios': " + errorUsuario.message);
+    btnGuardar.disabled = false;
+    btnGuardar.innerText = "Guardar y Continuar";
+    return;
+  }
+
+  const nuevoUsuarioId = usuarioInsertado[0].id || usuarioInsertado[0].Id;
+
+  // 2. Si es conductor, relacionar con tablas 'conductores' y 'vehiculos'
+  if (rolSeleccionado === 'conductor') {
+    const vehiculoModelo = document.getElementById('reg-vehiculo')?.value;
+    const vehiculoPlaca = document.getElementById('reg-placa')?.value;
+
+    const { data: conductorInsertado, error: errCond } = await supabaseClient
+      .from('conductores')
+      .insert([{ usuario_id: nuevoUsuarioId }])
+      .select();
+
+    if (!errCond && conductorInsertado && conductorInsertado.length > 0) {
+      const conductorId = conductorInsertado[0].id || conductorInsertado[0].Id;
+      await supabaseClient.from('vehiculos').insert([{
+        conductor_id: conductorId,
+        modelo: vehiculoModelo,
+        placa: vehiculoPlaca
+      }]);
+    }
+  }
+
   btnGuardar.disabled = false;
   btnGuardar.innerText = "Guardar y Continuar";
 
-  if (error) {
-    console.error(error);
-    alert("Error al registrar en Supabase. Asegúrate de tener la tabla 'usuarios' creada.");
-  } else {
-    alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
-    modalRegistro.classList.add('oculto');
+  alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
+  modalRegistro.classList.add('oculto');
 
-    if (rolSeleccionado === 'conductor') {
-      modoActual = 'conductor';
-      btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
-      uiPasajero.classList.add('oculto');
-      uiConductor.classList.remove('oculto');
-      cargarViajesSolicitados();
-    } else {
-      modoActual = 'pasajero';
-      uiPasajero.classList.remove('oculto');
-    }
+  if (rolSeleccionado === 'conductor') {
+    modoActual = 'conductor';
+    btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+    uiPasajero.classList.add('oculto');
+    uiConductor.classList.remove('oculto');
+    cargarViajesSolicitados();
+  } else {
+    modoActual = 'pasajero';
+    uiPasajero.classList.remove('oculto');
   }
 });
