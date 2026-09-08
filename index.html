@@ -8,7 +8,63 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<!-- BOTÓN MODO CLARO / OSCURO -->
+  <button id="btn-theme-toggle" class="btn-theme-toggle" title="Cambiar Modo">
+    <span id="theme-icon">🌙</span>
+  </button>
 
+  <!-- PANTALLA DE INICIO (SELECCIÓN DE ROL) -->
+  <div id="pantalla-inicio" class="pantalla-inicio">
+    <div class="header-inicio">
+      <h2>Bienvenido a BIKAR</h2>
+      <p>Selecciona tu perfil para comenzar</p>
+    </div>
+
+    <div class="roles-container">
+      <button class="tarjeta-rol" onclick="seleccionarRol('pasajero')">
+        <span class="rol-icon">🧍</span>
+        <span class="rol-title">Pasajero</span>
+      </button>
+
+      <button class="tarjeta-rol" onclick="seleccionarRol('conductor')">
+        <span class="rol-icon">🚗</span>
+        <span class="rol-title">Conductor</span>
+      </button>
+
+      <button class="tarjeta-rol" onclick="seleccionarRol('comercio')">
+        <span class="rol-icon">🏪</span>
+        <span class="rol-title">Comercio</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL DE REGISTRO / FORMULARIO -->
+  <div id="modal-registro" class="ui-panel oculto">
+    <h3 id="registro-titulo" class="panel-title">Completar Registro</h3>
+    <form id="form-registro">
+      <div class="input-group">
+        <input type="text" id="reg-nombre" placeholder="Nombre completo" required autocomplete="off">
+      </div>
+      <div class="input-group">
+        <input type="tel" id="reg-telefono" placeholder="Teléfono / WhatsApp" required autocomplete="off">
+      </div>
+
+      <!-- Campos dinámicos según el rol (vehículo, nombre de comercio, etc.) -->
+      <div id="campos-especificos"></div>
+
+      <!-- Subir Foto en tiempo real -->
+      <div class="input-group foto-group">
+        <label for="reg-foto" class="label-foto">📸 Capturar / Subir Foto:</label>
+        <input type="file" id="reg-foto" accept="image/*" capture="user" required>
+        <div id="preview-foto-container" class="preview-container oculto">
+          <img id="preview-foto" src="" alt="Vista previa de foto">
+        </div>
+      </div>
+
+      <button type="submit" id="btn-guardar-registro" class="btn-main">Guardar y Continuar</button>
+      <button type="button" id="btn-cancelar-registro" class="btn-secondary" style="margin-top: 8px;">Volver</button>
+    </form>
+  </div>
   <!-- Selector de Modo en la parte superior -->
   <div id="mode-selector">
     <button id="btn-cambiar-modo" class="btn-secondary">Modo: 🧍 Pasajero (Cambiar a Conductor)</button>
