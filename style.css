@@ -12,15 +12,42 @@ html, body {
   background-color: #f8f9fa;
 }
 
-/* El mapa ocupa toda la pantalla */
+.oculto {
+  display: none !important;
+}
+
 #map {
   width: 100%;
   height: 100vh;
   z-index: 1;
 }
 
-/* Panel flotante estilo app móvil */
-#ui-panel {
+/* Selector de modo flotante superior */
+#mode-selector {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  width: 90%;
+  max-width: 420px;
+}
+
+.btn-secondary {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #ffffff;
+  color: #134989;
+  border: 2px solid #134989;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos unificados para paneles flotantes */
+.ui-panel {
   position: absolute;
   bottom: 24px;
   left: 50%;
@@ -35,20 +62,18 @@ html, body {
   text-align: center;
 }
 
-#panel-title {
+.panel-title {
   color: #134989;
   font-size: 1.2rem;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-#status-text {
+.status-text {
   color: #666;
   font-size: 0.9rem;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
-/* --- ESTILOS NUEVOS PARA LOS CAMPOS DE TEXTO --- */
-/* --- ESTILOS DE LOS CAMPOS Y LISTA DE SUGERENCIAS --- */
 .input-group {
   position: relative;
   margin-bottom: 10px;
@@ -75,7 +100,7 @@ html, body {
   background: #ffffff;
   border: 1px solid #ddd;
   border-radius: 0 0 8px 8px;
-  max-height: 180px;
+  max-height: 160px;
   overflow-y: auto;
   z-index: 2000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -93,9 +118,9 @@ html, body {
 .sugerencia-item:hover {
   background-color: #f8f9fa;
   color: #134989;
-}/* ---------------------------------------------- */
+}
 
-button {
+.btn-main {
   width: 100%;
   padding: 14px;
   background-color: #134989;
@@ -105,9 +130,24 @@ button {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
-button:active {
+.btn-main:active {
   background-color: #275c98;
+}
+
+/* Tarjeta de solicitud para el conductor */
+.tarjeta-viaje {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px;
+  margin-top: 10px;
+  background-color: #f8f9fa;
+  text-align: left;
+}
+
+.tarjeta-viaje p {
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: #333;
 }
