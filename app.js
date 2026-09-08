@@ -13,7 +13,8 @@ let destino = null;
 let marcadorOrigen = null;
 let marcadorDestino = null;
 let timerBusqueda = null;
-
+let rolSeleccionado = null;
+let fotoBase64 = null;
 // Elementos DOM
 const btnCambiarModo = document.getElementById('btn-cambiar-modo');
 const uiPasajero = document.getElementById('ui-pasajero');
@@ -29,7 +30,19 @@ const btnPedirViaje = document.getElementById('btn-pedir-viaje');
 
 const statusTextConductor = document.getElementById('status-text-conductor');
 const contenedorSolicitudes = document.getElementById('contenedor-solicitudes');
-
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const pantallaInicio = document.getElementById('pantalla-inicio');
+const modalRegistro = document.getElementById('modal-registro');
+const registroTitulo = document.getElementById('registro-titulo');
+const formRegistro = document.getElementById('form-registro');
+const regNombre = document.getElementById('reg-nombre');
+const regTelefono = document.getElementById('reg-telefono');
+const camposEspecificos = document.getElementById('campos-especificos');
+const regFoto = document.getElementById('reg-foto');
+const previewFotoContainer = document.getElementById('preview-foto-container');
+const previewFoto = document.getElementById('preview-foto');
+const btnCancelarRegistro = document.getElementById('btn-cancelar-registro');
 // Inicialización del Mapa
 const map = L.map('map').setView([0, 0], 2);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -240,3 +253,118 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
             Math.sin(dLon/2) * Math.sin(dLon/2);
   return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)));
 }
+// -------------------------------------------------------------
+// MODO CLARO / OSCURO
+// -------------------------------------------------------------
+btnThemeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  const esOscuro = document.body.classList.contains('dark-mode');
+  themeIcon.innerText = esOscuro ? '☀️' : '🌙';
+});
+
+// -------------------------------------------------------------
+// SELECCIÓN DE ROL Y FORMULARIO DINÁMICO
+// -------------------------------------------------------------
+window.seleccionarRol = function(rol) {
+  rolSeleccionado = rol;
+  pantallaInicio.classList.add('oculto');
+  modalRegistro.classList.remove('oculto');
+  registroTitulo.innerText = `Registro - ${rol.toUpperCase()}`;
+
+  camposEspecificos.innerHTML = "";
+
+  if (rol === 'conductor') {
+    camposEspecificos.innerHTML = `
+      <div class="input-group">
+        <input type="text" id="reg-vehiculo" placeholder="Modelo del Vehículo (Ej: Chevrolet Spark)" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="reg-placa" placeholder="Placa del Vehículo" required>
+      </div>
+    `;
+  } else if (rol === 'comercio') {
+    camposEspecificos.innerHTML = `
+      <div class="input-group">
+        <input type="text" id="reg-comercio-nombre" placeholder="Nombre del Establecimiento" required>
+      </div>
+      <div class="input-group">
+        <input type="text" id="reg-comercio-categoria" placeholder="Categoría (Ej: Restaurante, Tienda)" required>
+      </div>
+    `;
+  }
+};
+
+btnCancelarRegistro.addEventListener('click', () => {
+  modalRegistro.classList.add('oculto');
+  pantallaInicio.classList.remove('oculto');
+});
+
+// CAPTURA Y PREVIEW DE FOTO EN TIEMPO REAL
+regFoto.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      fotoBase64 = evt.target.result;
+      previewFoto.src = fotoBase64;
+      previewFotoContainer.classList.remove('oculto');
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+// GUARDAR USUARIO Y FOTO EN SUPABASE
+formRegistro.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const btnGuardar = document.getElementById('btn-guardar-registro');
+  btnGuardar.disabled = true;
+  btnGuardar.innerText = "Guardando...";
+
+  const datosUsuario = {
+    nombre: regNombre.value,
+    telefono: regTelefono.value,
+    rol: rolSeleccionado,
+    foto_url: fotoBase64,
+    detalles: {}
+  };
+
+  if (rolSeleccionado === 'conductor') {
+    datosUsuario.detalles = {
+      vehiculo: document.getElementById('reg-vehiculo')?.value,
+      placa: document.getElementById('reg-placa')?.value
+    };
+  } else if (rolSeleccionado === 'comercio') {
+    datosUsuario.detalles = {
+      negocio: document.getElementById('reg-comercio-nombre')?.value,
+      categoria: document.getElementById('reg-comercio-categoria')?.value
+    };
+  }
+
+  const { data, error } = await supabaseClient
+    .from('usuarios')
+    .insert([datosUsuario])
+    .select();
+
+  btnGuardar.disabled = false;
+  btnGuardar.innerText = "Guardar y Continuar";
+
+  if (error) {
+    console.error(error);
+    alert("Error al registrar en Supabase. Asegúrate de tener la tabla 'usuarios' creada.");
+  } else {
+    alert(`¡Registro exitoso como ${rolSeleccionado.toUpperCase()}!`);
+    modalRegistro.classList.add('oculto');
+
+    if (rolSeleccionado === 'conductor') {
+      modoActual = 'conductor';
+      btnCambiarModo.innerText = "Modo: 🚗 Conductor (Cambiar a Pasajero)";
+      uiPasajero.classList.add('oculto');
+      uiConductor.classList.remove('oculto');
+      cargarViajesSolicitados();
+    } else {
+      modoActual = 'pasajero';
+      uiPasajero.classList.remove('oculto');
+    }
+  }
+});
