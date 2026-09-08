@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MiUber PWA</title>
+  <!-- Estilos de Leaflet (Mapas Gratis) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Contenedor del Mapa -->
+  <div id="map"></div>
+
+  <!-- Panel flotante de interfaz de usuario con autocompletado -->
+  <div id="ui-panel">
+    <h3 id="panel-title">Solicitar Viaje</h3>
+    
+    <div class="input-group">
+      <input type="text" id="input-origen" placeholder="Tu ubicación o dirección origen" autocomplete="off">
+      <div id="sugerencias-origen" class="lista-sugerencias"></div>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="input-destino" placeholder="Escribe la dirección de destino" autocomplete="off">
+      <div id="sugerencias-destino" class="lista-sugerencias"></div>
+    </div>
+
+    <p id="status-text">Ingresa una dirección o toca el mapa.</p>
+    <button id="btn-action">Confirmar Puntos</button>
+  </div>
+
+  <!-- Scripts externos (Leaflet + Supabase JS SDK) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Tu lógica de la app -->
+  <script src="app.js"></script>
+</body>
+</html>
