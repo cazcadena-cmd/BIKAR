@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MiUber PWA</title>
-  <!-- Estilos de Leaflet (Mapas Gratis) -->
+  <title>BIKAR PWA</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- Selector de Modo en la parte superior -->
+  <div id="mode-selector">
+    <button id="btn-cambiar-modo" class="btn-secondary">Modo: 🧍 Pasajero (Cambiar a Conductor)</button>
+  </div>
+
   <!-- Contenedor del Mapa -->
   <div id="map"></div>
 
-  <!-- Panel flotante de interfaz de usuario con autocompletado -->
-  <div id="ui-panel">
-    <h3 id="panel-title">Solicitar Viaje</h3>
+  <!-- PANEL PASAJERO -->
+  <div id="ui-pasajero" class="ui-panel">
+    <h3 class="panel-title">Solicitar Viaje</h3>
     
     <div class="input-group">
       <input type="text" id="input-origen" placeholder="Tu ubicación o dirección origen" autocomplete="off">
@@ -27,14 +31,20 @@
       <div id="sugerencias-destino" class="lista-sugerencias"></div>
     </div>
 
-    <p id="status-text">Ingresa una dirección o toca el mapa.</p>
-    <button id="btn-action">Confirmar Puntos</button>
+    <p id="status-text-pasajero" class="status-text">Ingresa una dirección o toca el mapa.</p>
+    <button id="btn-pedir-viaje" class="btn-main">Confirmar Puntos</button>
   </div>
 
-  <!-- Scripts externos (Leaflet + Supabase JS SDK) -->
+  <!-- PANEL CONDUCTOR -->
+  <div id="ui-conductor" class="ui-panel oculto">
+    <h3 class="panel-title">Viajes Solicitados</h3>
+    <p id="status-text-conductor" class="status-text">Buscando solicitudes cercanas...</p>
+    <div id="contenedor-solicitudes"></div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Tu lógica de la app -->
   <script src="app.js"></script>
 </body>
 </html>
