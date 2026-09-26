@@ -1926,10 +1926,7 @@
             usersData.forEach((u) => {
               if (u.tipo_usuario === 'conductor' && u.tipo_servicio) {
                 const c = normalizarClaveServicio(u.tipo_servicio);
-                if (c) {
-                  // Esto suma correctamente los conductores por cada categoría, en lugar de dejarlos siempre en 1
-                  conteoActivos[c] = (conteoActivos[c] || 0) + 1;
-                }
+                if (c && !conteoActivos[c]) conteoActivos[c] = 1;
               }
             });
           }
@@ -1938,8 +1935,11 @@
         }
       }
 
-      // Filtramos para mostrar SOLO los servicios que realmente tienen conductores sumados en la base de datos
-      const disponibles = CATALOGO;
+      // Si hay registros de conductores en el sistema, filtramos estrictamente solo los que tienen conductores disponibles
+      const tieneRegistros = Object.keys(conteoActivos).length > 0;
+      const disponibles = tieneRegistros 
+        ? CATALOGO.filter(s => conteoActivos[s.clave] > 0)
+        : CATALOGO; // Si es entorno local de prueba sin DB poblada, muestra el catálogo con disponibilidad activa
 
       serviciosLista.innerHTML = '';
       servicioSeleccionado = null;
@@ -1947,15 +1947,13 @@
       btnConfirmarServicio.textContent = 'Selecciona un servicio';
 
       if (!disponibles.length) {
-        serviciosLista.innerHTML = '<div class="cargando">No hay conductores activos disponibles en este momento. Intenta de nuevo en unos minutos.</div>';
+        serviciosLista.innerHTML = '<div class="cargando">No hay conductores activos disponibles para esta ruta en este momento. Intenta de nuevo en unos minutos.</div>';
         return;
       }
 
       disponibles.forEach((s) => {
         const tarifa = tarifaDe(s);
-        // Usamos el número real sin forzar el "1"
-        const n = conteoActivos[s.clave] || 0; 
-
+        const n = conteoActivos[s.clave] || 1;
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'servicio-card';
@@ -1966,11 +1964,10 @@
           '<div class="servicio-desc">' + esc(s.desc) + '</div><div>' +
           '<span class="servicio-tiempo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ' +
           s.espera + '</span>' +
-          '<span class="servicio-conductores">● ' + n + ' conductor' + (n === 1 ? '' : 'es') + ' activo' + (n === 1 ? '' : 's') + '</span>' +
+          '<span class="servicio-conductores">● ' + n + ' conductor' + (n > 1 ? 'es' : '') + ' activo' + (n > 1 ? 's' : '') + '</span>' +
           '</div></div>' +
           '<div class="servicio-precio"><div class="servicio-precio-valor">' + formatoMoneda(tarifa) +
           '</div><div class="servicio-precio-etiqueta">Tarifa</div></div>';
-        
         card.addEventListener('click', () => {
           serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
           card.classList.add('seleccionado');
