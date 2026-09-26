@@ -492,6 +492,16 @@
     .btn-conf-aceptar{color:#fff;border:none;background:linear-gradient(90deg,#a32626,#e05a5a);box-shadow:0 10px 24px rgba(224,90,90,.32)}
     .btn-conf-aceptar:hover{transform:translateY(-1px);box-shadow:0 14px 30px rgba(224,90,90,.4)}
   </style>
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('bikar_tema');
+        if (t === 'light') {
+          document.documentElement.classList.remove('dark-mode');
+        }
+      } catch(e){}
+    })();
+  </script>
 </head>
 <body class="dark-mode">
   <!-- ================= APP ================= -->
@@ -502,7 +512,7 @@
   <nav id="menu-perfil" class="oculto" aria-label="Menú de usuario">
     <button type="button" class="menu-perfil-item resaltado oculto" id="menu-item-mis-viajes">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg></span>
-      <span class="mi-txt">Mis viajes (En curso)</span>
+      <span class="mi-txt" id="txt-menu-mis-viajes">Mis viajes (En curso)</span>
     </button>
     <button type="button" class="menu-perfil-item" id="menu-item-perfil">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>
@@ -538,13 +548,13 @@
     <span id="texto-conductor-estado">Activo</span>
   </button>
 
-  <!-- ALERTA RADAR DE VIAJE EN PROGRESO PARA PASAJERO -->
+  <!-- ALERTA RADAR DE VIAJE EN PROGRESO -->
   <a id="alerta-viaje-activo" class="oculto" href="viaje.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2a10 10 0 1 0 10 10H12V2z"/>
       <circle cx="12" cy="12" r="4"/>
     </svg>
-    <span>Viaje en curso · Toca para ver</span>
+    <span id="txt-alerta-viaje">Viaje en curso · Toca para ver</span>
   </a>
 
   <div id="mode-selector">
@@ -558,9 +568,9 @@
     <div id="bloqueo-viaje-activo" class="viaje-bloqueo-box oculto">
       <div class="viaje-bloqueo-tit">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Tienes un viaje en progreso
+        <span id="txt-bloqueo-tit">Tienes un viaje en progreso</span>
       </div>
-      <p class="viaje-bloqueo-txt">No puedes solicitar otro viaje hasta que el viaje actual finalice.</p>
+      <p class="viaje-bloqueo-txt" id="txt-bloqueo-sub">No puedes solicitar otro viaje hasta que el viaje actual finalice.</p>
       <button type="button" id="btn-ir-viaje-activo" class="btn-ir-seguimiento">Ver seguimiento del viaje</button>
     </div>
 
@@ -742,6 +752,7 @@
     const URL_AYUDA = "https://whitecarappcelphone-sys.github.io/AYUDA-BIKAR/";
     const K_SESION = "bikar_usuario";
     const K_DOC = "bikar_documentacion_vehiculo";
+    const K_TEMA = "bikar_tema";
     const K_ESTADO_CONDUCTOR = "bikar_conductor_activo";
     const PASAJERO_ID_PRUEBA = "5";
     const CONDUCTOR_ID_PRUEBA = "10";
@@ -805,6 +816,7 @@
     let usuarioActual = null, claveServicioConductor = null, documentacionVehiculo = null;
     let conductorActivo = true; // Estado online/offline del conductor
     let viajeActivoPasajero = null; // Viaje en curso del pasajero
+    let viajeActivoConductor = null; // Viaje en curso del conductor
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
 
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
@@ -1207,13 +1219,26 @@
       iconMoon.classList.toggle('oculto', oscuro);
       iconSun.classList.toggle('oculto', !oscuro);
     }
+
+    function inicializarTema() {
+      const guardado = lsGet(K_TEMA);
+      if (guardado === 'light') {
+        document.body.classList.remove('dark-mode');
+      } else if (guardado === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+      actualizarIconoTema();
+    }
+
     function alternarTema() {
       document.body.classList.toggle('dark-mode');
+      const esOscuro = document.body.classList.contains('dark-mode');
+      lsSet(K_TEMA, esOscuro ? 'dark' : 'light');
       actualizarIconoTema();
       if (map) map.setOptions({ styles: estiloActual() });
       setTimeout(mostrarPopupOrigen, 120);
     }
-    actualizarIconoTema();
+    inicializarTema();
     $('btn-theme-toggle').addEventListener('click', alternarTema);
     $('btn-perfil-tema').addEventListener('click', alternarTema);
 
@@ -1270,46 +1295,92 @@
         '</div>';
     }
 
-    /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO) ============================ */
-    async function verificarViajeEnProgresoPasajero() {
-      if (modoActual !== 'pasajero' || !usuarioActual || !db) return;
-      const idPasajero = usuarioActual.id || usuarioActual.Id || PASAJERO_ID_PRUEBA;
+    /* ============================ DETECCIÓN DE VIAJE EN PROGRESO (PASAJERO Y CONDUCTOR) ============================ */
+    async function verificarViajeEnProgresoUsuario() {
+      if (!usuarioActual || !db) return;
+      const esConductor = (modoActual === 'conductor' || usuarioActual.tipo_usuario === 'conductor');
+      const idUsuario = esConductor
+        ? (usuarioActual.conductor_id || usuarioActual.id || CONDUCTOR_ID_PRUEBA)
+        : (usuarioActual.id || usuarioActual.Id || PASAJERO_ID_PRUEBA);
 
       try {
-        const { data, error } = await db.from('viajes').select('*')
-          .eq('pasajero_id', idPasajero)
-          .in('estado', ['solicitado', 'aceptado', 'en_camino'])
-          .order('id', { ascending: false })
-          .limit(1);
+        let query = db.from('viajes').select('*');
+        if (esConductor) {
+          query = query.eq('conductor_id', idUsuario);
+        } else {
+          query = query.eq('pasajero_id', idUsuario);
+        }
+
+        const { data, error } = await query.order('id', { ascending: false }).limit(1);
 
         if (!error && data && data.length > 0) {
-          viajeActivoPasajero = data[0];
-          aplicarBloqueoViajeActivo(true, viajeActivoPasajero);
-        } else {
-          viajeActivoPasajero = null;
-          aplicarBloqueoViajeActivo(false);
-        }
-      } catch (e) {
-        console.warn('Error al verificar viaje activo:', e);
-      }
-    }
+          const viaje = data[0];
+          const est = String(viaje.estado || '').toLowerCase().trim().replace(/[\s\-]+/g, '_');
 
-    function aplicarBloqueoViajeActivo(hayActivo, viaje) {
-      if (hayActivo && viaje) {
-        const url = 'viaje.html?id=' + viaje.id + '&rol=pasajero';
-        alertaViajeActivo.href = url;
-        alertaViajeActivo.classList.remove('oculto');
-        menuItemMisViajes.classList.remove('oculto');
-        menuItemMisViajes.onclick = () => { window.location.href = url; };
-        
-        bloqueoViajeActivo.classList.remove('oculto');
-        seccionSolicitarPasajero.classList.add('oculto');
-        btnIrViajeActivo.onclick = () => { window.location.href = url; };
-      } else {
+          // Estados finalizados o cancelados (Paso 4)
+          const esFinalizado = ['finalizado', 'completado', 'terminado', 'concluido', 'cancelado', 'rechazado', 'anulado'].includes(est);
+
+          // Estados activos (Pasos 1, 2 y 3)
+          const esPaso1 = ['solicitado', 'buscando', 'pendiente'].includes(est);
+          const esPaso2 = ['aceptado', 'asignado'].includes(est);
+          const esPaso3 = ['en_camino', 'en_curso', 'en_progreso', 'en_viaje', 'iniciado'].includes(est);
+
+          const esActivo = !esFinalizado && (esPaso1 || esPaso2 || esPaso3);
+
+          if (esActivo) {
+            const rol = esConductor ? 'conductor' : 'pasajero';
+            const url = 'viaje.html?id=' + viaje.id + '&rol=' + rol;
+
+            alertaViajeActivo.href = url;
+            alertaViajeActivo.classList.remove('oculto');
+            menuItemMisViajes.classList.remove('oculto');
+            menuItemMisViajes.onclick = () => { window.location.href = url; };
+
+            const txtAlerta = $('txt-alerta-viaje');
+            const txtMenu = $('txt-menu-mis-viajes');
+            const txtBloqueoTit = $('txt-bloqueo-tit');
+            const txtBloqueoSub = $('txt-bloqueo-sub');
+
+            // Actualización dinámica del texto según el paso en el que se encuentra el viaje
+            if (esPaso1) {
+              if (txtAlerta) txtAlerta.textContent = esConductor ? 'Solicitud pendiente · Toca para ver' : 'Buscando conductor… · Toca para ver';
+              if (txtMenu) txtMenu.textContent = 'Mis viajes (Solicitado)';
+              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Buscando tu conductor';
+              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Tu solicitud está activa. Esperando a que un conductor la acepte.';
+            } else if (esPaso2) {
+              if (txtAlerta) txtAlerta.textContent = esConductor ? 'Viaje aceptado · En camino al recojo' : '¡Conductor en camino! · Toca para ver';
+              if (txtMenu) txtMenu.textContent = esConductor ? 'Mi viaje (Hacia el recojo)' : 'Mis viajes (Conductor en camino)';
+              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Conductor asignado';
+              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Tu conductor ya aceptó el viaje y está dirigiéndose al punto de partida.';
+            } else if (esPaso3) {
+              if (txtAlerta) txtAlerta.textContent = 'Viaje en curso · Hacia el destino';
+              if (txtMenu) txtMenu.textContent = 'Mis viajes (En curso)';
+              if (txtBloqueoTit) txtBloqueoTit.textContent = 'Viaje en curso';
+              if (txtBloqueoSub) txtBloqueoSub.textContent = 'Te encuentras en camino hacia tu destino. Disfruta tu viaje.';
+            }
+
+            if (esConductor) {
+              viajeActivoConductor = viaje;
+              // Para el conductor no se bloquea la recepción de solicitudes en su categoría
+            } else {
+              viajeActivoPasajero = viaje;
+              bloqueoViajeActivo.classList.remove('oculto');
+              seccionSolicitarPasajero.classList.add('oculto');
+              btnIrViajeActivo.onclick = () => { window.location.href = url; };
+            }
+            return;
+          }
+        }
+
+        // Si no hay viaje o si el último viaje fue FINALIZADO / COMPLETADO / CANCELADO (Paso 4):
         alertaViajeActivo.classList.add('oculto');
         menuItemMisViajes.classList.add('oculto');
+        viajeActivoConductor = null;
+        viajeActivoPasajero = null;
         bloqueoViajeActivo.classList.add('oculto');
         seccionSolicitarPasajero.classList.remove('oculto');
+      } catch (e) {
+        console.warn('Error al verificar viaje activo:', e);
       }
     }
 
@@ -1405,6 +1476,7 @@
         } else {
           renderizarConductorInactivo();
         }
+        await verificarViajeEnProgresoUsuario();
       } else {
         modoActual = 'pasajero';
         uiConductor.classList.add('oculto');
@@ -1416,7 +1488,7 @@
             esc(usuario.nombre_comercio || usuario.nombre_establecimiento || usuario.nombre || 'Mi establecimiento') +
             ' · ' + esc(usuario.categoria || 'Categoría no registrada') + '</div>');
         }
-        await verificarViajeEnProgresoPasajero();
+        await verificarViajeEnProgresoUsuario();
       }
       actualizarChipUsuario();
     }
@@ -1854,7 +1926,10 @@
             usersData.forEach((u) => {
               if (u.tipo_usuario === 'conductor' && u.tipo_servicio) {
                 const c = normalizarClaveServicio(u.tipo_servicio);
-                if (c && !conteoActivos[c]) conteoActivos[c] = 1;
+                if (c) {
+                  // Esto suma correctamente los conductores por cada categoría, en lugar de dejarlos siempre en 1
+                  conteoActivos[c] = (conteoActivos[c] || 0) + 1;
+                }
               }
             });
           }
@@ -1863,11 +1938,8 @@
         }
       }
 
-      // Si hay registros de conductores en el sistema, filtramos estrictamente solo los que tienen conductores disponibles
-      const tieneRegistros = Object.keys(conteoActivos).length > 0;
-      const disponibles = tieneRegistros 
-        ? CATALOGO.filter(s => conteoActivos[s.clave] > 0)
-        : CATALOGO; // Si es entorno local de prueba sin DB poblada, muestra el catálogo con disponibilidad activa
+      // Filtramos para mostrar SOLO los servicios que realmente tienen conductores sumados en la base de datos
+      const disponibles = CATALOGO.filter(s => (conteoActivos[s.clave] || 0) > 0);
 
       serviciosLista.innerHTML = '';
       servicioSeleccionado = null;
@@ -1875,13 +1947,15 @@
       btnConfirmarServicio.textContent = 'Selecciona un servicio';
 
       if (!disponibles.length) {
-        serviciosLista.innerHTML = '<div class="cargando">No hay conductores activos disponibles para esta ruta en este momento. Intenta de nuevo en unos minutos.</div>';
+        serviciosLista.innerHTML = '<div class="cargando">No hay conductores activos disponibles en este momento. Intenta de nuevo en unos minutos.</div>';
         return;
       }
 
       disponibles.forEach((s) => {
         const tarifa = tarifaDe(s);
-        const n = conteoActivos[s.clave] || 1;
+        // Usamos el número real sin forzar el "1"
+        const n = conteoActivos[s.clave] || 0; 
+
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'servicio-card';
@@ -1892,10 +1966,11 @@
           '<div class="servicio-desc">' + esc(s.desc) + '</div><div>' +
           '<span class="servicio-tiempo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ' +
           s.espera + '</span>' +
-          '<span class="servicio-conductores">● ' + n + ' conductor' + (n > 1 ? 'es' : '') + ' activo' + (n > 1 ? 's' : '') + '</span>' +
+          '<span class="servicio-conductores">● ' + n + ' conductor' + (n === 1 ? '' : 'es') + ' activo' + (n === 1 ? '' : 's') + '</span>' +
           '</div></div>' +
           '<div class="servicio-precio"><div class="servicio-precio-valor">' + formatoMoneda(tarifa) +
           '</div><div class="servicio-precio-etiqueta">Tarifa</div></div>';
+        
         card.addEventListener('click', () => {
           serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
           card.classList.add('seleccionado');
@@ -2040,17 +2115,38 @@
       db.channel('public:viajes')
         .on('postgres_changes', { event:'*', schema:'public', table:'viajes' }, () => {
           if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
-          if (modoActual === 'pasajero') verificarViajeEnProgresoPasajero();
+          verificarViajeEnProgresoUsuario();
           if (abierto(modalHistorial)) cargarHistorial();
         })
         .subscribe();
     }
 
-    /* ============================ ARRANQUE ============================ */
+    /* ============================ ARRANQUE Y SINCRONIZACIÓN ============================ */
     document.addEventListener('DOMContentLoaded', () => {
+      inicializarTema();
       cargarGoogleMaps();
       suscribirRealtime();
       verificarSesionGuardada();
+
+      // Sincronización al regresar a la pestaña o ventana desde viaje.html
+      window.addEventListener('focus', () => {
+        verificarViajeEnProgresoUsuario();
+        if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          verificarViajeEnProgresoUsuario();
+          if (modoActual === 'conductor' && conductorActivo) cargarViajesSolicitados();
+        }
+      });
+
+      // Polling ligero en segundo plano para garantizar sincronización en tiempo real
+      setInterval(() => {
+        if (!document.hidden) {
+          verificarViajeEnProgresoUsuario();
+        }
+      }, 3500);
     });
   })();
   </script>
