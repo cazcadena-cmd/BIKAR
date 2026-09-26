@@ -1939,7 +1939,7 @@
       }
 
       // Filtramos para mostrar SOLO los servicios que realmente tienen conductores sumados en la base de datos
-      const disponibles = CATALOGO.filter(s => (conteoActivos[s.clave] || 0) > 0);
+      const disponibles = CATALOGO;
 
       serviciosLista.innerHTML = '';
       servicioSeleccionado = null;
