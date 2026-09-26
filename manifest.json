@@ -1,12 +1,12 @@
 {
-  "name": "BIKAR · Acceso",
+  "name": "BIKAR APP",
   "short_name": "BIKAR",
   "description": "BIKAR APP",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#121212",
+  "theme_color": "#FFFFFF",
   "orientation": "portrait",
   "icons": [
     {
