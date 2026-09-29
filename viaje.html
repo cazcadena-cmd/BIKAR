@@ -34,7 +34,8 @@
     .btn-icon svg{width:18px;height:18px}
 
     main{flex:1;max-width:600px;width:100%;margin:0 auto;padding:20px;display:flex;flex-direction:column;gap:16px}
-    .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow)}
+    .card,.status-card{background:var(--card-bg);border-radius:var(--radius);padding:20px;border:1px solid var(--border-color);box-shadow:var(--shadow);position:relative;overflow:hidden}
+    .card > *:not(.scanner-fantastico), .status-card > *:not(.scanner-fantastico){position:relative;z-index:1}
     .card-title{font-size:.8rem;text-transform:uppercase;color:var(--muted-text);font-weight:700;letter-spacing:.5px;margin-bottom:14px}
 
     /* ESTADO */
@@ -59,7 +60,7 @@
     .step-text{font-size:.66rem;color:var(--muted-text);font-weight:700;text-align:center;line-height:1.2}
     .step.active .step-text,.step.completed .step-text{color:var(--text-color)}
 
-    /* [MOD 2] Ring ring en los estados */
+    /* Ring ring en los estados */
     .step.active .step-icon{animation:ringShake 1.6s ease-in-out infinite}
     .step.active .step-icon::before,.step.active .step-icon::after{content:'';position:absolute;inset:-2px;border-radius:50%;border:2px solid var(--primary-color);animation:ringWave 1.6s ease-out infinite;pointer-events:none}
     .step.active .step-icon::after{animation-delay:.8s}
@@ -67,39 +68,112 @@
     @keyframes ringWave{0%{transform:scale(1);opacity:.8}100%{transform:scale(2.1);opacity:0}}
     @keyframes ringShake{0%,50%,100%{transform:rotate(0)}5%{transform:rotate(-14deg)}10%{transform:rotate(14deg)}15%{transform:rotate(-12deg)}20%{transform:rotate(12deg)}25%{transform:rotate(-6deg)}30%{transform:rotate(6deg)}35%{transform:rotate(0)}}
 
+    /* [MODIFICACIÓN 6] ANIMACIÓN TIPO AUTO FANTÁSTICO (KNIGHT RIDER) COMO DESTELLO EN EL FONDO */
+    .scanner-fantastico{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden;border-radius:inherit;display:none}
+    .scanner-fantastico.on{display:block}
+    .scanner-fantastico::before{
+      content:'';position:absolute;top:0;bottom:0;width:170px;left:-170px;
+      background:radial-gradient(ellipse at center, rgba(71,133,167,.35) 0%, rgba(19,73,137,.2) 45%, transparent 75%);
+      filter:blur(14px);animation:autoFantasticoSweep 2.8s ease-in-out infinite alternate;will-change:transform;
+    }
+    .scanner-fantastico::after{
+      content:'';position:absolute;top:0;left:-130px;width:130px;height:3px;
+      background:linear-gradient(90deg,transparent 0%,rgba(71,133,167,.7) 20%,#60a5fa 48%,#ffffff 52%,#60a5fa 56%,rgba(71,133,167,.7) 80%,transparent 100%);
+      box-shadow:0 0 16px 3px rgba(96,165,250,.95), 0 0 30px 6px rgba(71,133,167,.65);
+      border-radius:999px;animation:autoFantasticoSweep 2.8s ease-in-out infinite alternate;will-change:transform;
+    }
+    @keyframes autoFantasticoSweep{
+      0%{transform:translateX(0);opacity:.5}
+      50%{opacity:1}
+      100%{transform:translateX(calc(100% + 550px));opacity:.5}
+    }
+    body.dark-theme .scanner-fantastico::before{
+      background:radial-gradient(ellipse at center, rgba(96,165,250,.35) 0%, rgba(71,133,167,.25) 40%, rgba(19,73,137,.15) 60%, transparent 80%);
+      filter:blur(16px);
+    }
+    body.dark-theme .scanner-fantastico::after{
+      box-shadow:0 0 20px 4px rgba(147,197,253,1), 0 0 38px 8px rgba(71,133,167,.75);
+    }
+
     /* PERFIL DE LA CONTRAPARTE */
     .profile-box{display:flex;align-items:center;gap:14px}
     .profile-img{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid var(--primary-color);background:var(--field-bg);flex-shrink:0}
-    .profile-info{flex:1;min-width:0}
-    .profile-name{font-size:1.05rem;font-weight:800;word-break:break-word}
-    .profile-sub{font-size:.82rem;color:var(--muted-text);margin-top:2px}
-    .profile-extra{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px}
+    .profile-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+    .profile-name{font-size:1.05rem;font-weight:800;word-break:break-word;line-height:1.25}
+    .profile-sub{font-size:.8rem;color:var(--muted-text);line-height:1.3}
+    .profile-sub:empty{display:none}
+    .profile-extra{margin-top:5px;display:flex;flex-direction:column;gap:6px;width:100%}
+
+    .conductor-tags-top{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
     .vehicle-tag,.mini-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:var(--field-bg);color:var(--primary-color);border-radius:9px;font-weight:700;font-size:.74rem}
     .vehicle-tag svg,.mini-tag svg{width:13px;height:13px;flex-shrink:0}
     .mini-tag{color:var(--text-color)}
-    .placa{letter-spacing:1px;text-transform:uppercase}
+    .mini-tag.placa-tag{border:1px dashed var(--primary-color);color:var(--primary-color)}
+    .mini-tag.rating-tag{color:var(--accent-amber)}
+    .placa{letter-spacing:1px;text-transform:uppercase;font-weight:800}
+
+    /* [MODIFICACIÓN 4] PLACA CON FOTO REAL DEL VEHÍCULO Y CALIFICACIÓN DEBAJO */
+    .vehiculo-placa-bloque{display:flex;flex-direction:column;gap:6px;width:100%;margin-top:2px}
+    .placa-foto-fila{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+    .vehiculo-thumb-chip{
+      display:inline-flex;align-items:center;gap:6px;padding:3px 8px 3px 4px;
+      background:var(--field-bg);border:1px solid var(--border-color);border-radius:9px;
+      font-weight:700;font-size:.74rem;color:var(--text-color);cursor:pointer;transition:all .2s;
+    }
+    .vehiculo-thumb-chip:hover{border-color:var(--primary-color);transform:translateY(-1px)}
+    .vehiculo-mini-img{width:28px;height:28px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);background:var(--card-bg)}
+    .vehiculo-thumb-txt{font-size:.72rem;font-weight:700}
+    .calificacion-debajo-placa{display:flex;align-items:center;gap:6px;margin-top:1px}
+
+    /* [MODIFICACIÓN 3 Y 7] BOTONES DE CONTACTO (CHAT Y LLAMADA APP ÚNICAMENTE) */
     .contacto{display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px dashed var(--border-color);flex-wrap:wrap}
-    .btn-contacto{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 12px;border-radius:12px;cursor:pointer;
-      font-size:.8rem;font-weight:800;text-decoration:none;transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color);position:relative}
+    .btn-contacto{
+      flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;
+      border-radius:12px;cursor:pointer;font-size:.84rem;font-weight:800;text-decoration:none;
+      transition:all .2s;background:var(--field-bg);color:var(--primary-color);border:1px solid var(--border-color);position:relative;
+    }
     .btn-contacto:hover{transform:translateY(-1px);border-color:var(--primary-color)}
-    .btn-contacto svg{width:15px;height:15px}
-    .btn-contacto.whatsapp{color:#128c7e;border-color:rgba(18,140,126,.35)}
+    .btn-contacto svg{width:16px;height:16px}
     .badge-chat{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent-red);color:#fff;font-size:.65rem;display:none;place-items:center}
 
-    /* [MOD 1] Radar */
-    #card-persona{position:relative;overflow:hidden}
-    #card-persona > *:not(.radar){position:relative;z-index:1}
-    .radar{position:absolute;inset:0;pointer-events:none;z-index:0;display:none}
-    .radar.on{display:block}
-    .radar .centro{position:absolute;left:51px;top:50%;width:0;height:0}
-    .radar .anillo{position:absolute;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;border:2px solid var(--brand);opacity:0;animation:radarRing 3.6s linear infinite}
-    .radar .anillo:nth-child(2){animation-delay:1.2s}
-    .radar .anillo:nth-child(3){animation-delay:2.4s}
-    .radar .barrido{position:absolute;left:0;top:0;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;
-      background:conic-gradient(from 0deg,rgba(71,133,167,.28),rgba(71,133,167,0) 70deg,transparent 360deg);animation:radarSweep 3s linear infinite}
-    .radar .grid{position:absolute;left:0;top:0;border-radius:50%;border:1px dashed var(--border-color)}
-    @keyframes radarRing{0%{transform:scale(.05);opacity:.7}100%{transform:scale(1);opacity:0}}
-    @keyframes radarSweep{to{transform:rotate(360deg)}}
+    /* [MODIFICACIÓN 3] ANIMACIÓN RING RING MUY TENUE EN LOS ICONOS DE CHAT Y LLAMAR POR APP */
+    #btn-chat-app svg, #btn-llamada-app svg{
+      animation:ringRingTenue 3.2s ease-in-out infinite;
+      transform-origin:center;
+    }
+    #btn-llamada-app svg{animation-delay:1.6s}
+    @keyframes ringRingTenue{
+      0%,65%,100%{transform:rotate(0) scale(1)}
+      68%{transform:rotate(-7deg) scale(1.05)}
+      72%{transform:rotate(7deg) scale(1.05)}
+      76%{transform:rotate(-5deg) scale(1.03)}
+      80%{transform:rotate(5deg) scale(1.03)}
+      84%{transform:rotate(-2deg)}
+      88%{transform:rotate(2deg)}
+      92%{transform:rotate(0) scale(1)}
+    }
+
+    /* [MODIFICACIÓN 7] EN MODO OSCURO, TEXTO E ICONOS DE CHAT Y LLAMAR POR APP CAMBIAN A BLANCO */
+    body.dark-theme #btn-chat-app,
+    body.dark-theme #btn-llamada-app,
+    body.dark-theme .btn-contacto{
+      color:#ffffff !important;
+      border-color:rgba(255,255,255,.2);
+      background:rgba(255,255,255,.08);
+    }
+    body.dark-theme #btn-chat-app svg,
+    body.dark-theme #btn-llamada-app svg,
+    body.dark-theme .btn-contacto svg{
+      color:#ffffff !important;
+      stroke:#ffffff !important;
+    }
+    body.dark-theme #btn-chat-app:hover,
+    body.dark-theme #btn-llamada-app:hover,
+    body.dark-theme .btn-contacto:hover{
+      color:#ffffff !important;
+      border-color:#ffffff;
+      background:rgba(255,255,255,.16);
+    }
 
     /* RUTA */
     .route-box{display:flex;flex-direction:column;gap:12px}
@@ -175,6 +249,24 @@
     .pin-inputs input:focus{border-color:var(--primary-color)}
     .pin-inputs.error input{border-color:var(--accent-red);animation:shake .4s}
     @keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+    /* TARJETA PIN COMPACTA */
+    #card-pin{padding:14px 16px}
+    #card-pin .card-title{margin-bottom:10px;display:flex;align-items:center;gap:7px}
+    #card-pin .card-title svg{width:14px;height:14px;color:var(--primary-color)}
+    .pin-mini{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .pin-mini-txt{flex:1;min-width:150px}
+    .pin-mini-label{font-size:.82rem;font-weight:800;line-height:1.3}
+    .pin-mini-desc{font-size:.73rem;color:var(--muted-text);margin-top:3px;line-height:1.35}
+    #card-pin .pin-digitos{margin:0;gap:7px}
+    #card-pin .pin-digitos span{width:42px;height:50px;font-size:1.4rem;border-radius:11px}
+    #card-pin .pin-inputs{margin:12px 0 4px;gap:8px}
+    #card-pin .pin-inputs input{width:50px;height:56px;font-size:1.5rem;border-radius:12px}
+    #card-pin .btn-action{padding:12px;font-size:.88rem;margin-top:8px}
+    .pin-msg{font-size:.75rem;font-weight:700;color:var(--muted-text);text-align:center;min-height:15px;line-height:1.35}
+    .pin-msg.ok{color:var(--accent-green)}
+    .pin-msg.err{color:var(--accent-red)}
+
     .estrellas{display:flex;justify-content:center;gap:8px;margin:10px 0 14px}
     .estrellas button{background:none;border:none;cursor:pointer;color:var(--border-color);transition:transform .15s,color .15s}
     .estrellas button svg{width:40px;height:40px}
@@ -183,7 +275,8 @@
     .estrellas button:hover{transform:scale(1.15)}
     .nav-app{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;border:1px solid var(--border-color);background:var(--field-bg);color:var(--text-color);text-decoration:none;font-weight:700}
     .nav-app:hover{border-color:var(--primary-color)}
-    .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800}
+    .nav-app .logo{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;color:#fff;font-weight:800;flex-shrink:0}
+
     /* Chat */
     .chat-box{height:320px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--border-color)}
     .msg{max-width:80%;padding:9px 12px;border-radius:14px;font-size:.86rem;line-height:1.35;word-break:break-word}
@@ -218,7 +311,10 @@
 
   <main>
     <!-- ESTADO -->
-    <section class="status-card">
+    <section class="status-card" id="card-status">
+      <!-- [MODIFICACIÓN 6] Animación tipo Auto Fantástico como destello de fondo -->
+      <div class="scanner-fantastico on" id="scanner-status"></div>
+
       <div id="status-badge" class="status-badge solicitado">
         <span class="pulse-dot"></span>
         <span id="status-texto">Buscando conductor</span>
@@ -237,16 +333,9 @@
 
     <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
-      <div class="radar" id="radar">
-        <div class="centro">
-          <div class="barrido"></div>
-          <div class="grid" style="width:160px;height:160px;margin:-80px 0 0 -80px"></div>
-          <div class="grid" style="width:320px;height:320px;margin:-160px 0 0 -160px"></div>
-          <div>
-            <div class="anillo"></div><div class="anillo"></div><div class="anillo"></div>
-          </div>
-        </div>
-      </div>
+      <!-- [MODIFICACIÓN 6] Animación tipo Auto Fantástico como destello de fondo -->
+      <div class="scanner-fantastico on" id="radar"></div>
+
       <div class="card-title" id="titulo-persona">Información del conductor</div>
       <div class="profile-box">
         <img id="persona-foto" class="profile-img" alt="Foto de perfil" src="">
@@ -256,24 +345,48 @@
           <div class="profile-extra" id="persona-extra"></div>
         </div>
       </div>
+
+      <!-- [MODIFICACIÓN 3] Únicamente botones de Chat y Llamar por app -->
       <div class="contacto" id="zona-contacto" style="display:none">
-        <a class="btn-contacto" id="btn-llamar" href="#">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg>
-          Llamar
-        </a>
-        <a class="btn-contacto whatsapp" id="btn-whatsapp" href="#" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>
-          WhatsApp
-        </a>
-        <button class="btn-contacto" id="btn-chat-app" type="button" style="display:none">
+        <button class="btn-contacto" id="btn-chat-app" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Chat
+          <span>Chat</span>
           <span class="badge-chat" id="badge-chat">0</span>
         </button>
-        <button class="btn-contacto" id="btn-llamada-app" type="button" style="display:none">
+        <button class="btn-contacto" id="btn-llamada-app" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.6a2 2 0 0 1-.5 2.1L8.1 9.7a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.8.3 1.7.5 2.6.6a2 2 0 0 1 1.9 2z"/></svg>
-          Llamar por app
+          <span>Llamar por app</span>
         </button>
+      </div>
+    </section>
+
+    <!-- PIN DE SEGURIDAD COMPACTO -->
+    <section class="card" id="card-pin" style="display:none">
+      <div class="card-title" id="pin-card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>PIN de seguridad</span>
+      </div>
+
+      <!-- Vista pasajero -->
+      <div class="pin-mini" id="pin-mini-pasajero" style="display:none">
+        <div class="pin-mini-txt">
+          <div class="pin-mini-label">Dicta este PIN a tu conductor</div>
+          <div class="pin-mini-desc" id="pin-pasajero-estado">Tu conductor está en camino…</div>
+        </div>
+        <div class="pin-digitos" id="pin-digitos"></div>
+      </div>
+
+      <!-- Vista conductor -->
+      <div id="pin-mini-conductor" style="display:none">
+        <div class="pin-mini-desc">Pide al pasajero su PIN de 4 dígitos para iniciar el viaje. Puedes seguir usando el chat y ver la información mientras tanto.</div>
+        <div class="pin-inputs" id="pin-inputs">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+          <input inputmode="numeric" maxlength="1" autocomplete="off">
+        </div>
+        <p class="pin-msg" id="pin-conductor-msg"></p>
+        <button class="btn-action" id="pin-verificar"><span>Verificar e iniciar viaje</span></button>
       </div>
     </section>
 
@@ -348,40 +461,6 @@
     </div>
   </div>
 
-  <!-- MODAL PIN PASAJERO (no se puede cerrar) -->
-  <div class="modal" id="modal-pin-pasajero">
-    <div class="modal-box" style="text-align:center">
-      <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-      <div class="modal-title">Tu PIN de seguridad</div>
-      <p class="modal-desc" style="margin-top:6px">Cuando el conductor llegue, díctale este PIN. El viaje solo iniciará cuando lo ingrese correctamente.</p>
-      <div class="pin-digitos" id="pin-digitos"></div>
-      <p class="modal-desc" id="pin-pasajero-estado">Tu conductor está en camino…</p>
-      <div class="modal-acciones">
-        <button class="btn-action btn-danger" id="pin-pasajero-cancelar"><span>Cancelar viaje</span></button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL PIN CONDUCTOR (no se puede cerrar) -->
-  <div class="modal" id="modal-pin-conductor">
-    <div class="modal-box" style="text-align:center">
-      <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-      <div class="modal-title">Verifica el PIN del pasajero</div>
-      <p class="modal-desc" style="margin-top:6px">Pide al pasajero que te dicte su PIN de 4 dígitos para iniciar el viaje.</p>
-      <div class="pin-inputs" id="pin-inputs">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-        <input inputmode="numeric" maxlength="1" autocomplete="off">
-      </div>
-      <p class="modal-desc" id="pin-conductor-msg"></p>
-      <div class="modal-acciones">
-        <button class="btn-action" id="pin-verificar"><span>Verificar e iniciar viaje</span></button>
-        <button class="btn-action btn-danger" id="pin-conductor-cancelar"><span>Cancelar viaje</span></button>
-      </div>
-    </div>
-  </div>
-
   <!-- MODAL NAVEGACIÓN -->
   <div class="modal" id="modal-nav">
     <div class="modal-box">
@@ -399,13 +478,25 @@
     <div class="modal-box" style="text-align:center">
       <div class="modal-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
       <div class="modal-title">Tu viaje está en curso</div>
-      <p class="modal-desc" style="margin-top:6px">Por tu seguridad, comparte los datos del trayecto y tu ubicación con un contacto de confianza por WhatsApp.</p>
+      <p class="modal-desc" style="margin-top:6px">Por tu seguridad, comparte los datos del trayecto y tu ubicación con un contacto de confianza.</p>
       <div class="modal-acciones">
         <button class="btn-action" id="btn-compartir-ubicacion">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
           <span>Compartir ubicación</span>
         </button>
         <button class="btn-action btn-secundario" data-cerrar="modal-compartir"><span>Ahora no</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SELECTOR DE APPS PARA COMPARTIR -->
+  <div class="modal z3" id="modal-enviar">
+    <div class="modal-box">
+      <div class="modal-head"><div class="modal-title">Compartir por…</div><button class="modal-close" data-cerrar="modal-enviar">✕</button></div>
+      <p class="modal-desc">Elige la aplicación con la que quieres enviar los datos del viaje y tu ubicación actual.</p>
+      <div class="opciones" id="enviar-opciones"></div>
+      <div class="modal-acciones">
+        <button class="btn-action btn-secundario" id="enviar-copiar"><span>Copiar mensaje</span></button>
       </div>
     </div>
   </div>
@@ -450,6 +541,21 @@
     </div>
   </div>
 
+  <!-- MODAL FOTO VEHÍCULO (AMPLIACIÓN) -->
+  <div class="modal z3" id="modal-foto-vehiculo">
+    <div class="modal-box" style="text-align:center;max-width:440px;padding:20px">
+      <div class="modal-head">
+        <div class="modal-title">Vehículo registrado</div>
+        <button class="modal-close" data-cerrar="modal-foto-vehiculo">✕</button>
+      </div>
+      <div style="margin:12px 0;border-radius:14px;overflow:hidden;background:var(--field-bg);border:1px solid var(--border-color);max-height:360px;display:flex;align-items:center;justify-content:center">
+        <img id="img-vehiculo-completa" src="" alt="Vehículo del conductor" style="width:100%;height:auto;max-height:340px;object-fit:contain;display:block">
+      </div>
+      <div id="foto-vehiculo-placa" style="font-size:.92rem;font-weight:800;letter-spacing:1px;color:var(--primary-color);margin-bottom:12px"></div>
+      <button class="btn-action btn-secundario" data-cerrar="modal-foto-vehiculo" style="padding:12px"><span>Cerrar</span></button>
+    </div>
+  </div>
+
   <div id="toast" class="toast">Notificación</div>
 
   <script>
@@ -486,9 +592,10 @@
     const pasos = Array.prototype.slice.call($('stepper').querySelectorAll('.step'));
     const personaFoto = $('persona-foto'), personaNombre = $('persona-nombre'), personaSub = $('persona-sub');
     const personaExtra = $('persona-extra'), tituloPersona = $('titulo-persona'), zonaContacto = $('zona-contacto');
-    const btnLlamar = $('btn-llamar'), btnWhatsapp = $('btn-whatsapp'), linkMaps = $('link-maps');
+    const linkMaps = $('link-maps');
     const secAcciones = $('sec-acciones'), btnSiguiente = $('btn-siguiente-estado');
     const btnInicio = $('btn-inicio'), avisoRol = $('aviso-rol');
+    const cardPin = $('card-pin');
 
     /* ============================================================
        ICONOS SVG
@@ -504,7 +611,10 @@
       usuario: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>',
       estrella: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.7 5.6 6.3.9-4.5 4.4 1 6.1L12 17.8 6.5 20l1-6.1L3 9.5l6.3-.9z"/></svg>',
       siguiente: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>',
-      candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>'
+      candado: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+      placa: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h2M11 10h2M16 10h2M6 14h12"/></svg>',
+      camara: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+      zoom: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg>'
     };
     const ICONO_SERVICIO = {
       moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, taxi_carga: SVG.caja, default: SVG.ruta
@@ -516,7 +626,6 @@
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const mismoId = (a, b) => a != null && b != null && String(a) === String(b);
     const lsJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
-    /* [MOD 3] La tarifa se muestra tal como la guarda app.html (en soles), sin dividir entre 1000 */
     const formatoMoneda = (v) => { const n = Number(v); return 'S/ ' + (isFinite(n) ? n : 0).toFixed(2); };
     const tarifaDelViaje = (v) => {
       if (!v) return 0;
@@ -536,6 +645,55 @@
     }
 
     /* ============================================================
+       Consultas tolerantes
+       ============================================================ */
+    const DEBUG = urlParams.get('debug') === '1';
+    const logDebug = function () { if (DEBUG) console.info.apply(console, ['[BIKAR]'].concat(Array.prototype.slice.call(arguments))); };
+    const tablasFallidas = new Set();
+    const columnasTabla = new Map();
+
+    async function consultaSegura(tabla, armar) {
+      if (!db || tablasFallidas.has(tabla)) return null;
+      try {
+        const r = await armar(db.from(tabla));
+        if (r && r.error) {
+          const cod = String(r.error.code || '');
+          const msg = String(r.error.message || '');
+          if (cod === '42P01' || cod === 'PGRST205' || /does not exist|find the table|schema cache/i.test(msg)) {
+            tablasFallidas.add(tabla);
+            logDebug('tabla no disponible:', tabla, msg);
+          } else { logDebug('consulta con error:', tabla, msg); }
+          return null;
+        }
+        return r;
+      } catch (e) { logDebug('excepción en', tabla, e); return null; }
+    }
+
+    async function columnasDe(tabla) {
+      if (columnasTabla.has(tabla)) return columnasTabla.get(tabla);
+      const r = await consultaSegura(tabla, (q) => q.select('*').limit(1));
+      const cols = r ? (r.data && r.data.length ? Object.keys(r.data[0]) : []) : null;
+      columnasTabla.set(tabla, cols);
+      logDebug('columnas de', tabla, cols);
+      return cols;
+    }
+
+    const colsViaje = () => (viajeActual ? Object.keys(viajeActual) : []);
+    const viajeTiene = (c) => colsViaje().indexOf(c) >= 0;
+
+    function valorPorPatron(obj, patron) {
+      if (!obj) return null;
+      const claves = Object.keys(obj);
+      for (let i = 0; i < claves.length; i++) {
+        if (!patron.test(claves[i])) continue;
+        const v = obj[claves[i]];
+        if (v == null || v === '' || typeof v === 'object') continue;
+        return v;
+      }
+      return null;
+    }
+
+    /* ============================================================
        TEMA
        ============================================================ */
     function aplicarTema(oscuro) {
@@ -548,7 +706,7 @@
     aplicarTema((localStorage.getItem('bikar_tema') || 'oscuro') === 'oscuro');
 
     /* ============================================================
-       NORMALIZACIÓN DE SERVICIO (mismo criterio que index.html)
+       NORMALIZACIÓN DE SERVICIO
        ============================================================ */
     function normalizarClaveServicio(raw) {
       if (raw === null || raw === undefined || raw === '') return null;
@@ -582,40 +740,137 @@
       }
     }
 
-    /* Busca una fila de "usuarios" por id, correo o usuario (mismo criterio de la app) */
     async function buscarUsuario(id, correo) {
       const llave = String(id != null ? 'id:' + id : 'c:' + correo);
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
       let fila = null;
       if (db) {
-        try {
-          if (id != null) {
-            const r = await db.from('usuarios').select('*').eq('id', id).maybeSingle();
-            fila = r.data || null;
+        if (id != null) {
+          const r = await consultaSegura('usuarios', (q) => q.select('*').eq('id', id).limit(1));
+          fila = (r && r.data && r.data[0]) || null;
+        }
+        if (!fila && correo) {
+          const cu = (await columnasDe('usuarios')) || [];
+          const colMail = cu.indexOf('email') >= 0 ? 'email' : (cu.indexOf('correo') >= 0 ? 'correo' : null);
+          if (colMail) {
+            const r = await consultaSegura('usuarios', (q) => q.select('*').eq(colMail, correo).limit(1));
+            fila = (r && r.data && r.data[0]) || null;
           }
-          if (!fila && correo) {
-            const r = await db.from('usuarios').select('*').eq('correo', correo).maybeSingle();
-            fila = r.data || null;
-          }
-        } catch (e) { console.warn('usuarios:', e); }
+        }
       }
       cachePerfiles.set(llave, fila);
       return fila;
     }
+    const correoDe = (u) => (u && (u.email || u.correo)) || null;
 
-    async function buscarDocumentoConductor(id) {
-      const llave = 'doc:' + id;
+    /* En BIKAR: viajes.conductor_id → conductores.id ; conductores.usuario_id → usuarios.id */
+    const COLS_DOC = 'id,usuario_id,conductor_id,tipo_servicio,marca,modelo,anio,placa,foto_vehiculo,foto_auto,foto,foto_url';
+    async function filaPorLlave(tabla, llave, valor, columnas) {
+      if (valor == null) return null;
+      let r = await consultaSegura(tabla, (q) => q.select(columnas || '*').eq(llave, valor).limit(1));
+      if (!r && columnas) r = await consultaSegura(tabla, (q) => q.select('*').eq(llave, valor).limit(1));
+      return (r && r.data && r.data[0]) || null;
+    }
+
+    async function resolverConductor(conductorId) {
+      const llave = 'cond:' + conductorId;
       if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
-      let fila = null;
-      if (db) {
-        try {
-          let r = await db.from('documentos_conductor').select('*').eq('usuario_id', id).maybeSingle();
-          fila = r.data || null;
-          if (!fila) { r = await db.from('documentos_conductor').select('*').eq('conductor_id', id).maybeSingle(); fila = r.data || null; }
-        } catch (e) { console.warn('documentos_conductor:', e); }
+      const info = { conductorId: conductorId, usuarioId: null, conductor: null, vehiculo: null, doc: null, usuario: null };
+
+      info.conductor = await filaPorLlave('conductores', 'id', conductorId);
+      if (!info.conductor) {
+        const porUsuario = await filaPorLlave('conductores', 'usuario_id', conductorId);
+        if (porUsuario) { info.conductor = porUsuario; if (porUsuario.id != null) info.conductorId = porUsuario.id; }
       }
-      cachePerfiles.set(llave, fila);
-      return fila;
+      info.usuarioId = (info.conductor && info.conductor.usuario_id != null) ? info.conductor.usuario_id : conductorId;
+
+      /* Vehículo registrado */
+      info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.conductorId);
+      if (!info.vehiculo && info.usuarioId !== info.conductorId) info.vehiculo = await filaPorLlave('vehiculos', 'conductor_id', info.usuarioId);
+
+      /* Documentación del vehículo */
+      info.doc = await filaPorLlave('documentos_conductor', 'conductor_id', info.conductorId, COLS_DOC);
+      if (!info.doc) info.doc = await filaPorLlave('documentos_conductor', 'usuario_id', info.usuarioId, COLS_DOC);
+
+      /* Cuenta del conductor */
+      info.usuario = await buscarUsuario(info.usuarioId);
+      if (!info.usuario && info.usuarioId !== conductorId) info.usuario = await buscarUsuario(conductorId);
+
+      logDebug('conductor resuelto', info);
+      cachePerfiles.set(llave, info);
+      return info;
+    }
+
+    /* [MODIFICACIÓN 4] Helper para extraer la foto real del vehículo guardada en Supabase */
+    function obtenerFotoVehiculo(info, v) {
+      const veh = info && info.vehiculo, doc = info && info.doc, cond = info && info.conductor, u = info && info.usuario;
+      const PAT = /foto.*(vehic|auto|carro|moto)|imagen.*(vehic|auto)|vehiculo.*foto/i;
+      const candidatas = [
+        valorPorPatron(veh, PAT),
+        valorPorPatron(doc, PAT),
+        valorPorPatron(cond, PAT),
+        valorPorPatron(v, PAT),
+        veh && (veh.foto_vehiculo || veh.foto || veh.foto_url || veh.imagen || veh.url_foto),
+        doc && (doc.foto_vehiculo || doc.foto_auto || doc.foto || doc.foto_url || doc.foto_carro || doc.foto_moto),
+        cond && (cond.foto_vehiculo || cond.foto_auto || cond.foto),
+        v && (v.foto_vehiculo || v.vehiculo_foto)
+      ];
+      for (let i = 0; i < candidatas.length; i++) {
+        const val = candidatas[i];
+        if (val && typeof val === 'string' && val.trim().length > 6) {
+          return val.trim();
+        }
+      }
+      return null;
+    }
+
+    /* Estadísticas de calificación promedio (los viajes se eliminan de la visualización según punto 5) */
+    function limpiarCacheStats() {
+      Array.from(cachePerfiles.keys()).forEach((k) => { if (String(k).indexOf('stats:') === 0) cachePerfiles.delete(k); });
+    }
+    async function estadisticasUsuario(id, rolPersona, usuarioId) {
+      const llave = 'stats:' + rolPersona + ':' + id;
+      if (cachePerfiles.has(llave)) return cachePerfiles.get(llave);
+      const res = { promedio: null, total: 0 };
+      if (db && id != null) {
+        const campoId = rolPersona === 'conductor' ? 'conductor_id' : 'pasajero_id';
+        const cv = colsViaje().length ? colsViaje() : ((await columnasDe('viajes')) || []);
+        const idsPersona = [id];
+        if (usuarioId != null && String(usuarioId) !== String(id)) idsPersona.push(usuarioId);
+
+        /* Promedio de estrellas recibidas (calificaciones) */
+        const cc = await columnasDe('calificaciones');
+        if (cc !== null && cc.length) {
+          const colEstrellas = cc.indexOf('estrellas') >= 0 ? 'estrellas' : (cc.indexOf('calificacion') >= 0 ? 'calificacion' : (cc.indexOf('puntaje') >= 0 ? 'puntaje' : null));
+          const colCalificado = cc.indexOf('calificado_id') >= 0 ? 'calificado_id' : (cc.indexOf('usuario_id') >= 0 ? 'usuario_id' : null);
+          if (colEstrellas && colCalificado) {
+            const r = await consultaSegura('calificaciones', (q) => {
+              let s = q.select(colEstrellas).in(colCalificado, idsPersona);
+              if (cc.indexOf('rol_calificador') >= 0) s = s.eq('rol_calificador', rolPersona === 'conductor' ? 'pasajero' : 'conductor');
+              return s;
+            });
+            if (r && r.data && r.data.length) {
+              const ns = r.data.map((x) => Number(x[colEstrellas])).filter((n) => isFinite(n) && n > 0);
+              if (ns.length) { res.promedio = ns.reduce((a, b) => a + b, 0) / ns.length; res.total = ns.length; }
+            }
+          }
+        }
+
+        /* Respaldo: columnas de calificación dentro de viajes */
+        if (res.promedio == null) {
+          const col = rolPersona === 'conductor' ? 'calificacion_conductor' : 'calificacion_pasajero';
+          if (cv.indexOf(col) >= 0 && cv.indexOf(campoId) >= 0) {
+            const r = await consultaSegura('viajes', (q) => q.select(col).eq(campoId, id).not(col, 'is', null));
+            if (r && r.data && r.data.length) {
+              const ns = r.data.map((x) => Number(x[col])).filter((n) => isFinite(n) && n > 0);
+              if (ns.length) { res.promedio = ns.reduce((a, b) => a + b, 0) / ns.length; res.total = ns.length; }
+            }
+          }
+        }
+      }
+      logDebug('stats', rolPersona, id, res);
+      cachePerfiles.set(llave, res);
+      return res;
     }
 
     let infoContraparte = null;
@@ -627,30 +882,67 @@
       personaFoto.src = info.foto || avatarDe(nombre);
 
       const chips = [];
-      if (info.rol === 'conductor') {
-        if (info.tipo_servicio) chips.push('<span class="vehicle-tag">' + (ICONO_SERVICIO[info.tipo_servicio] || SVG.ruta) + esc(info.tipo_servicio) + '</span>');
-        if (info.vehiculo) chips.push('<span class="mini-tag">' + SVG.auto + esc(info.vehiculo) + '</span>');
-        if (info.placa) chips.push('<span class="mini-tag"><span class="placa">' + esc(info.placa) + '</span></span>');
-        if (info.calificacion) chips.push('<span class="mini-tag">' + SVG.estrella + esc(info.calificacion) + '</span>');
-      } else {
-        if (info.telefono) chips.push('<span class="mini-tag">' + SVG.usuario + 'Pasajero</span>');
-        if (info.correo) chips.push('<span class="mini-tag">' + esc(info.correo) + '</span>');
-      }
-      personaExtra.innerHTML = chips.join('');
+      const chipRating = () => {
+        if (info.calificacion) {
+          return '<span class="mini-tag rating-tag">' + SVG.estrella + esc(info.calificacion) +
+            (info.totalCalif ? ' <span style="color:var(--muted-text);font-weight:600">(' + esc(info.totalCalif) + ')</span>' : '') + '</span>';
+        }
+        return '<span class="mini-tag rating-tag">' + SVG.estrella + 'Sin calificaciones</span>';
+      };
 
-      if (info.telefono) {
-        const tel = String(info.telefono).replace(/[^\d+]/g, '');
-        zonaContacto.style.display = 'flex';
-        btnLlamar.href = 'tel:' + tel;
-        btnWhatsapp.href = 'https://wa.me/' + tel.replace(/^\+/, '') +
-          '?text=' + encodeURIComponent('Hola ' + (nombre.split(' ')[0] || '') + ', te contacto por tu viaje BIKAR #' + viajeId);
+      if (info.rol === 'conductor') {
+        /* Fila de servicio / modelo de vehículo */
+        const partesSrv = [];
+        if (info.tipo_servicio) partesSrv.push(info.tipo_servicio);
+        if (info.vehiculo) partesSrv.push(info.vehiculo);
+        if (partesSrv.length) {
+          const claveSrv = normalizarClaveServicio(info.tipo_servicio);
+          chips.push('<div class="conductor-tags-top"><span class="vehicle-tag">' + (ICONO_SERVICIO[claveSrv] || SVG.ruta) + esc(partesSrv.join(' · ')) + '</span></div>');
+        }
+
+        /* [MODIFICACIÓN 4]: Junto a la placa está la foto real del vehículo y la calificación debajo */
+        let bloquePlaca = '<div class="vehiculo-placa-bloque">' +
+          '<div class="placa-foto-fila">' +
+            '<span class="mini-tag placa-tag">' + SVG.placa + '<span class="placa">' +
+              (info.placa ? esc(info.placa) : 'Placa no registrada') + '</span></span>';
+
+        if (info.foto_vehiculo) {
+          bloquePlaca += '<button type="button" class="vehiculo-thumb-chip" id="btn-ver-foto-vehiculo" title="Ver foto completa del vehículo">' +
+            '<img src="' + esc(info.foto_vehiculo) + '" alt="Vehículo" class="vehiculo-mini-img" onerror="this.parentElement.style.display=\'none\'">' +
+            '<span class="vehiculo-thumb-txt">Foto vehículo</span>' +
+            SVG.zoom +
+            '</button>';
+        }
+
+        bloquePlaca += '</div>' +
+          '<div class="calificacion-debajo-placa">' + chipRating() + '</div>' +
+          '</div>';
+
+        chips.push(bloquePlaca);
       } else {
-        zonaContacto.style.display = 'none';
+        /* [MODIFICACIÓN 1 Y 5]: Pasajero sin teléfono, sin correo y sin viajes */
+        chips.push('<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center">' +
+          '<span class="mini-tag">' + SVG.usuario + 'Pasajero verificado</span>' +
+          chipRating() +
+          '</div>');
       }
+
+      personaExtra.innerHTML = chips.filter(Boolean).join('');
+
+      /* Evento para ver la foto ampliada del vehículo */
+      const btnVerFoto = $('btn-ver-foto-vehiculo');
+      if (btnVerFoto && info.foto_vehiculo) {
+        btnVerFoto.onclick = () => {
+          $('img-vehiculo-completa').src = info.foto_vehiculo;
+          $('foto-vehiculo-placa').textContent = info.placa ? ('PLACA: ' + String(info.placa).toUpperCase()) : '';
+          abrirModal('modal-foto-vehiculo');
+        };
+      }
+
       actualizarContacto();
     }
 
-    /* [MOD 7] El conductor no ve teléfono/WhatsApp del pasajero: usa chat y llamada dentro de la app */
+    /* [MODIFICACIÓN 3]: Solo Chat y Llamar por app; sin teléfono ni WhatsApp */
     function actualizarContacto() {
       const estado = String((viajeActual && viajeActual.estado) || 'solicitado').toLowerCase();
       const activo = ['aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
@@ -658,18 +950,11 @@
         ? (viajeActual && viajeActual.pasajero_id != null)
         : (viajeActual && viajeActual.conductor_id != null);
       const appOK = activo && hayContraparte;
+
       $('btn-chat-app').style.display = appOK ? 'inline-flex' : 'none';
       $('btn-llamada-app').style.display = appOK ? 'inline-flex' : 'none';
-      if (rolUsuario === 'conductor') {
-        btnLlamar.style.display = 'none';
-        btnWhatsapp.style.display = 'none';
-        zonaContacto.style.display = appOK ? 'flex' : 'none';
-      } else {
-        const tieneTel = !!(infoContraparte && infoContraparte.telefono);
-        btnLlamar.style.display = tieneTel ? '' : 'none';
-        btnWhatsapp.style.display = tieneTel ? '' : 'none';
-        zonaContacto.style.display = (tieneTel || appOK) ? 'flex' : 'none';
-      }
+      zonaContacto.style.display = appOK ? 'flex' : 'none';
+
       if (appOK) prepararCanalChat();
     }
 
@@ -682,32 +967,55 @@
       return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
     }
 
+    /* [MODIFICACIÓN 2, 4 Y 5]: Conductor sin teléfono, sin viajes, con foto de vehículo y placa */
     async function cargarPerfilConductor(id) {
-      const [u, doc] = await Promise.all([buscarUsuario(id), buscarDocumentoConductor(id)]);
+      const info = await resolverConductor(id);
+      const u = info.usuario, doc = info.doc, veh = info.vehiculo;
+      const st = await estadisticasUsuario(id, 'conductor', info.usuarioId);
+
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
-        || (u && (u.usuario || u.correo)) || 'Conductor BIKAR';
+        || (u && (u.usuario || correoDe(u))) || 'Conductor BIKAR';
+
+      const PAT_PLACA = /placa|matricul|patente/i;
+      const placa = valorPorPatron(veh, PAT_PLACA) || valorPorPatron(doc, PAT_PLACA) ||
+                    valorPorPatron(u, PAT_PLACA) || valorPorPatron(viajeActual, PAT_PLACA) || '';
+
+      const fotoVehiculo = obtenerFotoVehiculo(info, viajeActual);
+
+      const marca = (doc && doc.marca) || '';
+      const modelo = (doc && doc.modelo) || (veh && veh.modelo) || '';
+      const anio = (doc && doc.anio) || (veh && veh.anio) || '';
+      const tipoServ = (doc && doc.tipo_servicio) || (viajeActual && (viajeActual.tipo_servicio || viajeActual.nombre_servicio)) || '';
+
+      logDebug('perfil conductor', { usuario: u, vehiculo: veh, documento: doc, placa: placa, fotoVehiculo: fotoVehiculo, stats: st });
+
       pintarPersona({
-        rol: 'conductor', nombre,
-        sub: (u && u.telefono) ? 'Teléfono · ' + u.telefono : 'Conductor verificado BIKAR',
+        rol: 'conductor',
+        nombre: nombre,
+        sub: 'Conductor verificado BIKAR',
         foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
-        telefono: u && u.telefono,
-        tipo_servicio: doc && doc.tipo_servicio,
-        vehiculo: doc ? [doc.marca, doc.modelo, doc.color].filter(Boolean).join(' ') : '',
-        placa: doc && doc.placa,
-        calificacion: doc && (doc.calificacion || doc.rating)
+        tipo_servicio: tipoServ,
+        vehiculo: [marca, modelo, anio].filter(Boolean).join(' '),
+        placa: placa,
+        foto_vehiculo: fotoVehiculo,
+        calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
+        totalCalif: st.total
       });
     }
 
+    /* [MODIFICACIÓN 1 Y 5]: Pasajero sin teléfono, sin correo, sin viajes y con espacios pulidos */
     async function cargarPerfilPasajero(id) {
-      const u = await buscarUsuario(id);
+      const [u, st] = await Promise.all([buscarUsuario(id), estadisticasUsuario(id, 'pasajero')]);
       const nombre = [u && (u.nombre || u.nombres), u && (u.apellido || u.apellidos)].filter(Boolean).join(' ').trim()
-        || (u && (u.usuario || u.correo)) || 'Pasajero BIKAR';
+        || (u && (u.usuario || correoDe(u))) || 'Pasajero BIKAR';
+
       pintarPersona({
-        rol: 'pasajero', nombre,
-        sub: (u && u.telefono) ? 'Teléfono · ' + u.telefono : 'Pasajero BIKAR',
+        rol: 'pasajero',
+        nombre: nombre,
+        sub: 'Pasajero verificado BIKAR',
         foto: (u && (u.foto || u.foto_url)) || FOTO_REPO_GITHUB,
-        telefono: u && u.telefono,
-        correo: u && u.correo
+        calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
+        totalCalif: st.total
       });
     }
 
@@ -812,8 +1120,8 @@
           avisoRol.style.display = 'block';
         }
         boton(SVG.siguiente + '<span>' + paso[0] + '</span>', false, () => {
-          if (paso[1] === 'en_camino') { abrirModalNavegacion(); cambiarEstadoViaje(paso[1]); }  /* [MOD 6] */
-          else if (paso[1] === 'en_progreso') { abrirPinConductor(); }                          /* [MOD 9] */
+          if (paso[1] === 'en_camino') { abrirModalNavegacion(); cambiarEstadoViaje(paso[1]); }
+          else if (paso[1] === 'en_progreso') { abrirPinConductor(); }
           else cambiarEstadoViaje(paso[1]);
         });
         return;
@@ -851,14 +1159,42 @@
       }
     }
 
-    /* [MOD 4] Cancelación con motivo */
+    /* Ocultar viaje al cancelar */
+    async function ocultarViajeDeApp() {
+      if (db && viajeId) {
+        const posibles = { activo:false, visible:false, oculto:true, archivado:true, disponible:false, eliminado:true, finalizado:true };
+        const cambios = {};
+        Object.keys(posibles).forEach((k) => { if (viajeTiene(k)) cambios[k] = posibles[k]; });
+        if (Object.keys(cambios).length) await consultaSegura('viajes', (q) => q.update(cambios).eq('id', viajeId));
+        logDebug('banderas de ocultamiento aplicadas', cambios);
+      }
+      try {
+        const k = 'bikar_viajes_ocultos';
+        const arr = lsJSON(k) || [];
+        if (arr.map(String).indexOf(String(viajeId)) < 0) arr.push(String(viajeId));
+        localStorage.setItem(k, JSON.stringify(arr));
+        localStorage.setItem('bikar_viaje_cancelado', JSON.stringify({ id: String(viajeId), rol: rolUsuario, ts: Date.now() }));
+        const activo = lsJSON('bikar_viaje_activo');
+        if (activo && String(activo.id) === String(viajeId)) localStorage.removeItem('bikar_viaje_activo');
+        if (String(localStorage.getItem('bikar_viaje_activo_id') || '') === String(viajeId)) localStorage.removeItem('bikar_viaje_activo_id');
+      } catch (e) {}
+      const aviso = { tipo: 'viaje_cancelado', id: String(viajeId), rol: rolUsuario, ts: Date.now() };
+      try { if (window.BroadcastChannel) { const bc = new BroadcastChannel('bikar_viajes'); bc.postMessage(aviso); bc.close(); } } catch (e) {}
+      try { if (window.opener && !window.opener.closed) window.opener.postMessage(aviso, '*'); } catch (e) {}
+      try { if (window.parent && window.parent !== window) window.parent.postMessage(aviso, '*'); } catch (e) {}
+    }
+
     async function cancelarViaje(motivo) {
       btnSiguiente.disabled = true;
       btnSiguiente.innerHTML = '<span>Cancelando…</span>';
       try {
-        let r = await db.from('viajes').update({ estado:'cancelado', motivo_cancelacion: motivo || null, cancelado_por: rolUsuario }).eq('id', viajeId);
+        const cambios = { estado: 'cancelado' };
+        if (viajeTiene('motivo_cancelacion')) cambios.motivo_cancelacion = motivo || null;
+        if (viajeTiene('cancelado_por')) cambios.cancelado_por = rolUsuario;
+        let r = await db.from('viajes').update(cambios).eq('id', viajeId);
         if (r.error) r = await db.from('viajes').update({ estado:'cancelado' }).eq('id', viajeId);
         if (r.error) throw r.error;
+        await ocultarViajeDeApp();
         mostrarToast('Solicitud cancelada');
         viajeActual = Object.assign({}, viajeActual, { estado:'cancelado' });
         renderizarUI();
@@ -880,11 +1216,14 @@
       personaNombre.textContent = '—';
       personaSub.textContent = '';
       personaExtra.innerHTML = '';
+      ocultarCardPin();
       $('radar').classList.remove('on');
+      const scanStatus = $('scanner-status');
+      if (scanStatus) scanStatus.classList.remove('on');
     }
 
     /* ============================================================
-       MODALES (genérico)
+       MODALES
        ============================================================ */
     function abrirModal(id) { $(id).classList.add('open'); }
     function cerrarModal(id) { $(id).classList.remove('open'); }
@@ -894,8 +1233,11 @@
        EXTRAS SEGÚN ESTADO
        ============================================================ */
     function actualizarExtras(estado) {
-      /* [MOD 1] Radar: activo buscando y sigue tras aceptar hasta finalizar */
-      $('radar').classList.toggle('on', ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0);
+      /* [MODIFICACIÓN 6] Destello Auto Fantástico en ambas tarjetas */
+      const activoAuto = ['solicitado', 'aceptado', 'en_camino', 'en_progreso'].indexOf(estado) >= 0;
+      $('radar').classList.toggle('on', activoAuto);
+      const scanStatus = $('scanner-status');
+      if (scanStatus) scanStatus.classList.toggle('on', activoAuto);
 
       const bNav = $('btn-extra-nav'), bComp = $('btn-extra-compartir'), bCanc = $('btn-extra-cancelar');
       bNav.style.display = 'none'; bComp.style.display = 'none'; bCanc.style.display = 'none';
@@ -903,39 +1245,40 @@
       if (rolUsuario === 'conductor') {
         if (estado === 'en_camino') { bNav.style.display = 'flex'; }
         if (estado === 'aceptado' || estado === 'en_camino') { bCanc.style.display = 'flex'; }
-      } else if (estado === 'en_progreso') {
-        bComp.style.display = 'flex';
+      } else {
+        if (estado === 'en_progreso') bComp.style.display = 'flex';
+        if (estado === 'aceptado' || estado === 'en_camino') bCanc.style.display = 'flex';
       }
 
-      /* [MOD 9] PIN */
+      /* PIN compacto */
       const pinPendiente = (estado === 'aceptado' || estado === 'en_camino');
       if (rolUsuario !== 'conductor') {
         if (pinPendiente && viajeActual.conductor_id != null) mostrarPinPasajero(estado);
-        else cerrarModal('modal-pin-pasajero');
+        else ocultarCardPin();
       } else {
-        if (estado === 'en_camino' && sessionStorage.getItem('bikar_pin_abierto_' + viajeId) === '1') abrirPinConductor();
-        if (!pinPendiente) { cerrarModal('modal-pin-conductor'); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
+        if (estado === 'en_camino') mostrarPinConductor(false);
+        else { ocultarCardPin(); sessionStorage.removeItem('bikar_pin_abierto_' + viajeId); }
       }
 
-      /* [MOD 5] Compartir ubicación (pasajero, en curso) */
+      /* Compartir ubicación */
       if (rolUsuario !== 'conductor' && estado === 'en_progreso' && !sessionStorage.getItem('bikar_share_' + viajeId)) {
         sessionStorage.setItem('bikar_share_' + viajeId, '1');
-        setTimeout(() => abrirModal('modal-compartir'), 400);
+        setTimeout(() => { abrirModal('modal-compartir'); pedirPosicion(); }, 400);
       }
       if (estado !== 'en_progreso') cerrarModal('modal-compartir');
 
-      /* [MOD 8] Calificación */
+      /* Calificación */
       if (estado === 'terminado' && !localStorage.getItem('bikar_calif_' + viajeId + '_' + rolUsuario)) abrirCalificacion();
 
       if (estado === 'cancelado' || estado === 'terminado') { cerrarModal('modal-chat'); if (llamada.pc) terminarLlamada(true); }
     }
 
     $('btn-extra-nav').addEventListener('click', abrirModalNavegacion);
-    $('btn-extra-compartir').addEventListener('click', () => abrirModal('modal-compartir'));
+    $('btn-extra-compartir').addEventListener('click', () => { abrirModal('modal-compartir'); pedirPosicion(); });
     $('btn-extra-cancelar').addEventListener('click', abrirModalCancelacion);
 
     /* ============================================================
-       [MOD 4] MODAL DE CANCELACIÓN
+       MODAL DE CANCELACIÓN
        ============================================================ */
     const MOTIVOS = {
       pasajero: ['El conductor tarda demasiado', 'Cambié de planes', 'Encontré otro medio de transporte', 'Me equivoqué en la dirección', 'La tarifa es muy alta', 'El conductor me pidió cancelar'],
@@ -972,14 +1315,13 @@
       b.disabled = false;
       if (ok) {
         cerrarModal('modal-cancelar');
-        cerrarModal('modal-pin-pasajero');
-        cerrarModal('modal-pin-conductor');
+        ocultarCardPin();
         sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
       }
     });
 
     /* ============================================================
-       [MOD 9] PIN DE SEGURIDAD
+       PIN DE SEGURIDAD COMPACTO
        ============================================================ */
     let pinIntentado = false;
     function pinDerivado() {
@@ -994,25 +1336,42 @@
     async function asegurarPin() {
       if (pinIntentado || viajeActual.pin_verificacion) return;
       pinIntentado = true;
+      if (!viajeTiene('pin_verificacion')) return;
       const nuevo = String(Math.floor(1000 + Math.random() * 9000));
-      try {
-        const { error } = await db.from('viajes').update({ pin_verificacion: nuevo }).eq('id', viajeId);
-        if (!error) viajeActual.pin_verificacion = nuevo;
-      } catch (e) { /* sin columna: se usa PIN derivado */ }
+      const r = await consultaSegura('viajes', (q) => q.update({ pin_verificacion: nuevo }).eq('id', viajeId));
+      if (r) viajeActual.pin_verificacion = nuevo;
+    }
+    function ocultarCardPin() {
+      cardPin.style.display = 'none';
+      $('pin-mini-pasajero').style.display = 'none';
+      $('pin-mini-conductor').style.display = 'none';
     }
     async function mostrarPinPasajero(estado) {
       $('pin-pasajero-estado').textContent = estado === 'en_camino'
-        ? 'Tu conductor está en camino al punto de recojo…' : 'Tu conductor aceptó el viaje y se prepara…';
-      const yaAbierto = $('modal-pin-pasajero').classList.contains('open');
+        ? 'Tu conductor está en camino. Dale el PIN solo al subir al vehículo.'
+        : 'Tu conductor aceptó el viaje y se prepara para recogerte.';
       await asegurarPin();
       const pin = pinDelViaje();
-      if (!yaAbierto || $('pin-digitos').dataset.pin !== pin) {
-        $('pin-digitos').dataset.pin = pin;
-        $('pin-digitos').innerHTML = pin.split('').map((c) => '<span>' + c + '</span>').join('');
+      const cont = $('pin-digitos');
+      if (cont.dataset.pin !== pin) {
+        cont.dataset.pin = pin;
+        cont.innerHTML = pin.split('').map((c) => '<span>' + c + '</span>').join('');
       }
-      abrirModal('modal-pin-pasajero');
+      $('pin-card-title').querySelector('span').textContent = 'PIN de seguridad';
+      $('pin-mini-conductor').style.display = 'none';
+      $('pin-mini-pasajero').style.display = 'flex';
+      cardPin.style.display = 'block';
     }
-    $('pin-pasajero-cancelar').addEventListener('click', abrirModalCancelacion);
+    function mostrarPinConductor(enfocar) {
+      $('pin-card-title').querySelector('span').textContent = 'Verifica el PIN del pasajero';
+      $('pin-mini-pasajero').style.display = 'none';
+      $('pin-mini-conductor').style.display = 'block';
+      cardPin.style.display = 'block';
+      if (enfocar) {
+        try { cardPin.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+        setTimeout(() => { try { pinInputs[0].focus(); } catch (e) {} }, 350);
+      }
+    }
 
     const pinInputs = Array.prototype.slice.call(document.querySelectorAll('#pin-inputs input'));
     pinInputs.forEach((inp, i) => {
@@ -1026,12 +1385,10 @@
     });
     function abrirPinConductor() {
       sessionStorage.setItem('bikar_pin_abierto_' + viajeId, '1');
-      if (!$('modal-pin-conductor').classList.contains('open')) {
-        pinInputs.forEach((x) => (x.value = ''));
-        $('pin-conductor-msg').textContent = '';
-        abrirModal('modal-pin-conductor');
-        setTimeout(() => pinInputs[0].focus(), 300);
-      }
+      pinInputs.forEach((x) => (x.value = ''));
+      $('pin-conductor-msg').textContent = '';
+      $('pin-conductor-msg').className = 'pin-msg';
+      mostrarPinConductor(true);
     }
     let verificando = false;
     async function verificarPin() {
@@ -1040,6 +1397,7 @@
       if (ingresado.length < 4) { mostrarToast('Ingresa los 4 dígitos'); return; }
       verificando = true;
       $('pin-verificar').disabled = true;
+      $('pin-conductor-msg').className = 'pin-msg';
       $('pin-conductor-msg').textContent = 'Verificando…';
       try {
         const { data } = await db.from('viajes').select('*').eq('id', viajeId).maybeSingle();
@@ -1047,18 +1405,23 @@
       } catch (e) {}
       if (String(viajeActual.estado).toLowerCase() === 'cancelado') {
         verificando = false; $('pin-verificar').disabled = false;
-        cerrarModal('modal-pin-conductor'); renderizarUI(); mostrarToast('El pasajero canceló el viaje'); return;
+        ocultarCardPin(); renderizarUI(); mostrarToast('El pasajero canceló el viaje'); return;
       }
       if (ingresado === pinDelViaje()) {
+        $('pin-conductor-msg').className = 'pin-msg ok';
         $('pin-conductor-msg').textContent = '¡PIN correcto! Iniciando viaje…';
         const ok = await cambiarEstadoViaje('en_progreso');
         if (ok) {
-          try { await db.from('viajes').update({ pin_verificado: true }).eq('id', viajeId); } catch (e) {}
+          if (viajeTiene('pin_verificado')) await consultaSegura('viajes', (q) => q.update({ pin_verificado: true }).eq('id', viajeId));
           sessionStorage.removeItem('bikar_pin_abierto_' + viajeId);
-          cerrarModal('modal-pin-conductor');
-        } else $('pin-conductor-msg').textContent = 'No se pudo iniciar. Intenta de nuevo.';
+          ocultarCardPin();
+        } else {
+          $('pin-conductor-msg').className = 'pin-msg err';
+          $('pin-conductor-msg').textContent = 'No se pudo iniciar. Intenta de nuevo.';
+        }
       } else {
         $('pin-inputs').classList.add('error');
+        $('pin-conductor-msg').className = 'pin-msg err';
         $('pin-conductor-msg').textContent = 'PIN incorrecto. Pide al pasajero que lo repita.';
         pinInputs.forEach((x) => (x.value = ''));
         pinInputs[0].focus();
@@ -1067,10 +1430,9 @@
       $('pin-verificar').disabled = false;
     }
     $('pin-verificar').addEventListener('click', verificarPin);
-    $('pin-conductor-cancelar').addEventListener('click', abrirModalCancelacion);
 
     /* ============================================================
-       [MOD 6] NAVEGACIÓN AL ORIGEN
+       NAVEGACIÓN AL ORIGEN
        ============================================================ */
     function abrirModalNavegacion() {
       const v = viajeActual || {};
@@ -1087,8 +1449,19 @@
     ['nav-google', 'nav-waze'].forEach((id) => $(id).addEventListener('click', () => setTimeout(() => cerrarModal('modal-nav'), 300)));
 
     /* ============================================================
-       [MOD 5] COMPARTIR UBICACIÓN POR WHATSAPP
+       COMPARTIR UBICACIÓN
        ============================================================ */
+    let ultimaPos = null, ultimoTextoCompartir = '';
+    function pedirPosicion() {
+      if (!navigator.geolocation) return;
+      navigator.geolocation.getCurrentPosition((p) => { ultimaPos = p; }, () => {}, { enableHighAccuracy: true, timeout: 8000, maximumAge: 30000 });
+    }
+    function urlUbicacion(pos) {
+      if (pos && pos.coords) return 'https://www.google.com/maps?q=' + pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6);
+      const v = viajeActual || {};
+      if (v.destino_lat != null && v.destino_lon != null) return 'https://www.google.com/maps?q=' + v.destino_lat + ',' + v.destino_lon;
+      return linkMaps.href;
+    }
     function textoCompartir(pos) {
       const v = viajeActual || {}, c = infoContraparte || {};
       const l = ['🚖 *Estoy en un viaje BIKAR* (#' + viajeId + ')', ''];
@@ -1097,28 +1470,72 @@
       if (c.nombre) l.push('👤 *Conductor:* ' + c.nombre);
       if (c.vehiculo) l.push('🚗 *Vehículo:* ' + c.vehiculo);
       if (c.placa) l.push('🔢 *Placa:* ' + String(c.placa).toUpperCase());
-      if (c.telefono) l.push('📞 *Tel. conductor:* ' + c.telefono);
+      if (c.calificacion) l.push('⭐ *Calificación:* ' + c.calificacion + (c.totalCalif ? ' (' + c.totalCalif + ' reseñas)' : ''));
       l.push('💰 *Tarifa:* ' + formatoMoneda(tarifaDelViaje(v)));
       if (v.distancia_km) l.push('📏 *Distancia:* ' + v.distancia_km + ' km');
-      if (pos) l.push('', '🛰️ *Mi ubicación actual:* https://www.google.com/maps?q=' + pos.coords.latitude.toFixed(6) + ',' + pos.coords.longitude.toFixed(6));
+      if (pos) l.push('', '🛰️ *Mi ubicación actual:* ' + urlUbicacion(pos));
       l.push('🗺️ *Ruta al destino:* ' + linkMaps.href);
       l.push('', '🕒 ' + new Date().toLocaleString('es-PE'));
       return l.join('\n');
     }
+    function abrirOpcionesCompartir(texto) {
+      ultimoTextoCompartir = texto;
+      const t = encodeURIComponent(texto);
+      const asunto = encodeURIComponent('Mi viaje BIKAR #' + viajeId);
+      const enlace = encodeURIComponent(urlUbicacion(ultimaPos));
+      const apps = [
+        { n:'WhatsApp',           c:'#25d366', l:'W', u:'https://wa.me/?text=' + t,                              nueva:true  },
+        { n:'Correo electrónico', c:'#ea4335', l:'@', u:'mailto:?subject=' + asunto + '&body=' + t,              nueva:false },
+        { n:'Mensaje de texto',   c:'#34b7f1', l:'S', u:'sms:?&body=' + t,                                       nueva:false },
+        { n:'Telegram',           c:'#229ed9', l:'T', u:'https://t.me/share/url?url=' + enlace + '&text=' + t,   nueva:true  },
+        { n:'Messenger',          c:'#0084ff', l:'M', u:'fb-messenger://share/?link=' + enlace,                  nueva:false }
+      ];
+      $('enviar-opciones').innerHTML = apps.map((a) =>
+        '<a class="nav-app" href="' + a.u + '"' + (a.nueva ? ' target="_blank" rel="noopener"' : '') + '>' +
+        '<span class="logo" style="background:' + a.c + '">' + a.l + '</span><span>' + a.n + '</span></a>').join('');
+      Array.prototype.slice.call($('enviar-opciones').querySelectorAll('a')).forEach((a) => {
+        a.addEventListener('click', () => setTimeout(() => { cerrarModal('modal-enviar'); cerrarModal('modal-compartir'); }, 400));
+      });
+      abrirModal('modal-enviar');
+    }
+    async function compartirTexto(texto) {
+      ultimoTextoCompartir = texto;
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: 'Mi viaje BIKAR #' + viajeId, text: texto });
+          cerrarModal('modal-compartir');
+          mostrarToast('Ubicación compartida');
+          return;
+        } catch (e) {
+          if (e && e.name === 'AbortError') return;
+        }
+      }
+      abrirOpcionesCompartir(texto);
+    }
     $('btn-compartir-ubicacion').addEventListener('click', () => {
-      const w = window.open('', '_blank');
-      const enviar = (pos) => {
-        const url = 'https://wa.me/?text=' + encodeURIComponent(textoCompartir(pos));
-        if (w) w.location.href = url; else location.href = url;
-        cerrarModal('modal-compartir');
-      };
+      if (ultimaPos) { compartirTexto(textoCompartir(ultimaPos)); return; }
+      let hecho = false;
+      const enviar = (p) => { if (hecho) return; hecho = true; compartirTexto(textoCompartir(p)); };
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(enviar, () => enviar(null), { enableHighAccuracy:true, timeout:6000, maximumAge:30000 });
+        navigator.geolocation.getCurrentPosition((p) => { ultimaPos = p; enviar(p); }, () => enviar(null),
+          { enableHighAccuracy: true, timeout: 4000, maximumAge: 60000 });
+        setTimeout(() => enviar(ultimaPos), 4300);
       } else enviar(null);
+    });
+    $('enviar-copiar').addEventListener('click', async () => {
+      const texto = ultimoTextoCompartir || textoCompartir(ultimaPos);
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(texto);
+        else {
+          const ta = document.createElement('textarea');
+          ta.value = texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        }
+        mostrarToast('Mensaje copiado');
+      } catch (e) { mostrarToast('No se pudo copiar el mensaje'); }
     });
 
     /* ============================================================
-       [MOD 8] CALIFICACIÓN
+       CALIFICACIÓN
        ============================================================ */
     let estrellasSel = 0;
     const ETIQ = ['', 'Muy malo', 'Malo', 'Regular', 'Bueno', '¡Excelente!'];
@@ -1149,18 +1566,31 @@
         resena: $('calif-resena').value.trim() || null
       };
       let ok = false;
-      try { const { error } = await db.from('calificaciones').insert(fila); ok = !error; if (error) console.warn(error); } catch (e) { console.warn(e); }
+      const colsCal = await columnasDe('calificaciones');
+      if (colsCal !== null) {
+        if (colsCal.length) Object.keys(fila).forEach((k) => { if (colsCal.indexOf(k) < 0) delete fila[k]; });
+        const r = await consultaSegura('calificaciones', (q) => q.insert(fila));
+        ok = !!r;
+      }
       if (!ok) {
-        const campo = rolUsuario === 'conductor' ? { calificacion_pasajero: estrellasSel, resena_conductor: fila.resena } : { calificacion_conductor: estrellasSel, resena_pasajero: fila.resena };
-        try { const { error } = await db.from('viajes').update(campo).eq('id', viajeId); ok = !error; } catch (e) {}
+        const campo = {};
+        if (rolUsuario === 'conductor') {
+          if (viajeTiene('calificacion_pasajero')) campo.calificacion_pasajero = estrellasSel;
+          if (viajeTiene('resena_conductor')) campo.resena_conductor = fila.resena || null;
+        } else {
+          if (viajeTiene('calificacion_conductor')) campo.calificacion_conductor = estrellasSel;
+          if (viajeTiene('resena_pasajero')) campo.resena_pasajero = fila.resena || null;
+        }
+        if (Object.keys(campo).length) { const r = await consultaSegura('viajes', (q) => q.update(campo).eq('id', viajeId)); ok = !!r; }
       }
       localStorage.setItem('bikar_calif_' + viajeId + '_' + rolUsuario, String(estrellasSel));
+      limpiarCacheStats();
       cerrarModal('modal-calificar');
       mostrarToast(ok ? '¡Gracias por tu calificación!' : 'Calificación guardada localmente');
     });
 
     /* ============================================================
-       [MOD 7] CHAT INTERNO Y LLAMADA EN LA APP (tiempo real)
+       CHAT INTERNO Y LLAMADA EN LA APP
        ============================================================ */
     let canalChat = null, noLeidos = 0;
     const msgsVistos = new Set();
@@ -1173,10 +1603,10 @@
       cargarHistorialChat();
     }
     async function cargarHistorialChat() {
-      try {
-        const { data, error } = await db.from('mensajes_viaje').select('*').eq('viaje_id', viajeId).order('created_at', { ascending: true });
-        if (!error && data) data.forEach((m) => pintarMensaje({ uid: m.uid || ('db' + m.id), de: m.remitente_rol, texto: m.mensaje, ts: m.created_at }, true));
-      } catch (e) {}
+      const cols = await columnasDe('mensajes_viaje');
+      if (cols === null) return;
+      const r = await consultaSegura('mensajes_viaje', (q) => q.select('*').eq('viaje_id', viajeId).order('created_at', { ascending: true }));
+      if (r && r.data) r.data.forEach((m) => pintarMensaje({ uid: m.uid || ('db' + m.id), de: m.remitente_rol, texto: m.mensaje, ts: m.created_at }, true));
     }
     function pintarMensaje(m, silencioso) {
       if (msgsVistos.has(m.uid)) return;
@@ -1209,10 +1639,15 @@
       $('chat-input').value = '';
       pintarMensaje(m, true);
       canalChat.send({ type: 'broadcast', event: 'msg', payload: m });
-      try { await db.from('mensajes_viaje').insert({ viaje_id: viajeId, remitente_rol: rolUsuario, mensaje: texto, uid: m.uid }); } catch (err) {}
+      const colsMsg = await columnasDe('mensajes_viaje');
+      if (colsMsg !== null) {
+        const fila = { viaje_id: viajeId, remitente_rol: rolUsuario, mensaje: texto, uid: m.uid };
+        if (colsMsg.length) Object.keys(fila).forEach((k) => { if (colsMsg.indexOf(k) < 0) delete fila[k]; });
+        await consultaSegura('mensajes_viaje', (q) => q.insert(fila));
+      }
     });
 
-    /* Llamada de voz WebRTC (señalización por Supabase Realtime) */
+    /* Llamada de voz WebRTC */
     const llamada = { pc: null, stream: null, ofertaPendiente: null, timer: null, inicio: 0, iceCola: [] };
     const RTC_CFG = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
     function enviarSenal(payload) { if (canalChat) canalChat.send({ type: 'broadcast', event: 'call', payload: Object.assign({ de: rolUsuario }, payload) }); }
@@ -1312,7 +1747,7 @@
     }
 
     /* ============================================================
-       TIEMPO REAL (con respaldo por sondeo)
+       TIEMPO REAL
        ============================================================ */
     function suscribirRealtime() {
       if (!db || !viajeId) return;
@@ -1349,7 +1784,6 @@
        ============================================================ */
     function inicializar() {
       usuarioSesion = lsJSON(K_SESION);
-      /* Si no llegó ?rol=, se deduce de la sesión guardada */
       if (!urlParams.get('rol') && usuarioSesion && usuarioSesion.tipo_usuario === 'conductor') rolUsuario = 'conductor';
 
       personaFoto.src = avatarDe('B');
@@ -1364,13 +1798,15 @@
       renderCargando();
       obtenerDatosViaje();
       suscribirRealtime();
-      iniciarRefresco();          /* garantiza datos frescos aunque Realtime falle */
+      iniciarRefresco();
     }
 
     function renderCargando() {
       personaNombre.innerHTML = '<span class="skeleton" style="width:150px;height:14px"></span>';
       personaSub.innerHTML = '<span class="skeleton" style="width:190px;height:11px;display:block;margin-top:6px"></span>';
       $('radar').classList.add('on');
+      const scanStatus = $('scanner-status');
+      if (scanStatus) scanStatus.classList.add('on');
     }
 
     $('btn-refrescar').addEventListener('click', () => { obtenerDatosViaje(); mostrarToast('Actualizando…'); });
