@@ -16,6 +16,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://maps.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @import "tailwindcss/theme.css" layer(theme);
+    @import "tailwindcss/utilities.css" layer(utilities);
+  </style>
   <style>
     /* ============================================================
        BIKAR · Mapa, viajes y tiempo real (Google Maps + Supabase)
@@ -625,6 +630,61 @@
     .aviso-push.alerta .aviso-push-icono{background:linear-gradient(135deg,#ef4444,#a32626);animation:none}
     .aviso-push .btn-mini{flex-shrink:0}
     .aviso-push .btn-mini:disabled{opacity:.6;cursor:not-allowed;transform:none}
+
+    /* Direcciones, viajes recurrentes y servicios: mismo lenguaje visual de la app. */
+    #btn-direcciones-favoritas{top:calc(70px + env(safe-area-inset-top))}
+    #btn-centrar-ubicacion{top:calc(124px + env(safe-area-inset-top))}
+    #btn-centrar-ubicacion:disabled{opacity:.6;cursor:wait;transform:none}
+    body:has(#btn-direcciones-favoritas:not(.oculto)) #alerta-viaje-activo{max-width:calc(100vw - 156px)}
+    .modal-nueva .modal-titulo{padding-right:30px}
+    .modal-pequena{width:min(100%,370px)}
+    .modal-instrucciones{font-size:.78rem;line-height:1.55;color:var(--muted-text);margin:8px 0 14px}
+    .direcciones-lista{display:flex;flex-direction:column;gap:8px}
+    .direccion-fila{display:flex;align-items:center;gap:8px;animation:riseIn .3s ease both;min-width:0}
+    .direccion-elegir{display:flex;align-items:center;gap:11px;flex:1;min-width:0;width:100%;padding:12px;
+      border:1px solid var(--field-border);border-radius:14px;background:var(--field-bg);color:var(--text-color);
+      cursor:pointer;text-align:left;transition:border-color .2s,background .2s,transform .2s}
+    .direccion-elegir:hover{border-color:var(--primary-color);background:rgba(71,133,167,.12);transform:translateX(2px)}
+    .direccion-elegir:disabled{opacity:.6;cursor:wait;transform:none}
+    .direccion-icono{flex-shrink:0;display:flex;align-items:center;justify-content:center;width:32px;height:32px;
+      color:var(--primary-color);background:rgba(71,133,167,.12);border-radius:10px}
+    .direccion-icono svg{width:17px;height:17px}
+    .direccion-textos{display:block;min-width:0;flex:1}
+    .direccion-textos strong{display:block;font-size:.8rem;line-height:1.35;overflow-wrap:anywhere}
+    .direccion-textos small{display:block;font-size:.68rem;line-height:1.4;color:var(--muted-text);margin-top:3px;overflow-wrap:anywhere}
+    .direccion-eliminar{flex-shrink:0;width:32px;height:36px;border:1px solid var(--field-border);border-radius:10px;
+      display:flex;align-items:center;justify-content:center;background:transparent;color:var(--muted-text);cursor:pointer;transition:color .2s,border-color .2s}
+    .direccion-eliminar:hover{color:#ef4444;border-color:rgba(239,68,68,.5)}
+    .direccion-eliminar svg{width:15px;height:15px}
+    .favoritos-form{margin-top:16px;padding-top:14px;border-top:1px solid var(--glass-border)}
+    .favoritos-label{display:block;font-size:.7rem;font-weight:700;color:var(--primary-color);margin:0 0 6px}
+    .favoritos-control{display:block;width:100%;height:44px;padding:0 12px;margin-bottom:12px;font-size:.82rem;
+      background:var(--field-bg);color:var(--text-color);border:1px solid var(--field-border);border-radius:12px}
+    .favoritos-control option{background:var(--card-bg);color:var(--text-color)}
+    #input-direccion-favorita{height:48px;padding-left:14px;font-size:.84rem}
+    #sugerencias-favorito{position:relative;top:auto;margin-top:6px;max-height:180px;box-shadow:none}
+    .favoritos-ayuda{display:block;font-size:.65rem;line-height:1.45;color:var(--muted-text);margin:10px 0 0}
+    .favoritos-error{font-size:.73rem;line-height:1.4;color:#ef4444;margin-bottom:10px}
+    .menu-subservicios{pointer-events:auto;display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-left:20px;
+      padding-left:12px;border-left:1px solid rgba(71,133,167,.35);animation:riseIn .25s ease both}
+    .menu-subservicios .menu-perfil-item{font-size:.68rem}
+    .menu-servicios-chevron{width:12px;height:12px;transition:transform .25s}
+    #menu-item-tipos-servicios[aria-expanded="true"] .menu-servicios-chevron{transform:rotate(180deg)}
+    #menu-perfil:has(.menu-subservicios:not(.oculto)){max-height:calc(100dvh - 88px - env(safe-area-inset-top));
+      max-width:calc(100vw - 28px);overflow-y:auto;overflow-x:hidden;padding:2px 8px 12px 0;scrollbar-width:thin}
+    .servicio-presentacion-imagen{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:14px;
+      background:var(--field-bg);margin:12px 0 2px;animation:fadeIn .4s ease both}
+    .servicio-presentacion-fallback{display:flex;min-height:150px;align-items:center;justify-content:center;color:var(--primary-color);
+      background:var(--field-bg);border-radius:14px;margin-top:12px}
+    .servicio-presentacion-fallback svg{width:88px;height:88px}
+    .pagos-resumen.con-comisiones{grid-template-columns:repeat(6,minmax(0,1fr))}
+    .pagos-resumen.con-comisiones .pago-kpi{grid-column:span 2;min-width:0}
+    .pagos-resumen.con-comisiones .pago-comision{grid-column:span 3}
+    .pago-comision small{display:block;margin-top:4px;font-size:.6rem;color:var(--muted-text);line-height:1.35}
+    @media (prefers-reduced-motion:reduce){
+      .modal-nueva,.modal-nueva .modal-bikar-dialog,.modal-nueva .direccion-fila,
+      .menu-subservicios,.menu-subservicios .menu-perfil-item,.servicio-presentacion-imagen{animation:none!important}
+    }
   </style>
   <script>
     (function(){
@@ -654,8 +714,19 @@
     </button>
     <button type="button" class="menu-perfil-item" id="menu-item-historial">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-      <span class="mi-txt">Historial de servicios</span>
+      <span class="mi-txt">Mis viajes</span>
     </button>
+    <button type="button" class="menu-perfil-item oculto" id="menu-item-tipos-servicios" aria-expanded="false" aria-controls="menu-subservicios">
+      <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      <span class="mi-txt">Tipos de servicios de BIKAR</span>
+      <svg class="menu-servicios-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div id="menu-subservicios" class="menu-subservicios oculto" aria-label="Servicios de BIKAR">
+      <button type="button" class="menu-perfil-item" data-servicio-info="taxi_auto"><span class="mi-ico" data-icono-servicio="taxi_auto"></span><span>BIKAR TAXI</span></button>
+      <button type="button" class="menu-perfil-item" data-servicio-info="moto_delivery"><span class="mi-ico" data-icono-servicio="moto_delivery"></span><span>BIKAR ENVÍOS</span></button>
+      <button type="button" class="menu-perfil-item" data-servicio-info="moto_taxi"><span class="mi-ico" data-icono-servicio="moto_taxi"></span><span>BIKAR MOTO</span></button>
+      <button type="button" class="menu-perfil-item" data-servicio-info="taxi_carga"><span class="mi-ico" data-icono-servicio="taxi_carga"></span><span>TAXI CARGA</span></button>
+    </div>
     <button type="button" class="menu-perfil-item" id="menu-item-ayuda">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
       <span class="mi-txt">Ayuda BIKAR</span>
@@ -674,6 +745,14 @@
       <circle cx="12" cy="12" r="4"/>
       <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
     </svg>
+  </button>
+
+  <button id="btn-direcciones-favoritas" class="btn-theme-toggle oculto" type="button" title="Mis direcciones favoritas" aria-label="Mis direcciones favoritas" aria-haspopup="dialog" aria-controls="modal-favoritos">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91L12 3z"/></svg>
+  </button>
+
+  <button id="btn-centrar-ubicacion" class="btn-theme-toggle" type="button" title="Centrar mapa en mi ubicación" aria-label="Centrar mapa en mi ubicación" aria-controls="map">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
   </button>
 
   <!-- BOTÓN ESTADO CONDUCTOR: ACTIVO (VERDE) / INACTIVO (ROJO) -->
@@ -830,7 +909,7 @@
         <div class="perfil-zona-acciones">
           <button type="button" class="btn-mini" id="btn-perfil-historial">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            Ver historial
+            Mis viajes
           </button>
           <button type="button" class="btn-mini oculto" id="btn-perfil-vehiculo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
@@ -864,7 +943,7 @@
     <div class="modal-bikar-dialog" style="height:min(660px,100%)">
       <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-historial" aria-label="Cerrar">×</button>
       <span class="modal-kicker">BIKAR · Actividad</span>
-      <h2 class="modal-titulo" id="historial-titulo">Historial de servicios</h2>
+      <h2 class="modal-titulo" id="historial-titulo">Mis viajes</h2>
 
       <div class="historial-tabs">
         <button type="button" class="historial-tab activo" id="tab-servicios">Servicios</button>
@@ -900,6 +979,66 @@
           <span style="margin-left:8px">Cargando centro de ayuda…</span>
         </div>
         <iframe id="iframe-ayuda" class="ayuda-iframe" src="" title="Centro de Ayuda BIKAR" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIAJES RECURRENTES (PASAJERO) -->
+  <div id="modal-recurrentes" class="modal-bikar modal-nueva oculto" role="dialog" aria-modal="true" aria-labelledby="recurrentes-titulo" aria-describedby="recurrentes-ayuda">
+    <div class="modal-bikar-dialog modal-pequena">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-recurrentes" aria-label="Cerrar viajes recurrentes">×</button>
+      <span class="modal-kicker">BIKAR · Tus destinos</span>
+      <h2 class="modal-titulo" id="recurrentes-titulo">Viajes recurrentes</h2>
+      <p class="modal-instrucciones" id="recurrentes-ayuda">Elige uno de tus últimos tres viajes para volver a ese destino.</p>
+      <div class="modal-bikar-scroll">
+        <div id="lista-recurrentes" class="direcciones-lista" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECCIONES FAVORITAS (PASAJERO) -->
+  <div id="modal-favoritos" class="modal-bikar modal-nueva oculto" role="dialog" aria-modal="true" aria-labelledby="favoritos-titulo" aria-describedby="favoritos-instrucciones">
+    <div class="modal-bikar-dialog">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-favoritos" aria-label="Cerrar direcciones favoritas">×</button>
+      <span class="modal-kicker">BIKAR · Lugares favoritos</span>
+      <h2 class="modal-titulo" id="favoritos-titulo">Mis direcciones</h2>
+      <div class="modal-bikar-scroll">
+        <p class="modal-instrucciones" id="favoritos-instrucciones">Guarda Mi casa, Mi trabajo u otro lugar. Elige un nombre, busca la dirección y selecciona una sugerencia. Después, toca una dirección guardada para usarla como destino.</p>
+        <div id="lista-favoritos" class="direcciones-lista" aria-live="polite"></div>
+        <form id="form-direccion-favorita" class="favoritos-form">
+          <label class="favoritos-label" for="tipo-direccion-favorita">¿Qué lugar quieres guardar?</label>
+          <select id="tipo-direccion-favorita" class="favoritos-control">
+            <option value="casa">Mi casa</option>
+            <option value="trabajo">Mi trabajo</option>
+            <option value="otra">Nueva ubicación</option>
+          </select>
+          <div id="grupo-nombre-favorito" class="oculto">
+            <label class="favoritos-label" for="nombre-direccion-favorita">Nombre del lugar</label>
+            <input id="nombre-direccion-favorita" class="favoritos-control" type="text" maxlength="50" placeholder="Por ejemplo: Universidad" autocomplete="off">
+          </div>
+          <label class="favoritos-label" for="input-direccion-favorita">Dirección</label>
+          <div class="input-group">
+            <input id="input-direccion-favorita" type="text" placeholder="Busca una dirección o un lugar" autocomplete="off" required>
+            <div id="sugerencias-favorito" class="lista-sugerencias"></div>
+          </div>
+          <p id="favoritos-error" class="favoritos-error oculto" role="alert"></p>
+          <button type="submit" class="btn-main">Guardar dirección</button>
+          <small class="favoritos-ayuda">Se guardan para tu cuenta en este dispositivo. Puedes actualizar un lugar guardándolo de nuevo con el mismo nombre.</small>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRESENTACIÓN DE CADA SERVICIO (PASAJERO) -->
+  <div id="modal-tipo-servicio" class="modal-bikar modal-nueva oculto" role="dialog" aria-modal="true" aria-labelledby="tipo-servicio-titulo">
+    <div class="modal-bikar-dialog modal-pequena">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-tipo-servicio" aria-label="Cerrar información del servicio">×</button>
+      <span class="modal-kicker">BIKAR · Nuestros servicios</span>
+      <h2 class="modal-titulo" id="tipo-servicio-titulo"></h2>
+      <div class="modal-bikar-scroll">
+        <img id="tipo-servicio-imagen" class="servicio-presentacion-imagen" alt="" decoding="async" referrerpolicy="no-referrer">
+        <div id="tipo-servicio-fallback" class="servicio-presentacion-fallback oculto" role="img"></div>
+        <p id="tipo-servicio-descripcion" class="modal-instrucciones"></p>
       </div>
     </div>
   </div>
@@ -953,11 +1092,11 @@
 
     /* ============================ TARIFAS REALES PERÚ (SOLES S/) ============================
        Ajustadas equivalentes al mercado de Uber/inDrive en Perú (Lima/provincias) con tarifas justas:
-       - Moto Taxi:     Base S/ 2.50 + S/ 0.90/km (Mínimo S/ 3.50)
-       - Moto Delivery: Base S/ 3.20 + S/ 1.10/km (Mínimo S/ 4.50)
-       - Taxi Auto:     Base S/ 4.50 + S/ 1.40/km (Mínimo S/ 6.50)
-       - Taxi Carga:    Base S/ 16.00 + S/ 2.80/km (Mínimo S/ 20.00)
-    ======================================================================================== */
+       - BIKAR MOTO:    Base S/ 2.50 + S/ 0.90/km (Mínimo S/ 3.50)
+       - BIKAR ENVÍOS:  Base S/ 3.20 + S/ 1.10/km (Mínimo S/ 4.50)
+       - BIKAR TAXI:    Base S/ 4.50 + S/ 1.40/km (Mínimo S/ 6.50)
+       - TAXI CARGA:    Base S/ 16.00 + S/ 2.80/km (Mínimo S/ 20.00)
+    ======================================================================================= */
     const ICONOS = {
       taxi_auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/><path d="M9 7V4h6v3"/></svg>',
       moto_taxi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/><path d="M6 11h4"/></svg>',
@@ -967,13 +1106,13 @@
     };
 
     const CATALOGO = [
-      { clave:'moto_taxi',     etiqueta:'Moto Taxi',     desc:'Económico y ágil · 1 pasajero',           base:2.50,  porKm:0.90, minTarifa:3.50,  espera:'2 min' },
-      { clave:'moto_delivery', etiqueta:'Moto Delivery', desc:'Envíos de paquetes, comida y documentos',  base:3.20,  porKm:1.10, minTarifa:4.50,  espera:'3 min' },
-      { clave:'taxi_auto',     etiqueta:'Taxi Auto',     desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:4.50,  porKm:1.40, minTarifa:6.50,  espera:'4 min' },
-      { clave:'taxi_carga',    etiqueta:'Taxi Carga',    desc:'Mudanzas, carga pesada y encomiendas',     base:16.00, porKm:2.80, minTarifa:20.00, espera:'8 min' }
+      { clave:'moto_taxi',     etiqueta:'BIKAR MOTO',    desc:'Económico y ágil · 1 pasajero',           base:2.50,  porKm:0.90, minTarifa:3.50,  espera:'2 min' },
+      { clave:'moto_delivery', etiqueta:'BIKAR ENVÍOS',  desc:'Envíos de paquetes, comida y documentos',  base:3.20,  porKm:1.10, minTarifa:4.50,  espera:'3 min' },
+      { clave:'taxi_auto',     etiqueta:'BIKAR TAXI',    desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:4.50,  porKm:1.40, minTarifa:6.50,  espera:'4 min' },
+      { clave:'taxi_carga',    etiqueta:'TAXI CARGA',    desc:'Mudanzas, carga pesada y encomiendas',     base:16.00, porKm:2.80, minTarifa:20.00, espera:'8 min' }
     ];
 
-    /* Normaliza cualquier etiqueta a la clave canónica del catálogo */
+    /* Los nombres BIKAR y los anteriores conservan las mismas claves internas. */
     function normalizarClaveServicio(raw) {
       if (raw === null || raw === undefined || raw === '') return null;
       let c = String(raw).toLowerCase().trim();
@@ -993,7 +1132,8 @@
       const dist = Number(distanciaKm || 0);
       const calculo = s.base + (dist * s.porKm);
       const final = Math.max(s.minTarifa, calculo);
-      return Math.round(final * 10) / 10;
+      const normal = Math.round(final * 10) / 10;
+      return s.capacidadPasajeros === 6 ? Math.round(normal * 130) / 100 : normal;
     }
 
     function formatoMoneda(v) {
@@ -1014,6 +1154,9 @@
     let viajesIdsVistos = null; // IDs de viajes ya mostrados al conductor (null = primera carga)
     let seqViajes = 0;
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
+    let capacidadConductor = null, recurrentesMostrados = false, secuenciaRecurrentes = 0;
+    let favoritoBorrador = null, tokenFavorito = null, destinoGuardadoPendiente = null;
+    let servicioConductorListo = false, secuenciaDireccionGuardada = 0;
 
     // Notificaciones push y sonido
     let swRegistro = null, swListenerOk = false; // Service Worker
@@ -1028,7 +1171,7 @@
     let map, geocoder, autocompleteService, placesService, directionsService, directionsRenderer;
     let tokenOrigen = null, tokenDestino = null, marcadorOrigen = null, marcadorDestino = null, infoOrigen = null;
     let popupDir = null, popupSub = null;
-    const timers = { origen:null, destino:null };
+    const timers = { origen:null, destino:null, favorito:null };
     const cacheDir = new Map();
 
     /* ============================ DOM ============================ */
@@ -1055,7 +1198,11 @@
     const btnIrViajeActivo = $('btn-ir-viaje-activo'), btnCancelarViaje = $('btn-cancelar-viaje');
     const avisoPush = $('aviso-push'), avisoPushTit = $('aviso-push-tit'), avisoPushSub = $('aviso-push-sub'), btnActivarPush = $('btn-activar-push');
     const avisoPushPas = $('aviso-push-pasajero'), avisoPushPasTit = $('aviso-push-pasajero-tit'), avisoPushPasSub = $('aviso-push-pasajero-sub'), btnActivarPushPas = $('btn-activar-push-pasajero');
-    const CAPAS = [modalConfirmar, modalAyuda, modalVehiculo, modalPerfil, modalHistorial];
+    const modalRecurrentes = $('modal-recurrentes'), modalFavoritos = $('modal-favoritos'), modalTipoServicio = $('modal-tipo-servicio');
+    const btnFavoritos = $('btn-direcciones-favoritas'), menuTiposServicios = $('menu-item-tipos-servicios'), menuSubservicios = $('menu-subservicios');
+    const inputDireccionFavorita = $('input-direccion-favorita'), sugFavorito = $('sugerencias-favorito');
+    const MODALES_NUEVOS = [modalTipoServicio, modalFavoritos, modalRecurrentes];
+    const CAPAS = [modalConfirmar, ...MODALES_NUEVOS, modalAyuda, modalVehiculo, modalPerfil, modalHistorial];
     const abierto = (el) => el && !el.classList.contains('oculto');
 
     /* ============================ HELPERS ============================ */
@@ -1068,6 +1215,57 @@
     const lsJSON = (k) => { try { return JSON.parse(lsGet(k) || 'null'); } catch (e) { return null; } };
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const tituloClave = (c) => c.replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
+
+    const CLAVES_CAPACIDAD = ['capacidadpasajeros', 'numeropasajeros', 'numerodepasajeros', 'cantidadpasajeros',
+      'cantidaddepasajeros', 'numpasajeros', 'nropasajeros', 'cantpasajeros', 'pasajeros',
+      'capacidadvehiculo', 'capacidad', 'numeroasientos', 'cantidadasientos', 'asientos', 'plazas'];
+    const normalizarCampoCapacidad = (k) => String(k).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z]/g, '');
+
+    // Lee la capacidad existente sin solicitar columnas que puedan no existir en el registro.
+    function capacidadPasajerosDe(...fuentes) {
+      const numero = (v, soloEtiqueta) => {
+        if (typeof v !== 'string' && typeof v !== 'number') return null;
+        const txt = String(v).trim();
+        if (!soloEtiqueta && /^\d{1,2}$/.test(txt)) {
+          const n = Number(txt);
+          if (n > 0 && n <= 20) return n;
+        }
+        const m = txt.match(/\b(\d{1,2})\s*(?:pasajeros?|pax|personas?|plazas|asientos)\b/i);
+        return m && Number(m[1]) > 0 && Number(m[1]) <= 20 ? Number(m[1]) : null;
+      };
+      function leer(f, profundidad) {
+        if (!f || typeof f !== 'object' || Array.isArray(f)) return null;
+        const campos = Object.keys(f);
+        for (const clave of CLAVES_CAPACIDAD) {
+          const campo = campos.find(k => normalizarCampoCapacidad(k) === clave);
+          if (campo === undefined) continue;
+          const n = numero(f[campo], false);
+          if (n !== null) return n;
+        }
+        for (const campo of ['nombre_servicio', 'tipo_servicio', 'servicio', 'tipo_vehiculo']) {
+          const n = numero(f[campo], true);
+          if (n !== null) return n;
+        }
+        if (profundidad < 2) {
+          for (const campo of ['vehiculo', 'datos_vehiculo', 'documentacion_vehiculo', 'datos_conductor']) {
+            let valor = f[campo];
+            if (typeof valor === 'string' && valor.trim().startsWith('{')) {
+              try { valor = JSON.parse(valor); } catch (e) { continue; }
+            }
+            const n = leer(valor, profundidad + 1);
+            if (n !== null) return n;
+          }
+        }
+        return null;
+      }
+      for (const fuente of fuentes) {
+        const n = leer(fuente, 0);
+        if (n !== null) return n;
+      }
+      return null;
+    }
+    const claveOpcionServicio = (clave, capacidad) => clave + (capacidad === 6 ? '_6_pasajeros' : '');
+    const viajeDeSeisPasajeros = (v) => capacidadPasajerosDe(v) === 6;
 
     let toastTimer;
     function mostrarToast(mensaje, icono = '✓') {
@@ -1148,10 +1346,17 @@
       // Solo el pasajero puede interactuar tocando el mapa para marcar destino
       map.addListener('click', (e) => {
         if (modoActual !== 'pasajero' || viajeActivoPasajero) return;
+        destinoGuardadoPendiente = null;
+        secuenciaDireccionGuardada++;
         establecerDestino({ lat: e.latLng.lat(), lng: e.latLng.lng() }, null, null, true);
       });
 
       obtenerUbicacionActual(true);
+      if (destinoGuardadoPendiente) {
+        const lugar = destinoGuardadoPendiente;
+        destinoGuardadoPendiente = null;
+        usarDireccionGuardada(lugar);
+      }
     };
 
     /* ============================ GEOCODIFICACIÓN ============================ */
@@ -1290,6 +1495,39 @@
       }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
     }
 
+    async function centrarMapaEnUbicacionActual() {
+      const boton = $('btn-centrar-ubicacion');
+      if (boton.disabled) return;
+      if (!map) { mostrarToast('Espera a que termine de cargar el mapa', '!'); return; }
+      if (!('geolocation' in navigator)) { mostrarToast('Tu navegador no soporta GPS', '!'); return; }
+
+      boton.disabled = true;
+      boton.setAttribute('aria-busy', 'true');
+      boton.title = 'Obteniendo tu ubicación...';
+      try {
+        const pos = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy:true, timeout:10000, maximumAge:0
+          });
+        });
+        // Solo centra la vista: no cambia los puntos ni la ruta del viaje.
+        map.setZoom(Math.max(map.getZoom() || 15, 15));
+        map.panTo({ lat:pos.coords.latitude, lng:pos.coords.longitude });
+      } catch (error) {
+        const mensajes = {
+          1:'Permite el acceso a tu ubicación en los ajustes del navegador',
+          2:'No se pudo obtener tu ubicación. Revisa que el GPS esté activado',
+          3:'La ubicación tardó demasiado. Inténtalo de nuevo'
+        };
+        mostrarToast(mensajes[error && error.code] || 'No se pudo obtener tu ubicación. Inténtalo de nuevo', '!');
+      } finally {
+        boton.disabled = false;
+        boton.removeAttribute('aria-busy');
+        boton.title = 'Centrar mapa en mi ubicación';
+      }
+    }
+    $('btn-centrar-ubicacion').addEventListener('click', centrarMapaEnUbicacionActual);
+
     /* ============================ RUTA + TARIFA ============================ */
     function calcularRuta() {
       if (!origen || !destino || modoActual !== 'pasajero') return;
@@ -1330,10 +1568,12 @@
         if (!autocompleteService) return;
         if (tipo === 'origen' && !tokenOrigen) tokenOrigen = new google.maps.places.AutocompleteSessionToken();
         if (tipo === 'destino' && !tokenDestino) tokenDestino = new google.maps.places.AutocompleteSessionToken();
-        const req = { input: q, language: 'es', sessionToken: tipo === 'origen' ? tokenOrigen : tokenDestino };
+        if (tipo === 'favorito' && !tokenFavorito) tokenFavorito = new google.maps.places.AutocompleteSessionToken();
+        const req = { input: q, language: 'es', sessionToken: tipo === 'origen' ? tokenOrigen : (tipo === 'favorito' ? tokenFavorito : tokenDestino) };
         if (origen) req.locationBias = new google.maps.Circle({ center: origen, radius: 40000 });
 
         autocompleteService.getPlacePredictions(req, (preds, status) => {
+          if (tipo === 'favorito' && (!abierto(modalFavoritos) || inputDireccionFavorita.value.trim() !== q)) return;
           contenedor.innerHTML = '';
           if (status !== google.maps.places.PlacesServiceStatus.OK || !preds) return;
           preds.slice(0, 6).forEach((p) => {
@@ -1360,9 +1600,11 @@
         placeId,
         fields: ['geometry','name','formatted_address','address_components'],
         language: 'es',
-        sessionToken: tipo === 'origen' ? tokenOrigen : tokenDestino
+        sessionToken: tipo === 'origen' ? tokenOrigen : (tipo === 'favorito' ? tokenFavorito : tokenDestino)
       }, (place, status) => {
-        if (tipo === 'origen') tokenOrigen = null; else tokenDestino = null;
+        if (tipo === 'origen') tokenOrigen = null;
+        else if (tipo === 'favorito') tokenFavorito = null;
+        else tokenDestino = null;
         if (status !== google.maps.places.PlacesServiceStatus.OK || !place || !place.geometry) {
           mostrarToast('No se pudo obtener esa dirección', '!'); return;
         }
@@ -1415,6 +1657,7 @@
       if (e.key !== 'Escape') return;
       const capa = CAPAS.find(abierto);
       if (capa === modalConfirmar) { resolverConfirmacion(false); return; }
+      if (MODALES_NUEVOS.includes(capa)) { cerrarModalNuevo(capa); return; }
       if (capa) { capa.classList.add('oculto'); return; }
       if (abierto(menuPerfil)) return cerrarMenuPerfil();
       if (abierto(modalOrigen)) return cerrarModalOrigen();
@@ -1795,7 +2038,7 @@
     }
 
     // Pasajero: pide el permiso (con un toque suyo) y registra este dispositivo para recibir los avisos de su viaje:
-    // conductor asignado, viaje en curso, finalizado o cancelado — aunque la app esté cerrada.
+    // conductor asignado, viaje en curso, finalizado o cancelado, aunque la app esté cerrada.
     async function iniciarPushPasajero(pedirPermiso) {
       if (!usuarioActual || esConductorSesion()) return false;
       if (!PUSH_SOPORTADO) {
@@ -2069,6 +2312,9 @@
               // Para el conductor no se bloquea la recepción de solicitudes en su categoría
             } else {
               viajeActivoPasajero = viaje;
+              recurrentesMostrados = false;
+              secuenciaRecurrentes++;
+              cerrarModalNuevo(modalRecurrentes);
               bloqueoViajeActivo.classList.remove('oculto');
               seccionSolicitarPasajero.classList.add('oculto');
               btnIrViajeActivo.onclick = () => { window.location.href = url; };
@@ -2095,6 +2341,7 @@
           else mostrarToast('El viaje ha finalizado');
           if (esConductor && conductorActivo) cargarViajesSolicitados();
         }
+        if (!esConductor) mostrarRecurrentesSiCorresponde();
       } catch (e) {
         console.warn('Error al verificar viaje activo:', e);
       }
@@ -2199,7 +2446,7 @@
     // Vehículo (tabla 'vehiculos' por conductor_id) y documentación (tabla 'documentos_conductor')
     async function datosVehiculoDB(u, conFoto) {
       const cid = await resolverConductorId(u);
-      const cols = conFoto ? COLS_DOC_FOTO : COLS_DOC;
+      const cols = conFoto ? COLS_DOC_FOTO : '*';
       let veh = null, doc = null;
       if (cid != null) veh = masReciente(await consultarFilas('vehiculos', '*', 'conductor_id', cid));
       if (u && u.id != null) doc = masReciente(await consultarFilas('documentos_conductor', cols, 'usuario_id', u.id));
@@ -2210,6 +2457,7 @@
     // Resumen: tipo de servicio, marca, modelo, año y placa
     async function resumenVehiculoDB(u) {
       const { veh, doc } = await datosVehiculoDB(u, false);
+      capacidadConductor = capacidadPasajerosDe(veh, doc, u);
       if (!veh && !doc) return null;
       const r = {};
       ['tipo_servicio', 'marca', 'modelo', 'anio', 'placa'].forEach((k) => {
@@ -2263,6 +2511,9 @@
       }
       fotoHeader.src = fotoDeUsuario(usuario);
       perfilSuperior.classList.remove('oculto');
+      const esPasajero = String(usuario.tipo_usuario || '').toLowerCase() !== 'conductor';
+      btnFavoritos.classList.toggle('oculto', !esPasajero);
+      menuTiposServicios.classList.toggle('oculto', !esPasajero);
 
       // El rol se define directamente por su perfil
       if (usuario.tipo_usuario === 'conductor') {
@@ -2272,6 +2523,7 @@
         inicializarEstadoConductor();
         sincronizarEstadoConductorDB();
         await resolverServicioDelConductor();
+        servicioConductorListo = true;
         iniciarPushConductor(false); // Registra / renueva las notificaciones push de este dispositivo
         if (conductorActivo) {
           cargarViajesSolicitados();
@@ -2313,6 +2565,8 @@
     function cerrarMenuPerfil() {
       menuPerfil.classList.add('oculto');
       perfilSuperior.classList.remove('activo');
+      menuSubservicios.classList.add('oculto');
+      menuTiposServicios.setAttribute('aria-expanded', 'false');
     }
 
     perfilSuperior.addEventListener('click', (e) => {
@@ -2475,6 +2729,8 @@
       let i = 0;
       Object.keys(u).forEach((clave) => {
         if (OCULTAS.includes(clave.toLowerCase())) return;
+        if (esCond && clave.toLowerCase().trim() === 'estado') return;
+        if (!esCond && clave.toLowerCase().trim() === 'disponible') return;
         const valor = valorLegible(clave, u[clave]);
         if (valor === null) return;
         grid.appendChild(tarjetaDato(ETIQUETAS[clave] || tituloClave(clave), valor, i++));
@@ -2653,7 +2909,7 @@
       if (historialCargando) return;
       const con = esConductorContexto();
       tabPagos.textContent = con ? 'Mis ingresos' : 'Mis pagos';
-      $('historial-titulo').textContent = con ? 'Servicios realizados' : 'Historial de servicios';
+      $('historial-titulo').textContent = con ? 'Servicios realizados' : 'Mis viajes';
       const lista = viajesFiltrados();
       historialContenido.innerHTML = '';
 
@@ -2664,10 +2920,12 @@
         const etiqueta = { hoy:'hoy', semana:'últimos 7 días', mes:'este mes', todo:'todo el historial' }[filtroPeriodo.value] || '';
         const wrap = document.createElement('div');
         wrap.innerHTML =
-          '<div class="pagos-resumen">' +
+          '<div class="pagos-resumen' + (con ? ' con-comisiones' : '') + '">' +
             '<div class="pago-kpi" style="animation-delay:.02s"><span class="pago-kpi-label">' + (con ? 'Ganado' : 'Pagado') + '</span><span class="pago-kpi-valor">' + formatoMoneda(total) + '</span></div>' +
             '<div class="pago-kpi" style="animation-delay:.08s"><span class="pago-kpi-label">Servicios</span><span class="pago-kpi-valor">' + n + '</span></div>' +
             '<div class="pago-kpi" style="animation-delay:.14s"><span class="pago-kpi-label">Promedio</span><span class="pago-kpi-valor">' + formatoMoneda(promedio) + '</span></div>' +
+            (con ? '<div class="pago-kpi pago-comision" style="animation-delay:.20s"><span class="pago-kpi-label">Comisiones pagadas</span><span class="pago-kpi-valor">' + formatoMoneda(0) + '</span><small>Gratuito por ahora</small></div>' +
+              '<div class="pago-kpi pago-comision" style="animation-delay:.26s"><span class="pago-kpi-label">Comisiones pendientes por pagar</span><span class="pago-kpi-valor">' + formatoMoneda(0) + '</span><small>Gratuito por ahora</small></div>' : '') +
           '</div><p class="historial-fecha" style="margin:-4px 0 10px 2px">Mostrando ' + etiqueta + '</p>';
 
         if (!n) {
@@ -2774,6 +3032,12 @@
       const resumen = (documentacionVehiculo && documentacionVehiculo.tipo_servicio) ? documentacionVehiculo : await resumenVehiculoDB(u);
       const bruto = (resumen && resumen.tipo_servicio) || u.tipo_servicio || u.servicio || null;
 
+      if (capacidadConductor === null) capacidadConductor = capacidadPasajerosDe(u, resumen);
+      if (capacidadConductor === null) {
+        const cid = await resolverConductorId(u);
+        const filaConductor = masReciente(await consultarFilas('conductores', '*', 'id', cid));
+        capacidadConductor = capacidadPasajerosDe(filaConductor);
+      }
       claveServicioConductor = normalizarClaveServicio(bruto);
 
       if (claveServicioConductor) {
@@ -2841,33 +3105,65 @@
       return { filas: [], nivel: -1 };
     }
 
+    const columnasCapacidadCache = new Map();
+    async function leerTablaConCapacidad(tabla, intentos, filtro) {
+      if (!columnasCapacidadCache.has(tabla)) {
+        // Tras detectar las columnas, las lecturas masivas no descargan fotos ni documentos personales.
+        const promesa = (async () => {
+          try {
+            let q = db.from(tabla).select('*').limit(1);
+            if (filtro) q = q.eq(filtro[0], filtro[1]);
+            const { data, error } = await q;
+            if (!error && data && data[0]) {
+              return Object.keys(data[0]).filter(k => CLAVES_CAPACIDAD.includes(normalizarCampoCapacidad(k)));
+            }
+          } catch (e) {}
+          return [];
+        })();
+        columnasCapacidadCache.set(tabla, promesa);
+      }
+      const extras = await columnasCapacidadCache.get(tabla);
+      if (!extras.length) columnasCapacidadCache.delete(tabla);
+      const columnas = intentos.map(cols => cols === '*' ? cols : [...new Set(cols.split(',').concat(extras))].join(','));
+      return leerTabla(tabla, columnas, filtro);
+    }
+
     async function obtenerConductoresActivos() {
       const conteo = {};
       if (!db) return conteo;
 
       const res = await Promise.all([
-        leerTabla('usuarios', [
+        leerTablaConCapacidad('usuarios', [
           'id,tipo_usuario,conductor_activo,ultima_conexion,recibe_push',
           'id,tipo_usuario,conductor_activo,ultima_conexion',
           'id,tipo_usuario,conductor_activo',
           'id,tipo_usuario'
         ], ['tipo_usuario', 'conductor']),
-        leerTabla('conductores', ['id,usuario_id']),
-        leerTabla('vehiculos', ['conductor_id,tipo_servicio']),
-        leerTabla('documentos_conductor', ['usuario_id,conductor_id,tipo_servicio'])
+        leerTablaConCapacidad('conductores', ['id,usuario_id']),
+        leerTablaConCapacidad('vehiculos', ['conductor_id,tipo_servicio']),
+        leerTablaConCapacidad('documentos_conductor', ['usuario_id,conductor_id,tipo_servicio'])
       ]);
       const ru = res[0], rc = res[1], rv = res[2], rd = res[3];
 
       // usuarios.id → conductores.id
       const condDeUsuario = new Map();
-      rc.filas.forEach((c) => { if (c.usuario_id !== null && c.usuario_id !== undefined) condDeUsuario.set(String(c.usuario_id), c.id); });
+      const filaCondUsuario = new Map(), filaVehCond = new Map(), filaDocUsuario = new Map(), filaDocCond = new Map();
+      rc.filas.forEach((c) => {
+        if (c.usuario_id !== null && c.usuario_id !== undefined) {
+          condDeUsuario.set(String(c.usuario_id), c.id);
+          filaCondUsuario.set(String(c.usuario_id), c);
+        }
+      });
       // Servicio registrado: vehiculos (por conductor_id) y documentos_conductor (por usuario_id / conductor_id)
       const servVeh = new Map(), servDocUsuario = new Map(), servDocCond = new Map();
       rv.filas.forEach((v) => {
+        if (v.conductor_id != null) filaVehCond.set(String(v.conductor_id), v);
         const k = normalizarClaveServicio(v.tipo_servicio);
         if (k && v.conductor_id !== null && v.conductor_id !== undefined) servVeh.set(String(v.conductor_id), k);
       });
       rd.filas.forEach((d) => {
+        if (d.usuario_id != null) filaDocUsuario.set(String(d.usuario_id), d);
+        if (d.conductor_id != null) filaDocCond.set(String(d.conductor_id), d);
         const k = normalizarClaveServicio(d.tipo_servicio);
         if (!k) return;
         if (d.usuario_id !== null && d.usuario_id !== undefined) servDocUsuario.set(String(d.usuario_id), k);
@@ -2893,7 +3189,12 @@
         const clave = (cid !== undefined && cid !== null && servVeh.get(String(cid))) ||
           servDocUsuario.get(String(u.id)) ||
           (cid !== undefined && cid !== null && servDocCond.get(String(cid)));
-        if (clave) conteo[clave] = (conteo[clave] || 0) + 1;
+        if (clave) {
+          const capacidad = capacidadPasajerosDe(filaVehCond.get(String(cid)), filaDocUsuario.get(String(u.id)),
+            filaDocCond.get(String(cid)), filaCondUsuario.get(String(u.id)), u);
+          const opcion = claveOpcionServicio(clave, capacidad);
+          conteo[opcion] = (conteo[opcion] || 0) + 1;
+        }
         else console.warn('Conductor activo sin tipo de servicio registrado (usuario ' + u.id + '): revisa las tablas vehiculos / documentos_conductor.');
       });
       if (!Object.keys(conteo).length) console.warn('Servicios: 0 conductores activos. Conductores activos encontrados:', ru.filas.filter((x) => x.conductor_activo === true).length);
@@ -2905,7 +3206,17 @@
       serviciosLista.innerHTML = '<div class="cargando"><div class="loading-pulse"><span></span><span></span><span></span></div>Buscando conductores activos…</div>';
 
       const conteoActivos = await obtenerConductoresActivos();
-      const disponibles = CATALOGO.filter((s) => conteoActivos[s.clave] > 0);
+      const disponibles = [];
+      CATALOGO.forEach((s) => {
+        if (conteoActivos[s.clave] > 0) disponibles.push(Object.assign({}, s, { opcion:s.clave }));
+        const opcionSeis = claveOpcionServicio(s.clave, 6);
+        if (conteoActivos[opcionSeis] > 0) {
+          disponibles.push(Object.assign({}, s, {
+            opcion:opcionSeis, capacidadPasajeros:6, etiqueta:s.etiqueta + ' · 6 pasajeros',
+            desc:'Vehículo para 6 pasajeros · Incluye 30% adicional'
+          }));
+        }
+      });
 
       serviciosLista.innerHTML = '';
       servicioSeleccionado = null;
@@ -2919,12 +3230,12 @@
 
       disponibles.forEach((s) => {
         const tarifa = tarifaDe(s);
-        const n = conteoActivos[s.clave];
+        const n = conteoActivos[s.opcion];
         const textoConductores = '● ' + n + ' conductor' + (n > 1 ? 'es' : '') + ' activo' + (n > 1 ? 's' : '');
         const card = document.createElement('button');
         card.type = 'button';
         card.className = 'servicio-card';
-        card.dataset.clave = s.clave;
+        card.dataset.clave = s.opcion;
         card.innerHTML =
           '<div class="servicio-icono">' + iconoServicio(s.clave) + '</div>' +
           '<div class="servicio-info"><div class="servicio-nombre">' + esc(s.etiqueta) + '</div>' +
@@ -2965,7 +3276,7 @@
         destino_lat: destino.lat, destino_lon: destino.lng,
         origen_nombre: [origenNombre, origenDetalle].filter(Boolean).join(', '),
         destino_nombre: [destinoNombre, destinoDetalle].filter(Boolean).join(', '),
-        tipo_servicio: servicio.etiqueta,
+        tipo_servicio: etiquetaServicio(servicio.clave),
         nombre_servicio: servicio.etiqueta,
         tarifa: servicio.tarifa,
         distancia_km: Math.round(distanciaKm * 10) / 10,
@@ -2985,6 +3296,7 @@
       mostrarToast(servicio.etiqueta + ' solicitado con éxito');
       cerrarPanelServicios();
       if (data && data.length) {
+        recurrentesMostrados = false;
         viajeActivoPasajero = data[0];
         window.location.href = 'viaje.html?id=' + data[0].id + '&rol=pasajero';
       }
@@ -3157,7 +3469,7 @@
       card.innerHTML =
         '<div class="viaje-header">' +
           '<div class="viaje-header-izq">' +
-            '<span class="viaje-tipo-badge">' + iconoServicio(clave) + ' ' + esc(viaje.tipo_servicio || 'Servicio') + '</span>' +
+            '<span class="viaje-tipo-badge">' + iconoServicio(clave) + ' ' + esc((viajeDeSeisPasajeros(viaje) ? viaje.nombre_servicio : viaje.tipo_servicio) || 'Servicio') + '</span>' +
             (esNuevo ? '<span class="viaje-nuevo-chip">NUEVO</span>' : '') +
           '</div>' +
           '<div class="viaje-precio-badge">' + formatoMoneda(viaje.tarifa || 0) + '<small>TARIFA</small></div>' +
@@ -3259,6 +3571,7 @@
 
     async function cargarViajesSolicitados() {
       if (modoActual !== 'conductor' || !db) return;
+      if (!servicioConductorListo) return;
 
       // Si el conductor está inactivo, no debe cargar ni recibir nada
       if (!conductorActivo) {
@@ -3292,6 +3605,7 @@
       if (claveServicioConductor) {
         viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
       }
+      viajes = viajes.filter(v => viajeDeSeisPasajeros(v) === (capacidadConductor === 6));
 
       // Excluir los viajes que este conductor ya rechazó (los demás conductores los siguen viendo)
       const rechazados = new Set(rechazadosDelConductor());
@@ -3349,6 +3663,10 @@
     }
 
     async function aceptarViaje(viaje) {
+      if (viajeDeSeisPasajeros(viaje) !== (capacidadConductor === 6)) {
+        mostrarToast('La capacidad solicitada no corresponde a tu vehículo', '!');
+        return;
+      }
       const conductorId = usuarioActual ? (usuarioActual.conductor_id || usuarioActual.id || usuarioActual.Id) : CONDUCTOR_ID_PRUEBA;
       const { error } = await db.from('viajes')
         .update({ estado:'aceptado', conductor_id: conductorId }).eq('id', viaje.id);
@@ -3369,6 +3687,320 @@
         })
         .subscribe();
     }
+
+    /* ============================ DIRECCIONES Y SERVICIOS DEL PASAJERO ============================ */
+    const focoModalesNuevos = new WeakMap();
+    const esPasajeroActual = () => !!usuarioActual && !esConductorSesion() && modoActual === 'pasajero';
+    const idPasajeroActual = () => usuarioActual ? (usuarioActual.id ?? usuarioActual.Id ?? null) : null;
+    const SVG_CASA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10z"/><path d="M9 21V12h6v9"/></svg>';
+    const SVG_TRABAJO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V3h8v4M3 12a22 22 0 0 0 18 0M12 11v4"/></svg>';
+    const SVG_PAPELERA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V3h8v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>';
+    const SERVICIOS_INFO = {
+      taxi_auto: {
+        titulo:'BIKAR TAXI',
+        imagen:'https://images.pexels.com/photos/13918522/pexels-photo-13918522.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
+        alt:'Taxi circulando por una calle de la ciudad',
+        descripcion:'Viaja en auto desde tu punto de partida hasta tu destino. Elige la opción disponible que necesites; los vehículos registrados para 6 pasajeros tienen una tarifa 30% mayor que la normal.'
+      },
+      moto_delivery: {
+        titulo:'BIKAR ENVÍOS',
+        imagen:'https://images.pexels.com/photos/4440774/pexels-photo-4440774.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
+        alt:'Entrega de paquetes a un destinatario',
+        descripcion:'Envía paquetes, comida o documentos de un punto a otro. Indica la dirección de recojo y la de entrega para solicitar un conductor del servicio.'
+      },
+      moto_taxi: {
+        titulo:'BIKAR MOTO',
+        imagen:'https://images.pexels.com/photos/5192884/pexels-photo-5192884.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
+        alt:'Personas desplazándose en motocicleta',
+        descripcion:'Una alternativa ágil y económica para el traslado de un pasajero en moto. Selecciona tu destino y consulta la disponibilidad y la tarifa antes de confirmar.'
+      },
+      taxi_carga: {
+        titulo:'TAXI CARGA',
+        imagen:'https://images.pexels.com/photos/9754798/pexels-photo-9754798.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
+        alt:'Camión transportando carga por carretera',
+        descripcion:'Traslada muebles, encomiendas o carga de mayor volumen. Marca los puntos de recojo y entrega y coordina con el conductor los detalles del traslado.'
+      }
+    };
+
+    function abrirModalNuevo(modal) {
+      focoModalesNuevos.set(modal, document.activeElement);
+      modal.classList.remove('oculto');
+      requestAnimationFrame(() => {
+        if (abierto(modal)) modal.querySelector('.modal-bikar-cerrar').focus({ preventScroll:true });
+      });
+    }
+
+    function cerrarModalNuevo(modal) {
+      if (!abierto(modal)) return;
+      const teniaFoco = modal.contains(document.activeElement);
+      modal.classList.add('oculto');
+      if (modal === modalFavoritos) {
+        clearTimeout(timers.favorito);
+        sugFavorito.innerHTML = '';
+        tokenFavorito = null;
+      }
+      if (teniaFoco) {
+        const previo = focoModalesNuevos.get(modal);
+        const respaldo = modal === modalFavoritos ? btnFavoritos : inputDestino;
+        const destinoFoco = previo && previo !== document.body && previo.isConnected && previo.getClientRects().length ? previo : respaldo;
+        if (destinoFoco && destinoFoco.getClientRects().length) destinoFoco.focus({ preventScroll:true });
+      }
+    }
+
+    MODALES_NUEVOS.forEach((modal) => {
+      modal.querySelector('.modal-bikar-cerrar').addEventListener('click', () => cerrarModalNuevo(modal));
+      modal.addEventListener('click', (e) => { if (e.target === modal) cerrarModalNuevo(modal); });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const modal = CAPAS.find(abierto);
+      if (!MODALES_NUEVOS.includes(modal)) return;
+      const elementos = Array.from(modal.querySelectorAll('button, input, select, [tabindex="0"]'))
+        .filter(el => !el.disabled && el.getClientRects().length);
+      if (!elementos.length) return;
+      const primero = elementos[0], ultimo = elementos[elementos.length - 1];
+      if (e.shiftKey && (document.activeElement === primero || !modal.contains(document.activeElement))) {
+        e.preventDefault(); ultimo.focus();
+      } else if (!e.shiftKey && (document.activeElement === ultimo || !modal.contains(document.activeElement))) {
+        e.preventDefault(); primero.focus();
+      }
+    });
+
+    function coordenadasGuardadas(lat, lng) {
+      if (lat === null || lat === undefined || lat === '' || lng === null || lng === undefined || lng === '') return null;
+      const a = Number(lat), b = Number(lng);
+      return Number.isFinite(a) && Number.isFinite(b) && Math.abs(a) <= 90 && Math.abs(b) <= 180 ? { lat:a, lng:b } : null;
+    }
+
+    async function usarDireccionGuardada(lugar) {
+      if (!esPasajeroActual()) return;
+      if (viajeActivoPasajero) { mostrarToast('Finaliza tu viaje actual antes de elegir otro destino', '!'); return; }
+      if (!lugar || !String(lugar.direccion || '').trim()) return;
+      const secuencia = ++secuenciaDireccionGuardada;
+      const usuarioId = String(idPasajeroActual());
+      const valorAnterior = inputDestino.value;
+      inputDestino.value = lugar.direccion;
+      clearTimeout(timers.destino);
+      sugDestino.innerHTML = '';
+      cerrarModalNuevo(modalRecurrentes);
+      cerrarModalNuevo(modalFavoritos);
+      btnPedirViaje.disabled = true;
+      if (!map || !geocoder) {
+        destinoGuardadoPendiente = lugar;
+        mostrarToast('Destino elegido. Esperando a que cargue el mapa');
+        return;
+      }
+      try {
+        let coords = coordenadasGuardadas(lugar.lat, lugar.lng);
+        if (!coords) {
+          coords = await new Promise((resolve, reject) => {
+            geocoder.geocode({ address:lugar.direccion, language:'es', region:'PE' }, (resultados, estado) => {
+              if (estado !== 'OK' || !resultados || !resultados[0]) return reject(new Error('Dirección no encontrada'));
+              const p = resultados[0].geometry.location;
+              resolve({ lat:p.lat(), lng:p.lng() });
+            });
+          });
+        }
+        if (secuencia !== secuenciaDireccionGuardada || String(idPasajeroActual()) !== usuarioId || viajeActivoPasajero) return;
+        await establecerDestino(coords, lugar.corta || lugar.direccion, lugar.detalle || '', true);
+        if (!origen) btnPedirViaje.disabled = false;
+        mostrarToast('Destino agregado');
+      } catch (e) {
+        if (secuencia !== secuenciaDireccionGuardada) return;
+        inputDestino.value = valorAnterior;
+        btnPedirViaje.disabled = false;
+        mostrarToast('No se pudo localizar la dirección. Inténtalo de nuevo', '!');
+      }
+    }
+
+    inputDestino.addEventListener('input', () => {
+      secuenciaDireccionGuardada++;
+      destinoGuardadoPendiente = null;
+    });
+
+    function crearDireccionElegible(lugar, icono, subtitulo, indice) {
+      const fila = document.createElement('div');
+      fila.className = 'direccion-fila';
+      fila.style.animationDelay = (indice * 0.055) + 's';
+      const boton = document.createElement('button');
+      boton.type = 'button'; boton.className = 'direccion-elegir';
+      const ico = document.createElement('span'); ico.className = 'direccion-icono'; ico.innerHTML = icono;
+      const textos = document.createElement('span'); textos.className = 'direccion-textos';
+      const titulo = document.createElement('strong'); titulo.textContent = lugar.nombre || lugar.direccion;
+      const detalle = document.createElement('small'); detalle.textContent = subtitulo || lugar.direccion;
+      textos.append(titulo, detalle); boton.append(ico, textos); fila.appendChild(boton);
+      boton.addEventListener('click', async () => {
+        boton.disabled = true;
+        try { await usarDireccionGuardada(lugar); }
+        finally { boton.disabled = false; }
+      });
+      return fila;
+    }
+
+    async function mostrarRecurrentesSiCorresponde() {
+      if (!esPasajeroActual() || !db || idPasajeroActual() == null || recurrentesMostrados || viajeActivoPasajero || document.hidden) return;
+      if (uiPasajero.classList.contains('oculto') || CAPAS.some(abierto) || abierto(menuPerfil) || abierto(modalOrigen) || panelServicios.classList.contains('visible')) return;
+      recurrentesMostrados = true;
+      const secuencia = ++secuenciaRecurrentes;
+      const usuarioId = idPasajeroActual();
+      const lista = $('lista-recurrentes');
+      lista.innerHTML = '<div class="cargando">Cargando tus últimos viajes…</div>';
+      abrirModalNuevo(modalRecurrentes);
+      try {
+        const { data, error } = await db.from('viajes').select('*').eq('pasajero_id', usuarioId)
+          .order('id', { ascending:false }).limit(3);
+        if (secuencia !== secuenciaRecurrentes || !mismoId(usuarioId, idPasajeroActual()) || viajeActivoPasajero) return;
+        if (error) throw error;
+        lista.innerHTML = '';
+        if (!data || !data.length) {
+          lista.innerHTML = '<div class="perfil-vacio">Aún no tienes viajes. Tus próximos destinos aparecerán aquí.</div>';
+          return;
+        }
+        data.forEach((v, i) => {
+          const direccion = String(v.destino_nombre || '').trim();
+          if (!direccion) return;
+          lista.appendChild(crearDireccionElegible({ direccion, corta:direccion, lat:v.destino_lat, lng:v.destino_lon ?? v.destino_lng },
+            ICONOS.default, textoFecha(fechaDeViaje(v)), i));
+        });
+        if (!lista.childElementCount) lista.innerHTML = '<div class="perfil-vacio">No hay direcciones de destino disponibles en tus últimos viajes.</div>';
+      } catch (e) {
+        if (secuencia !== secuenciaRecurrentes) return;
+        lista.innerHTML = '<p class="perfil-vacio">No se pudieron cargar tus viajes recurrentes.</p>';
+        const reintentar = document.createElement('button');
+        reintentar.type = 'button'; reintentar.className = 'btn-mini'; reintentar.textContent = 'Reintentar';
+        reintentar.addEventListener('click', () => {
+          cerrarModalNuevo(modalRecurrentes);
+          recurrentesMostrados = false;
+          mostrarRecurrentesSiCorresponde();
+        });
+        lista.appendChild(reintentar);
+      }
+    }
+
+    const claveFavoritos = () => 'bikar_direcciones_favoritas_' + String(idPasajeroActual());
+    function leerFavoritos() {
+      if (idPasajeroActual() == null) return [];
+      const lista = lsJSON(claveFavoritos());
+      return Array.isArray(lista) ? lista.filter(lugar => lugar && typeof lugar.nombre === 'string' && typeof lugar.direccion === 'string') : [];
+    }
+    function guardarFavoritos(lista) {
+      if (idPasajeroActual() == null) return false;
+      try { localStorage.setItem(claveFavoritos(), JSON.stringify(lista)); return true; }
+      catch (e) { mostrarToast('El navegador no permite guardar direcciones en este dispositivo', '!'); return false; }
+    }
+
+    function renderizarFavoritos() {
+      const lista = $('lista-favoritos');
+      lista.innerHTML = '';
+      const favoritos = leerFavoritos();
+      if (!favoritos.length) {
+        lista.innerHTML = '<p class="perfil-vacio">Todavía no tienes direcciones guardadas.</p>';
+        return;
+      }
+      favoritos.forEach((lugar, i) => {
+        const icono = lugar.tipo === 'casa' ? SVG_CASA : (lugar.tipo === 'trabajo' ? SVG_TRABAJO : SVG_PIN);
+        const fila = crearDireccionElegible(lugar, icono, lugar.direccion, i);
+        const eliminar = document.createElement('button');
+        eliminar.type = 'button'; eliminar.className = 'direccion-eliminar'; eliminar.innerHTML = SVG_PAPELERA;
+        eliminar.title = 'Eliminar ' + lugar.nombre;
+        eliminar.setAttribute('aria-label', 'Eliminar ' + lugar.nombre);
+        eliminar.addEventListener('click', () => {
+          const actual = leerFavoritos().filter(f => !mismoTexto(f.nombre, lugar.nombre));
+          if (guardarFavoritos(actual)) { renderizarFavoritos(); mostrarToast('Dirección eliminada'); }
+        });
+        fila.appendChild(eliminar); lista.appendChild(fila);
+      });
+    }
+
+    btnFavoritos.addEventListener('click', () => {
+      if (!esPasajeroActual()) return;
+      cerrarMenuPerfil(); cerrarModalNuevo(modalRecurrentes);
+      $('form-direccion-favorita').reset();
+      $('grupo-nombre-favorito').classList.add('oculto');
+      $('nombre-direccion-favorita').required = false;
+      $('favoritos-error').classList.add('oculto');
+      favoritoBorrador = null; tokenFavorito = null; sugFavorito.innerHTML = '';
+      renderizarFavoritos(); abrirModalNuevo(modalFavoritos);
+    });
+
+    $('tipo-direccion-favorita').addEventListener('change', () => {
+      const otra = $('tipo-direccion-favorita').value === 'otra';
+      $('grupo-nombre-favorito').classList.toggle('oculto', !otra);
+      $('nombre-direccion-favorita').required = otra;
+      if (otra) $('nombre-direccion-favorita').focus();
+    });
+
+    inputDireccionFavorita.addEventListener('input', () => {
+      favoritoBorrador = null;
+      $('favoritos-error').classList.add('oculto');
+      const consulta = inputDireccionFavorita.value.trim();
+      if (!autocompleteService) {
+        const error = $('favoritos-error');
+        error.textContent = 'Espera a que cargue Google Maps para buscar la dirección.';
+        error.classList.remove('oculto');
+        return;
+      }
+      buscarSugerencias(consulta, sugFavorito, 'favorito', (coords, corta, detalle, completa) => {
+        if (!abierto(modalFavoritos) || inputDireccionFavorita.value.trim() !== consulta) return;
+        const direccion = completa || [corta, detalle].filter(Boolean).join(', ');
+        favoritoBorrador = { lat:coords.lat, lng:coords.lng, corta, detalle, direccion };
+        inputDireccionFavorita.value = direccion;
+      });
+    });
+
+    $('form-direccion-favorita').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!esPasajeroActual() || idPasajeroActual() == null) return;
+      const tipo = $('tipo-direccion-favorita').value;
+      const nombre = tipo === 'casa' ? 'Mi casa' : (tipo === 'trabajo' ? 'Mi trabajo' : $('nombre-direccion-favorita').value.trim());
+      const error = $('favoritos-error');
+      if (!nombre || !favoritoBorrador || inputDireccionFavorita.value !== favoritoBorrador.direccion) {
+        error.textContent = !nombre ? 'Escribe un nombre para este lugar.' : 'Selecciona una dirección de las sugerencias de Google Maps.';
+        error.classList.remove('oculto');
+        return;
+      }
+      const favoritos = leerFavoritos();
+      const nuevo = Object.assign({}, favoritoBorrador, { nombre, tipo });
+      const indice = favoritos.findIndex(f => mismoTexto(f.nombre, nombre));
+      if (indice >= 0) favoritos[indice] = nuevo; else favoritos.push(nuevo);
+      if (!guardarFavoritos(favoritos)) return;
+      renderizarFavoritos(); favoritoBorrador = null; inputDireccionFavorita.value = '';
+      sugFavorito.innerHTML = ''; error.classList.add('oculto');
+      mostrarToast(indice >= 0 ? 'Dirección actualizada' : 'Dirección guardada');
+    });
+
+    menuTiposServicios.addEventListener('click', () => {
+      if (!esPasajeroActual()) return;
+      const mostrar = menuSubservicios.classList.contains('oculto');
+      menuSubservicios.classList.toggle('oculto', !mostrar);
+      menuTiposServicios.setAttribute('aria-expanded', String(mostrar));
+      if (mostrar) {
+        menuSubservicios.querySelectorAll('.menu-perfil-item').forEach(el => {
+          el.style.animation = 'none'; void el.offsetWidth; el.style.animation = '';
+        });
+        menuSubservicios.scrollIntoView({ block:'nearest', behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+      }
+    });
+
+    document.querySelectorAll('[data-icono-servicio]').forEach(el => { el.innerHTML = iconoServicio(el.dataset.iconoServicio); });
+    document.querySelectorAll('[data-servicio-info]').forEach(boton => {
+      boton.addEventListener('click', () => {
+        if (!esPasajeroActual()) return;
+        const clave = boton.dataset.servicioInfo, info = SERVICIOS_INFO[clave];
+        if (!info) return;
+        cerrarMenuPerfil();
+        $('tipo-servicio-titulo').textContent = info.titulo;
+        $('tipo-servicio-descripcion').textContent = info.descripcion;
+        const imagen = $('tipo-servicio-imagen'), respaldo = $('tipo-servicio-fallback');
+        respaldo.classList.add('oculto'); respaldo.innerHTML = iconoServicio(clave);
+        respaldo.setAttribute('aria-label', info.alt);
+        imagen.classList.remove('oculto'); imagen.alt = info.alt;
+        imagen.onerror = () => { imagen.classList.add('oculto'); respaldo.classList.remove('oculto'); };
+        imagen.src = info.imagen;
+        abrirModalNuevo(modalTipoServicio);
+      });
+    });
 
     /* ============================ ARRANQUE Y SINCRONIZACIÓN ============================ */
     document.addEventListener('DOMContentLoaded', () => {
