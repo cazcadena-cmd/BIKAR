@@ -736,10 +736,18 @@
     .paradas-titulo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
     .paradas-titulo span{font-size:.58rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--primary-color)}
     .paradas-titulo small{font-size:.6rem;font-weight:700;color:var(--muted-text)}
-    .parada-fila{display:flex;align-items:center;gap:6px;margin-bottom:6px}
-    .parada-fila input{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--field-border);
+    .parada-fila{display:flex;align-items:flex-start;gap:6px;margin-bottom:7px}
+    .parada-campo{position:relative;flex:1;min-width:0}
+    .parada-campo input{width:100%;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--field-border);
       background:var(--glass-bg-strong);color:var(--text-color);font-size:.76rem;outline:none}
-    .parada-fila input:focus{border-color:var(--primary-color)}
+    .parada-campo input:focus{border-color:var(--primary-color)}
+    /* Se abren hacia arriba para que el panel de servicios no las recorte */
+    .parada-sugerencias{top:auto;bottom:calc(100% + 4px);max-height:190px;z-index:60;
+      box-shadow:0 -12px 30px rgba(0,0,0,.35)}
+    .parada-sugerencias .sugerencia-item{padding:8px 10px;gap:8px}
+    .parada-sugerencias .sugerencia-principal{font-size:.75rem}
+    .parada-sugerencias .sugerencia-detalle{font-size:.64rem}
+    .parada-coord{display:block;margin-top:2px;font-size:.58rem;font-weight:700;color:var(--primary-color)}
     .parada-quitar{flex-shrink:0;width:32px;height:32px;border-radius:9px;border:1px solid rgba(231,76,60,.45);
       background:rgba(231,76,60,.1);color:#e74c3c;font-size:12px;cursor:pointer}
     .paradas-agregar{width:100%;padding:9px;border-radius:10px;border:1px dashed rgba(71,133,168,.6);
@@ -748,6 +756,14 @@
     .paradas-total{margin-top:7px;font-size:.66rem;font-weight:800;color:var(--text-color);display:none}
     .paradas-total.visible{display:block}
     .paradas-total b{color:var(--primary-color)}
+    /* AVISO DE TRÁFICO / DEMANDA (tarifas dinámicas) */
+    .aviso-demanda{display:none;align-items:center;gap:7px;padding:7px 10px;border-radius:11px;margin-bottom:9px;
+      background:rgba(71,133,168,.10);border:1px solid rgba(71,133,168,.32);text-align:left}
+    .aviso-demanda.visible{display:flex}
+    .aviso-demanda svg{flex-shrink:0;width:14px;height:14px;color:var(--primary-color)}
+    .aviso-demanda span{font-size:.64rem;font-weight:700;line-height:1.35;color:var(--text-color)}
+    .aviso-demanda.alta{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.45)}
+    .aviso-demanda.alta svg{color:#f59e0b}
     /* AVISO FUERA DE LA CIUDAD / PEAJE */
     .aviso-ciudad{display:none;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:12px;margin-bottom:9px;
       background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.45);text-align:left}
@@ -1018,6 +1034,10 @@
     </div>
     <div id="servicios-lista" class="servicios-lista"></div>
     <div class="servicios-footer">
+      <div id="aviso-demanda" class="aviso-demanda">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h2l2-6h10l2 6h2"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/><path d="M6 8h4M8 6v4"/></svg>
+        <span id="aviso-demanda-texto">Tráfico fluido · tarifa en condiciones óptimas</span>
+      </div>
       <div id="aviso-fuera-ciudad" class="aviso-ciudad">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <div><b>Viaje fuera de la ciudad</b>El recorrido sale de tu ciudad. Los <b>peajes corren por cuenta del pasajero</b> y se pagan aparte de la tarifa.</div>
@@ -1366,13 +1386,39 @@
       pet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="9.5" r="1.8"/><circle cx="9.5" cy="5.5" r="1.8"/><circle cx="14.5" cy="5.5" r="1.8"/><circle cx="18.5" cy="9.5" r="1.8"/><path d="M8 15.5c.8-2 2.3-3.2 4-3.2s3.2 1.2 4 3.2c.9 2.1-.2 4.2-2.3 4.2-.7 0-1.1-.3-1.7-.3s-1 .3-1.7.3c-2.1 0-3.2-2.1-2.3-4.2z"/><path d="M12 21v-3"/></svg>',
       default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'
     };
+    /* ============ TARIFAS EN SOLES PERUANOS (S/) ============
+       - TAXI / AUTO: mínimo S/ 4.50, que cubre 1.3 km y 3.9 min.
+         Fuera de esa base: S/ 0.50 mínimo + extra por km/min.
+         Con congestión o alta demanda se aplica +30%.
+       - MOTO: mínimo S/ 3.00 y S/ 1.30–1.50 por km según tráfico.
+       - TAXI CARGA: mínimo S/ 18.00 y S/ 3.00–5.00 por km según tráfico.
+       - ENVÍOS / PET: se derivan del servicio base (+10% PET, −20% envío). */
     const CATALOGO = [
-      { clave:'moto_taxi',     etiqueta:'BIKAR MOTO',    desc:'Económico y ágil · 1 pasajero',           base:2450,  porKm:980,  minTarifa:4400,  espera:'2 min' },
-      { clave:'moto_delivery', etiqueta:'BIKAR ENVÍOS',  desc:'Envíos de paquetes, comida y documentos',  base:2940,  porKm:1176, minTarifa:5400,  espera:'3 min' },
-      { clave:'taxi_auto',     etiqueta:'BIKAR TAXI',    desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:3920,  porKm:1372, minTarifa:6400,  espera:'4 min' },
-      { clave:'auto_particular', etiqueta:'BIKAR AUTO', desc:'Auto particular cómodo · hasta 4 pasajeros', base:3920, porKm:1372, minTarifa:6400, espera:'4 min' },
-      { clave:'taxi_carga',    etiqueta:'BIKAR TAXI CARGA', desc:'Carga, bultos y mudanzas pequeñas',      base:4900,  porKm:1680, minTarifa:8200,  espera:'6 min' }
+      { clave:'moto_taxi',     etiqueta:'BIKAR MOTO',    desc:'Económico y ágil · 1 pasajero · Mín. S/ 3.00',
+        minTarifa:3.00, porKm:1.30, porKmAlto:1.50, espera:'2 min' },
+      { clave:'moto_delivery', etiqueta:'BIKAR ENVÍOS',  desc:'Paquetes, comida y documentos · Desde S/ 5.40',
+        base:2.90, porKm:1.25, minTarifa:5.40, espera:'3 min' },
+      { clave:'taxi_auto',     etiqueta:'BIKAR TAXI',    desc:'Auto sedán cómodo · hasta 4 pasajeros · Mín. S/ 4.50',
+        minTarifa:4.50, kmIncluidos:1.3, minIncluidos:3.9, extraKm:1.30, extraMin:0.20, recargoMinimo:0.50, espera:'4 min' },
+      { clave:'auto_particular', etiqueta:'BIKAR AUTO', desc:'Auto particular · hasta 4 pasajeros · Mín. S/ 4.50',
+        minTarifa:4.50, kmIncluidos:1.3, minIncluidos:3.9, extraKm:1.30, extraMin:0.20, recargoMinimo:0.50, espera:'4 min' },
+      { clave:'taxi_carga',    etiqueta:'BIKAR TAXI CARGA', desc:'Carga, bultos y mudanzas · Mín. S/ 18.00',
+        minTarifa:18.00, porKm:3.00, porKmAlto:5.00, espera:'6 min' }
     ];
+    /* Tráfico y alta demanda (hora punta). Ajusta la tarifa automáticamente. */
+    function demandaYTrafico() {
+      const h = new Date().getHours();
+      const punta = (h >= 7 && h < 9) || (h >= 12 && h < 14) || (h >= 18 && h < 21);
+      return {
+        punta: punta,
+        factor: punta ? 1.30 : 1,
+        porKmMoto: punta ? 1.50 : 1.30,
+        porKmCarga: punta ? 5.00 : 3.00,
+        etiqueta: punta
+          ? 'Hora punta: tráfico y alta demanda · tarifas +30%'
+          : 'Tráfico fluido · tarifa en condiciones óptimas'
+      };
+    }
     function normalizarClaveServicio(raw) {
       if (raw === null || raw === undefined || raw === '') return null;
       let c = String(raw).toLowerCase().trim();
@@ -1390,23 +1436,50 @@
     const etiquetaServicio = (c) => { const s = servicioPorClave(c); return s ? s.etiqueta : 'Servicio'; };
     const iconoServicio   = (c) => ICONOS[c] || (c === 'taxi_carga' ? ICONOS.encomienda : (c === 'pet' ? ICONOS.pet : ICONOS.default));
     function tarifaDe(s) {
-      const dist = Number(distanciaKm || 0);
-      const calculo = s.base + (dist * s.porKm);
-      const final = Math.max(s.minTarifa, calculo);
-      const centena = (v) => Math.round(v / 100) * 100;   // pesos redondeados a la centena
-      let total = centena(final);
-      if (s.capacidadPasajeros === 6) total = centena(total * 1.30); // 6 pasajeros: +30%
-      if (s.conMascota) total = Math.ceil(total * 1.10 / 100) * 100; // Con mascota: +10% (redondeo hacia arriba, nunca menos del 10%)
-      return total;
+      const dist = Math.max(0, Number(distanciaKm || 0));
+      const min = Math.max(0, Number(duracionMin || 0));
+      const dem = demandaYTrafico();
+      let total = 0;
+
+      if (s.clave === 'taxi_auto' || s.clave === 'auto_particular') {
+        const kmInc = Number(s.kmIncluidos != null ? s.kmIncluidos : 1.3);
+        const minInc = Number(s.minIncluidos != null ? s.minIncluidos : 3.9);
+        if (dist <= kmInc && min <= minInc) {
+          total = s.minTarifa;                       // tarifa mínima S/ 4.50
+        } else {
+          const extraKm = Math.max(0, dist - kmInc);
+          const extraMin = Math.max(0, min - minInc);
+          const extra = Math.max(
+            Number(s.recargoMinimo || 0.50),
+            extraKm * Number(s.extraKm || 1.30) + extraMin * Number(s.extraMin || 0.20)
+          );
+          total = s.minTarifa + extra;
+        }
+        if (dem.punta) total *= dem.factor;          // +30% con congestión / alta demanda
+        total = Math.max(s.minTarifa, total);        // nunca por debajo de la mínima
+      } else if (s.clave === 'moto_taxi') {
+        total = Math.max(s.minTarifa, dist * dem.porKmMoto);
+      } else if (s.clave === 'taxi_carga') {
+        total = Math.max(s.minTarifa, dist * dem.porKmCarga);
+      } else {
+        total = Math.max(s.minTarifa || 5.40, (s.base || 2.90) + dist * (s.porKm || 1.25));
+      }
+
+      if (s.capacidadPasajeros === 6) total *= 1.30;  // 6 pasajeros: +30%
+      if (s.conMascota) total *= 1.10;               // BIKAR PET: +10%
+      return Math.round(total * 10) / 10;            // redondeo a S/ 0.10
     }
+    /* Moneda oficial de la app: SOLES PERUANOS */
     function formatoMoneda(v) {
-      const n = Math.round(Number(v || 0));
-      return '$ ' + n.toLocaleString('es-CO');
+      let n = Number(v || 0);
+      if (!isFinite(n)) n = 0;
+      if (n >= 2000) n = n / 1000; // registros antiguos guardados en otra moneda
+      return 'S/ ' + n.toFixed(2);
     }
     /* Tarifa de la opción «Envío»: 20% menos que la tarifa normal del servicio */
     function tarifaEnvio(s) {
       const normal = tarifaDe(s);
-      return Math.max(100, Math.round((normal * 0.80) / 100) * 100);
+      return Math.max(0.5, Math.round(normal * 0.80 * 10) / 10);
     }
     /* ============================ ESTADO ============================ */
     let modoActual = 'pasajero', origen = null, destino = null;
@@ -1424,7 +1497,8 @@
     let aceptaMascotasConductor = false; // true si el vehículo del conductor está registrado como «Acepta mascotas»
     let aceptaEnviosConductor = false;   // true si el conductor acepta envíos (cualquier tipo de servicio)
     let envioSolicitud = null;           // datos del formulario de envío elegido por el pasajero
-    let paradasServicio = [];            // paradas adicionales de la solicitud (+20% cada una)
+    let paradasServicio = [];            // direcciones de las paradas adicionales (+20% cada una)
+    let paradasCoords = [];              // coordenadas elegidas en Google para cada parada
     let beneficiosConductor = {};        // beneficios del vehículo (checklist)
     let beneficiosConfigurado = false;   // el conductor ya respondió el checklist
     let timerGratuito = null;            // contador regresivo del perfil
@@ -3186,7 +3260,7 @@
       const lista = viajesFiltrados();
       historialContenido.innerHTML = '';
       if (vistaHistorial === 'pagos') {
-        // Los viajes cancelados (por el pasajero o el conductor) aparecen en $ 0 y no se suman
+        // Los viajes cancelados (por el pasajero o el conductor) aparecen en S/ 0.00 y no se suman
         const viajeCanceladoPago = (v) => /cancel|rechaz|anul/.test(String(v.estado || '').toLowerCase());
         const valorViaje = (v) => viajeCanceladoPago(v) ? 0 : Number(v.tarifa || 0);
         const total = lista.reduce((a, v) => a + valorViaje(v), 0);
@@ -3294,7 +3368,7 @@
         .replace(/\u2192/g, '>').replace(/\u2022/g, '-').replace(/\u2026/g, '...')
         .replace(/[^\x00-\xFF]/g, '').replace(/\s+/g, ' ').trim();
     }
-    const pdfMoneda = (v) => pdfTxt('$ ' + Math.round(Number(v) || 0).toLocaleString('es-CO'));
+    const pdfMoneda = (v) => pdfTxt('S/ ' + (Number(v) || 0).toFixed(2));
     // Logo de la app (icon-192.png) sobre fondo oscuro para el encabezado; si no carga, el PDF sale sin logo
     function logoParaPdf() {
       return new Promise((resolve) => {
@@ -3377,7 +3451,7 @@
         y = 58;
         const kpis = esPagos
           ? [[con ? 'Total ganado' : 'Total pagado', pdfMoneda(total)], ['Servicios', String(nValidos)],
-             ['Promedio', pdfMoneda(nValidos ? total / nValidos : 0)], ['Cancelados ($ 0)', String(nCancelados)]]
+             ['Promedio', pdfMoneda(nValidos ? total / nValidos : 0)], ['Cancelados (S/ 0.00)', String(nCancelados)]]
           : [['Servicios', String(lista.length)], ['Finalizados', String(nFinalizados)],
              ['Cancelados', String(nCancelados)], [con ? 'Total generado' : 'Total pagado', pdfMoneda(total)]];
         const gap = 4, ancho = (W - 2 * M - gap * 3) / 4;
@@ -3392,9 +3466,9 @@
         });
         y += 25;
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(...GRIS);
-        let nota = 'Los viajes cancelados aparecen con valor $ 0 y no se suman al total.';
+        let nota = 'Los viajes cancelados aparecen con valor S/ 0.00 y no se suman al total.';
         if (!esPagos && km) nota = 'Distancia recorrida: ' + km.toFixed(1).replace('.', ',') + ' km. ' + nota;
-        if (esPagos && con) nota += ' Comisiones BIKAR: $ 0 (gratuito por ahora).';
+        if (esPagos && con) nota += ' Comisiones BIKAR: S/ 0.00 (gratuito por ahora).';
         doc.text(pdfTxt(nota), M, y, { maxWidth: W - 2 * M });
         y += 6;
         /* ---------- Tabla ---------- */
@@ -3493,13 +3567,22 @@
       const aviso = $('aviso-fuera-ciudad');
       if (aviso) aviso.classList.toggle('visible', esViajeFueraCiudad());
     }
+    function actualizarAvisoDemanda() {
+      const caja = $('aviso-demanda');
+      const texto = $('aviso-demanda-texto');
+      if (!caja || !texto) return;
+      const dem = demandaYTrafico();
+      texto.textContent = dem.etiqueta;
+      caja.classList.add('visible');
+      caja.classList.toggle('alta', dem.punta);
+    }
     /* ============================ PARADAS ADICIONALES ============================ */
     function tarifaConParadas() {
       const s = servicioSeleccionado;
       if (!s) return 0;
       const base = Number(s.tarifaBase || s.tarifa || 0);
       const n = paradasServicio.filter((p) => String(p || '').trim()).length;
-      return Math.round(base * (1 + 0.20 * n));
+      return Math.round(base * (1 + 0.20 * n) * 10) / 10;
     }
     function actualizarTotalParadas() {
       const total = $('paradas-total');
@@ -3507,7 +3590,7 @@
       const n = paradasServicio.filter((p) => String(p || '').trim()).length;
       if (!n) { total.classList.remove('visible'); total.innerHTML = ''; return; }
       const base = Number((servicioSeleccionado || {}).tarifaBase || 0);
-      const recargo = Math.round(base * 0.20 * n);
+      const recargo = Math.round(base * 0.20 * n * 10) / 10;
       total.classList.add('visible');
       total.innerHTML = n + ' parada' + (n > 1 ? 's' : '') + ' · Recargo <b>' + formatoMoneda(recargo) +
         '</b> · Total <b>' + formatoMoneda(base + recargo) + '</b>';
@@ -3516,22 +3599,62 @@
       const box = $('paradas-box'), lista = $('paradas-lista');
       if (!box || !lista) return;
       box.classList.toggle('oculto', !servicioSeleccionado);
-      if (!servicioSeleccionado) { paradasServicio = []; return; }
-      lista.innerHTML = paradasServicio.map((p, i) =>
-        '<div class="parada-fila">' +
-          '<input type="text" maxlength="90" data-parada="' + i + '" value="' + esc(p) + '" placeholder="Dirección de la parada ' + (i + 1) + '">' +
+      if (!servicioSeleccionado) { paradasServicio = []; paradasCoords = []; return; }
+      lista.innerHTML = paradasServicio.map((p, i) => {
+        const c = paradasCoords[i];
+        return '<div class="parada-fila">' +
+          '<div class="parada-campo">' +
+            '<input type="text" maxlength="120" data-parada="' + i + '" value="' + esc(p) + '" placeholder="Busca la parada ' + (i + 1) + ' en Google" autocomplete="off">' +
+            (c ? '<span class="parada-coord">✓ Ubicación confirmada</span>' : '') +
+            '<div class="lista-sugerencias parada-sugerencias" data-sug="' + i + '"></div>' +
+          '</div>' +
           '<button type="button" class="parada-quitar" data-quitar="' + i + '" aria-label="Quitar parada">✕</button>' +
-        '</div>').join('');
+        '</div>';
+      }).join('');
+
       lista.querySelectorAll('[data-parada]').forEach((inp) => {
-        inp.addEventListener('input', () => {
-          paradasServicio[Number(inp.dataset.parada)] = inp.value;
+        const i = Number(inp.dataset.parada);
+        const cont = lista.querySelector('[data-sug="' + i + '"]');
+        const escribir = () => {
+          paradasServicio[i] = inp.value;
           actualizarTotalParadas();
           actualizarBotonConfirmar();
+        };
+        inp.addEventListener('input', () => {
+          paradasCoords[i] = null;
+          const confirmado = inp.parentElement.querySelector('.parada-coord');
+          if (confirmado) confirmado.remove();
+          escribir();
+          /* Sugerencias reales de Google (mismo buscador del destino) */
+          if (cont) {
+            buscarSugerencias(inp.value, cont, 'parada', (coords, corta, detalle, completa) => {
+              const dir = completa || [corta, detalle].filter(Boolean).join(', ') || corta;
+              inp.value = dir;
+              paradasServicio[i] = dir;
+              paradasCoords[i] = coords;
+              cont.innerHTML = '';
+              const aviso = inp.parentElement.querySelector('.parada-coord');
+              if (!aviso) {
+                const span = document.createElement('span');
+                span.className = 'parada-coord';
+                span.textContent = '✓ Ubicación confirmada';
+                inp.parentElement.insertBefore(span, cont);
+              }
+              actualizarTotalParadas();
+              actualizarBotonConfirmar();
+            });
+          }
+        });
+        inp.addEventListener('blur', () => {
+          setTimeout(() => { if (cont) cont.innerHTML = ''; }, 220);
         });
       });
+
       lista.querySelectorAll('[data-quitar]').forEach((b) => {
         b.addEventListener('click', () => {
-          paradasServicio.splice(Number(b.dataset.quitar), 1);
+          const idx = Number(b.dataset.quitar);
+          paradasServicio.splice(idx, 1);
+          paradasCoords.splice(idx, 1);
           renderizarParadas();
           actualizarBotonConfirmar();
         });
@@ -3648,7 +3771,7 @@
       $('detalle-ingreso-cuerpo').innerHTML =
         '<div class="modal-kicker">' + esc(String(v.nombre_servicio || v.tipo_servicio || 'Servicio')) + '</div>' +
         '<p class="modal-instrucciones" style="margin:0 0 10px">' +
-          (fecha ? fecha.toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' }) + ' · ' + dos(fecha.getHours()) + ':' + dos(fecha.getMinutes()) : 'Sin fecha') +
+          (fecha ? fecha.toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric' }) + ' · ' + dos(fecha.getHours()) + ':' + dos(fecha.getMinutes()) : 'Sin fecha') +
           (metodo ? ' · ' + (metodo === 'billetera' ? 'Billetera digital' : 'Efectivo') : '') +
           ' · ' + esc(String(v.estado || 'solicitado')) +
         '</p>' +
@@ -3714,7 +3837,9 @@
       panelServicios.setAttribute('aria-hidden', 'false');
       backdrop.classList.add('visible');
       actualizarAvisoCiudad();
+      actualizarAvisoDemanda();
       paradasServicio = [];
+      paradasCoords = [];
       renderizarParadas();
       await cargarServiciosDisponibles();
     }
@@ -3729,6 +3854,7 @@
       envioSolicitud = null;
       cerrarFormularioEnvio();
       paradasServicio = [];
+      paradasCoords = [];
       renderizarParadas();
       const cajaParadas = $('paradas-box');
       if (cajaParadas) cajaParadas.classList.add('oculto');
@@ -3910,6 +4036,7 @@
           card.classList.add('seleccionado');
           servicioSeleccionado = Object.assign({}, s, { tarifa, tarifaBase: tarifa });
           paradasServicio = [];
+          paradasCoords = [];
           renderizarParadas();
           mostrarMetodosPago(s.opcion);
           if (s.esEnvio || normalizarClaveServicio(s.clave) === 'moto_delivery') {
@@ -4038,7 +4165,15 @@
         try { await Promise.race([promesaPushPasajero, new Promise((r) => setTimeout(r, 6000))]); } catch (e) {}
       }
       const paradasLimpias = paradasServicio
-        .map((p, i) => ({ orden: i + 1, nombre: String(p || '').trim() }))
+        .map((p, i) => {
+          const c = paradasCoords[i] || null;
+          return {
+            orden: i + 1,
+            nombre: String(p || '').trim(),
+            lat: c ? Number(c.lat) : null,
+            lng: c ? Number(c.lng) : null
+          };
+        })
         .filter((p) => p.nombre);
       const base = Number(servicioSeleccionado.tarifaBase || servicioSeleccionado.tarifa || 0);
       await solicitarViaje(Object.assign({}, servicioSeleccionado, {
@@ -4047,7 +4182,7 @@
         tarifaBase: base,
         paradas: paradasLimpias,
         paradasTotal: paradasLimpias.length,
-        recargoParadas: Math.round(base * 0.20 * paradasLimpias.length)
+        recargoParadas: Math.round(base * 0.20 * paradasLimpias.length * 10) / 10
       }));
     });
     /* ============================ SOLICITAR VIAJE ============================ */
@@ -4269,20 +4404,20 @@
           '<div class="viaje-punto"><span class="viaje-punto-dot origen">A</span><div class="viaje-punto-text">' +
             esc(viaje.origen_nombre || 'Origen') + '<span class="viaje-punto-sub">Punto de recojo</span></div></div>' +
           '<div class="viaje-linea-conector"></div>' +
+          (function () {
+            let ps = viaje.paradas;
+            if (typeof ps === 'string') { try { ps = JSON.parse(ps); } catch (e) { ps = []; } }
+            if (!Array.isArray(ps) || !ps.length) return '';
+            return ps.map((p, i) => {
+              const n = (p && (p.nombre || p.direccion)) || String(p || '');
+              if (!n) return '';
+              return '<div class="parada-viaje-linea"><span class="pnum">' + (i + 1) + '</span><div class="ptxt">' +
+                esc(n) + '<small>Parada adicional · antes del destino</small></div></div>';
+            }).join('') + '<div class="viaje-linea-conector"></div>';
+          })() +
           '<div class="viaje-punto"><span class="viaje-punto-dot destino">B</span><div class="viaje-punto-text">' +
             esc(viaje.destino_nombre || 'Destino') + '<span class="viaje-punto-sub">Punto de entrega</span></div></div>' +
         '</div>' +
-        (function () {
-          let ps = viaje.paradas;
-          if (typeof ps === 'string') { try { ps = JSON.parse(ps); } catch (e) { ps = []; } }
-          if (!Array.isArray(ps) || !ps.length) return '';
-          return ps.map((p, i) => {
-            const n = (p && (p.nombre || p.direccion)) || String(p || '');
-            if (!n) return '';
-            return '<div class="parada-viaje-linea"><span class="pnum">' + (i + 1) + '</span><div class="ptxt">' +
-              esc(n) + '<small>Parada adicional</small></div></div>';
-          }).join('');
-        })() +
         ((viaje.fuera_ciudad === true || viaje.aviso_peaje === true)
           ? '<div class="parada-viaje-linea" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.5)">' +
               '<span class="pnum" style="background:#f59e0b">!</span>' +
