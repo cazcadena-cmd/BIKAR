@@ -284,6 +284,13 @@
     .doc-drop svg{flex-shrink:0}
     .doc-drop-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .doc-drop input[type="file"]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;z-index:2}
+    .doc-foto-acciones{display:flex;gap:8px;align-items:stretch}
+    .doc-foto-acciones .doc-drop{flex:1;min-width:0;flex-direction:column;justify-content:center;gap:5px;text-align:center;padding:12px 8px}
+    .doc-foto-acciones .doc-drop-text{flex:none;white-space:normal;font-size:.78rem;line-height:1.2}
+    .doc-foto-acciones svg{margin:0 auto}
+    .doc-placa-linea{margin:9px 4px 0;font-size:.78rem;font-weight:600;color:var(--muted-text)}
+    .doc-placa-linea b{color:var(--primary-color);letter-spacing:.09em}
+    @media (max-width:360px){.doc-foto-acciones{gap:6px}.doc-foto-acciones .doc-drop-text{font-size:.72rem}}
     .doc-item.cargado .doc-drop{border-style:solid;border-color:rgba(71,133,168,.60)}
     .doc-preview{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid rgba(71,133,168,.40);
       background:rgba(0,0,0,.25);animation:fadeIn .35s ease both}
@@ -811,11 +818,19 @@
 
       <div class="doc-item" data-doc="foto_vehiculo">
         <span class="doc-label">Foto del vehículo</span>
-        <label class="doc-drop">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4785A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <span class="doc-drop-text">Tomar / Subir foto</span>
-          <input type="file" id="doc-foto-vehiculo" accept="image/*">
-        </label>
+        <div class="doc-foto-acciones">
+          <label class="doc-drop" title="Abrir la cámara">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4785A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span class="doc-drop-text">Tomar foto</span>
+            <input type="file" id="doc-foto-vehiculo" accept="image/*" capture="environment">
+          </label>
+          <label class="doc-drop" title="Elegir una imagen del carrete">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4785A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5"/><path d="M12 3v12"/></svg>
+            <span class="doc-drop-text">Subir imagen</span>
+            <input type="file" id="doc-foto-vehiculo-subir" accept="image/*">
+          </label>
+        </div>
+        <p class="doc-placa-linea">Placa del vehículo: <b id="doc-placa-foto">—</b></p>
         <div class="doc-preview oculto">
           <img class="doc-preview-img oculto" alt="Vista previa">
           <span class="doc-preview-pdf oculto">PDF</span>
@@ -1380,40 +1395,57 @@
     }
     formDocumentacion.querySelectorAll('.doc-item').forEach((item) => {
       const clave = item.dataset.doc;
-      const input = item.querySelector('input[type="file"]');
-      const texto = item.querySelector('.doc-drop-text');
-      const textoOriginal = texto.innerText;
+      const inputs = Array.prototype.slice.call(item.querySelectorAll('input[type="file"]'));
+      if (!inputs.length) return;
+      const textos = Array.prototype.slice.call(item.querySelectorAll('.doc-drop-text'));
+      const textosOriginales = textos.map((t) => t.innerText);
       const preview = item.querySelector('.doc-preview');
       const previewImg = item.querySelector('.doc-preview-img');
       const previewPdf = item.querySelector('.doc-preview-pdf');
       const previewNombre = item.querySelector('.doc-preview-nombre');
       const limpiar = () => {
-        input.value = '';
+        inputs.forEach((inp) => { inp.value = ''; });
         delete documentacionVehiculo.archivos[clave];
         item.classList.remove('cargado');
-        texto.innerText = textoOriginal;
+        textos.forEach((t, i) => { t.innerText = textosOriginales[i]; });
         preview.classList.add('oculto');
         previewImg.removeAttribute('src');
         actualizarContadorDocumentos();
       };
-      input.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const valido = procesarArchivoDocumento(file, (archivo) => {
-          documentacionVehiculo.archivos[clave] = archivo;
-          item.classList.add('cargado');
-          texto.innerText = 'Cambiar archivo';
-          previewNombre.innerText = archivo.nombre;
-          if (archivo.tipo === 'imagen') previewImg.src = archivo.data; else previewImg.removeAttribute('src');
-          previewImg.classList.toggle('oculto', archivo.tipo !== 'imagen');
-          previewPdf.classList.toggle('oculto', archivo.tipo !== 'pdf');
-          preview.classList.remove('oculto');
-          actualizarContadorDocumentos();
+      inputs.forEach((input) => {
+        input.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) { return; }
+          /* Al usar una de las dos vías (cámara o archivo) se vacía la otra */
+          inputs.forEach((otro) => { if (otro !== input) otro.value = ''; });
+          const valido = procesarArchivoDocumento(file, (archivo) => {
+            documentacionVehiculo.archivos[clave] = archivo;
+            item.classList.add('cargado');
+            textos.forEach((t) => { t.innerText = 'Cambiar foto'; });
+            previewNombre.innerText = archivo.nombre;
+            if (archivo.tipo === 'imagen') previewImg.src = archivo.data; else previewImg.removeAttribute('src');
+            previewImg.classList.toggle('oculto', archivo.tipo !== 'imagen');
+            previewPdf.classList.toggle('oculto', archivo.tipo !== 'pdf');
+            preview.classList.remove('oculto');
+            actualizarContadorDocumentos();
+          });
+          if (!valido) limpiar();
         });
-        if (!valido) limpiar();
       });
       item.querySelector('.doc-quitar').addEventListener('click', () => { limpiar(); marcarDocumentacionPendiente(); });
     });
+    /* Placa visible junto a la foto del vehículo */
+    (function sincronizarPlacaFoto() {
+      const placa = $('reg-placa');
+      const destino = $('doc-placa-foto');
+      if (!placa || !destino) return;
+      const pintar = () => {
+        const valor = placa.value.trim().toUpperCase();
+        destino.textContent = valor || '—';
+      };
+      placa.addEventListener('input', pintar);
+      pintar();
+    })();
     formDocumentacion.addEventListener('submit', (e) => {
       e.preventDefault();
       const camposTexto = [
