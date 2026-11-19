@@ -791,7 +791,8 @@
     };
     SVG.autoParticular = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.6 5H8.4a2 2 0 0 0-1.9 1.3L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>';
     const ICONO_SERVICIO = {
-      moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, auto_particular: SVG.autoParticular, default: SVG.ruta
+      moto_taxi: SVG.moto, moto_delivery: SVG.bolsa, taxi_auto: SVG.auto, auto_particular: SVG.autoParticular,
+      taxi_carga: SVG.caja, encomienda: SVG.caja, pet: SVG.mascota, default: SVG.ruta
     };
     /* ============================================================
        HELPERS
@@ -1038,13 +1039,13 @@
       c = c.replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
       if (/moto\s*deliver|delivery|domicili|paqueter|mensajer|reparto|envio/.test(c)) return 'moto_delivery';
       if (/moto\s*taxi|\bmoto\b/.test(c)) return 'moto_taxi';
-      // BIKAR AUTO (auto particular). Los registros antiguos de «Taxi Carga» también pasan a BIKAR AUTO.
-      if (/bikar\s*auto|particular|carga|mudanza|camion|furgon|encomienda/.test(c)) return 'auto_particular';
+      if (/taxi\s*carga|\bcarga\b|mudanza|camion|furgon|encomienda/.test(c)) return 'taxi_carga';
+      if (/bikar\s*auto|particular/.test(c)) return 'auto_particular';
       if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c)) return 'taxi_auto';
       return null;
     }
     function etiquetaServicio(clave) {
-      return { moto_taxi:'Moto Taxi', moto_delivery:'Moto Delivery', taxi_auto:'Taxi Auto', auto_particular:'BIKAR AUTO' }[clave] || 'Servicio BIKAR';
+      return { moto_taxi:'BIKAR MOTO', moto_delivery:'BIKAR ENVÍOS', taxi_auto:'BIKAR TAXI', auto_particular:'BIKAR AUTO', taxi_carga:'BIKAR TAXI CARGA' }[clave] || 'Servicio BIKAR';
     }
     /* ============================================================
        CARGA DE DATOS
@@ -1368,12 +1369,12 @@
       $('txt-destino').textContent = viajeActual.destino_nombre || 'Destino no especificado';
       const clave = normalizarClaveServicio(viajeActual.tipo_servicio || viajeActual.nombre_servicio);
       // Servicio con mascota: se muestra «BIKAR TAXI · Con mascota» con la huella
-      const conMascota = viajeActual.con_mascota === true || /mascota/i.test(String(viajeActual.nombre_servicio || ''));
+      const conMascota = viajeActual.con_mascota === true || /mascota|\bpet\b/i.test(String(viajeActual.nombre_servicio || ''));
       const nombreRegistrado = String(viajeActual.nombre_servicio || '');
       const nombreServicio = conMascota
         ? (/mascota/i.test(nombreRegistrado) ? nombreRegistrado : (viajeActual.tipo_servicio || 'BIKAR TAXI') + ' · Con mascota')
         : (esViajeEnvio(viajeActual) && nombreRegistrado ? nombreRegistrado : (viajeActual.tipo_servicio || nombreRegistrado || etiquetaServicio(clave)));
-      $('txt-servicio').innerHTML = (conMascota ? SVG.mascota : (ICONO_SERVICIO[clave] || SVG.ruta)) + '<span>' + esc(nombreServicio) + '</span>';
+      $('txt-servicio').innerHTML = (conMascota ? SVG.mascota : (esViajeEnvio(viajeActual) ? SVG.caja : (ICONO_SERVICIO[clave] || SVG.ruta))) + '<span>' + esc(nombreServicio) + '</span>';
       $('txt-tarifa').textContent = formatoMoneda(tarifaDelViaje(viajeActual));
       $('txt-distancia').textContent = viajeActual.distancia_km ? viajeActual.distancia_km + ' km' : '—';
       const fecha = viajeActual.created_at || viajeActual.creado_en || viajeActual.fecha;
