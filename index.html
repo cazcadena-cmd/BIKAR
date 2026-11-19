@@ -743,6 +743,21 @@
         </div>
       </div>
 
+      <div class="pet-friendly-grupo" id="bloque-acepta-envios">
+        <span class="doc-label">¿Acepta Envíos?</span>
+        <div class="pet-friendly-opciones" role="group" aria-label="¿Acepta Envíos?">
+          <button type="button" id="btn-envios-si" class="btn-pet-friendly" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/><path d="m7.5 5.5 9 5"/></svg>
+            Sí
+          </button>
+          <button type="button" id="btn-envios-no" class="btn-pet-friendly" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/><path d="m7.5 5.5 9 5"/><line x1="4" y1="20" x2="20" y2="4"/></svg>
+            No
+          </button>
+        </div>
+        <p class="doc-nota" style="margin:6px 4px 0">Si aceptas envíos, los pasajeros podrán elegir BIKAR ENVÍOS contigo sin importar tu tipo de servicio.</p>
+      </div>
+
       <p class="doc-seccion">Documentos (foto o PDF · máx. 5 MB)</p>
 
       <div class="doc-item" data-doc="dni_ce">
@@ -1248,7 +1263,7 @@
     const docContador = $('doc-contador');
     const docAnio = $('doc-anio');
     const docItemRevision = $('doc-item-revision');
-    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null, capacidad_pasajeros: null };
+    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null, acepta_envios: null, capacidad_pasajeros: null };
     function requiereRevisionTecnica() {
       const anio = parseInt(docAnio.value, 10);
       return !isNaN(anio) && (new Date().getFullYear() - anio) > 3;
@@ -1283,6 +1298,7 @@
       modalDocumentacion.scrollTop = 0;
       actualizarRevisionTecnica();
       actualizarPreguntaMascotas();
+      if (typeof aplicarEstadoEnvios === 'function') aplicarEstadoEnvios(documentacionVehiculo.acepta_envios);
     }
     function cerrarModalDocumentacion() {
       modalDocumentacion.classList.add('oculto');
@@ -1306,6 +1322,22 @@
     }
     $('btn-pet-si').addEventListener('click', () => { aplicarEstadoPetFriendly(true); marcarDocumentacionPendiente(); });
     $('btn-pet-no').addEventListener('click', () => { aplicarEstadoPetFriendly(false); marcarDocumentacionPendiente(); });
+    /* ENVÍOS: se pregunta a TODOS los tipos de servicio */
+    function aplicarEstadoEnvios(valor) {
+      documentacionVehiculo.acepta_envios = valor;
+      const btnSi = $('btn-envios-si');
+      const btnNo = $('btn-envios-no');
+      if (btnSi) {
+        btnSi.classList.toggle('activo-si', valor === true);
+        btnSi.setAttribute('aria-pressed', valor === true ? 'true' : 'false');
+      }
+      if (btnNo) {
+        btnNo.classList.toggle('activo-no', valor === false);
+        btnNo.setAttribute('aria-pressed', valor === false ? 'true' : 'false');
+      }
+    }
+    $('btn-envios-si').addEventListener('click', () => { aplicarEstadoEnvios(true); marcarDocumentacionPendiente(); });
+    $('btn-envios-no').addEventListener('click', () => { aplicarEstadoEnvios(false); marcarDocumentacionPendiente(); });
     /* «¿Acepta Mascotas?» aparece SOLO para el tipo de servicio BIKAR TAXI */
     function esServicioTaxi() {
       const sel = $('doc-tipo-servicio');
@@ -1407,6 +1439,12 @@
       } else {
         documentacionVehiculo.pet_friendly = false;   /* solo BIKAR TAXI puede aceptar mascotas */
       }
+      if (documentacionVehiculo.acepta_envios !== true && documentacionVehiculo.acepta_envios !== false) {
+        mostrarAlerta('Indica si acepta envíos.', "error");
+        const bloqueEnvios = $('bloque-acepta-envios');
+        if (bloqueEnvios) bloqueEnvios.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
       for (const [clave, nombre] of listaDocumentosRequeridos()) {
         if (!documentacionVehiculo.archivos[clave]) {
           mostrarAlerta(`Falta adjuntar: ${nombre}.`, "error");
@@ -1453,6 +1491,7 @@
         placa: documentacionVehiculo.placa || null,
         capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
         pet_friendly: documentacionVehiculo.pet_friendly === true,
+        acepta_envios: documentacionVehiculo.acepta_envios === true,
         requiere_revision_tecnica: !!documentacionVehiculo.requiere_revision_tecnica,
         dni_ce: urlsDocumentos.dni_ce || null,
         antecedente_policial: urlsDocumentos.antecedente_policial || null,
@@ -1468,7 +1507,13 @@
         localStorage.setItem(LLAVE_DOCUMENTACION, JSON.stringify(resumen));
       } catch (errStorage) { console.warn("No se pudo guardar el resumen de la documentación:", errStorage); }
       try {
-        const { error } = await supabaseClient.from('documentos_conductor').insert([registro]);
+        let { error } = await supabaseClient.from('documentos_conductor').insert([registro]);
+        /* Si la columna acepta_envios aún no existe en Supabase, se guarda la documentación sin ella */
+        if (error && /acepta_envios/i.test(String(error.message || ''))) {
+          const respaldo = Object.assign({}, registro);
+          delete respaldo.acepta_envios;
+          ({ error } = await supabaseClient.from('documentos_conductor').insert([respaldo]));
+        }
         if (error) console.warn("No se pudo guardar la documentación en Supabase (tabla 'documentos_conductor'):", error.message);
       } catch (err) { console.warn("Error al guardar la documentación del vehículo:", err); }
     }
@@ -1801,9 +1846,7 @@
           usuarioCreado.conductor_id = conductorId;
           const inputVehiculoModelo = document.getElementById('reg-vehiculo');
           const inputVehiculoPlaca = document.getElementById('reg-placa');
-          const { error: errVehiculo } = await supabaseClient
-  .from('vehiculos')
-  .insert([{
+          const filaVehiculo = {
     conductor_id: conductorId,
     tipo_servicio: documentacionVehiculo.tipo_servicio || null,
     marca: documentacionVehiculo.marca || null,
@@ -1812,8 +1855,16 @@
     placa: documentacionVehiculo.placa || (inputVehiculoPlaca ? inputVehiculoPlaca.value : null),
     color: documentacionVehiculo.color || null,
     capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
-    pet_friendly: documentacionVehiculo.pet_friendly === true
-  }]);
+    pet_friendly: documentacionVehiculo.pet_friendly === true,
+    acepta_envios: documentacionVehiculo.acepta_envios === true
+  };
+          let { error: errVehiculo } = await supabaseClient.from('vehiculos').insert([filaVehiculo]);
+          /* Si la columna acepta_envios aún no existe en Supabase, se guarda el vehículo sin ella */
+          if (errVehiculo && /acepta_envios/i.test(String(errVehiculo.message || ''))) {
+            const filaRespaldo = Object.assign({}, filaVehiculo);
+            delete filaRespaldo.acepta_envios;
+            ({ error: errVehiculo } = await supabaseClient.from('vehiculos').insert([filaRespaldo]));
+          }
 if (errVehiculo) {
   console.error("ERROR AL GUARDAR VEHÍCULO:", errVehiculo);
   mostrarAlerta("No se pudo guardar el vehículo: " + errVehiculo.message, "error");
