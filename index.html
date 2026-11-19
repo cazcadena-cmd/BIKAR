@@ -717,9 +717,9 @@
         <select id="doc-tipo-servicio" required>
           <option value="" disabled selected>Tipo de servicio</option>
           <option value="BIKAR TAXI">BIKAR TAXI</option>
-          <option value="BIKAR ENVIOS">BIKAR ENVIOS</option>
-          <option value="TAXI CARGA">TAXI CARGA</option>
+          <option value="BIKAR AUTO">BIKAR AUTO</option>
           <option value="BIKAR MOTO">BIKAR MOTO</option>
+          <option value="BIKAR TAXI CARGA">BIKAR TAXI CARGA</option>
         </select>
       </div>
       <div class="input-group"><input type="text" id="doc-marca" placeholder="Marca del Vehículo (Ej: Chevrolet)" required autocomplete="off"></div>
@@ -1338,10 +1338,10 @@
     }
     $('btn-envios-si').addEventListener('click', () => { aplicarEstadoEnvios(true); marcarDocumentacionPendiente(); });
     $('btn-envios-no').addEventListener('click', () => { aplicarEstadoEnvios(false); marcarDocumentacionPendiente(); });
-    /* «¿Acepta Mascotas?» aparece SOLO para el tipo de servicio BIKAR TAXI */
+    /* «¿Acepta Mascotas?» aparece SOLO para BIKAR TAXI y BIKAR AUTO */
     function esServicioTaxi() {
       const sel = $('doc-tipo-servicio');
-      return !!sel && sel.value === 'BIKAR TAXI';
+      return !!sel && (sel.value === 'BIKAR TAXI' || sel.value === 'BIKAR AUTO');
     }
     function actualizarPreguntaMascotas() {
       const bloque = $('bloque-pet-friendly');
@@ -1437,7 +1437,7 @@
       if (esServicioTaxi()) {
         if (documentacionVehiculo.pet_friendly !== true && documentacionVehiculo.pet_friendly !== false) { mostrarAlerta('Indica si acepta mascotas.', "error"); return; }
       } else {
-        documentacionVehiculo.pet_friendly = false;   /* solo BIKAR TAXI puede aceptar mascotas */
+        documentacionVehiculo.pet_friendly = false;   /* solo BIKAR TAXI y BIKAR AUTO pueden aceptar mascotas */
       }
       if (documentacionVehiculo.acepta_envios !== true && documentacionVehiculo.acepta_envios !== false) {
         mostrarAlerta('Indica si acepta envíos.', "error");
