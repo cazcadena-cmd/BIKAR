@@ -393,6 +393,15 @@
     .chat-form button svg{width:18px;height:18px}
     .llamada-estado{text-align:center;font-weight:800;font-size:1rem;margin-bottom:4px}
     .llamada-tiempo{text-align:center;color:var(--muted-text);font-size:.85rem;margin-bottom:10px}
+    /* DETALLE DEL ENVÍO (BIKAR ENVÍOS) */
+    .envio-detalle-box{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    .envio-detalle-fila{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px solid var(--border-color)}
+    .envio-detalle-etiqueta{font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--primary-color)}
+    .envio-detalle-valor{font-size:.86rem;font-weight:700;line-height:1.4;word-break:break-word}
+    .envio-seguridad{display:flex;gap:9px;padding:11px;border-radius:12px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4)}
+    .envio-seguridad svg{flex-shrink:0;width:18px;height:18px;color:#f59e0b;margin-top:1px}
+    .envio-seguridad b{display:block;font-size:.74rem;color:#f59e0b;margin-bottom:3px}
+    .envio-seguridad span{display:block;font-size:.69rem;line-height:1.45;color:var(--text-color)}
     @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
@@ -556,6 +565,27 @@
       <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap">
         <div><span class="kpi-label">Distancia</span><div class="kpi-valor" id="txt-distancia">—</div></div>
         <div><span class="kpi-label">Solicitado</span><div class="kpi-valor" id="txt-fecha">—</div></div>
+      </div>
+    </section>
+    <!-- DETALLE DEL ENVÍO (solo para viajes de BIKAR ENVÍOS) -->
+    <section class="card" id="card-envio" style="display:none">
+      <div class="card-title">Detalle del envío</div>
+      <div class="envio-detalle-box">
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">¿Qué se envía?</span>
+          <span class="envio-detalle-valor" id="envio-tipo">—</span>
+        </div>
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">Descripción del paquete</span>
+          <span class="envio-detalle-valor" id="envio-descripcion">—</span>
+        </div>
+      </div>
+      <div class="envio-seguridad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        <div>
+          <b>Envío seguro y responsable</b>
+          <span>El paquete está cerrado y no contiene artículos prohibidos: drogas, armas, explosivos, inflamables, dinero en efectivo, joyas, animales vivos ni documentos ajenos. BIKAR puede rechazar el envío si detecta contenido no permitido.</span>
+        </div>
       </div>
     </section>
     <!-- MÉTODO DE PAGO (efectivo o billetera digital del conductor) -->
@@ -1297,6 +1327,18 @@
       const mapa = DESC_POR_ROL[rolUsuario === 'conductor' ? 'conductor' : 'pasajero'];
       return (mapa && mapa[estado]) || respaldo;
     }
+    function esViajeEnvio(v) {
+      return !!v && (v.categoria_envio != null || v.detalle_envio != null ||
+        /env[ií]o|delivery|paquete|encomienda/i.test(String(v.tipo_servicio || '') + ' ' + String(v.nombre_servicio || '')));
+    }
+    function pintarDetalleEnvio() {
+      const card = $('card-envio'), v = viajeActual || {};
+      if (!esViajeEnvio(v)) { card.style.display = 'none'; return; }
+      const tipo = $('envio-tipo'), desc = $('envio-descripcion');
+      tipo.textContent = v.categoria_envio || 'Paquete / encomienda';
+      desc.textContent = v.detalle_envio || 'El pasajero no agregó una descripción adicional.';
+      card.style.display = 'block';
+    }
     function renderizarUI() {
       if (!viajeActual) return;
       const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
@@ -1356,6 +1398,7 @@
       }
       configurarAcciones(estado);
       actualizarExtras(estado);
+      pintarDetalleEnvio();
       pintarMetodoPago();
     }
     /* ============================================================
