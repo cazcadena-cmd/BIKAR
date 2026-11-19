@@ -708,6 +708,60 @@
     /* Perfil del conductor: aceptar o no viajes con mascota */
     .btn-mini.mascotas-no{color:var(--muted-text);background:var(--field-bg);border-color:var(--field-border)}
     /* ============================================================
+       BIKAR · MI BILLETERA (demostración · espacio para integración)
+       ============================================================ */
+    #modal-billetera-bikar .modal-bikar-dialog{width:min(100%,420px)}
+    .wallet-card{position:relative;overflow:hidden;border-radius:20px;padding:18px;margin:4px 0 14px;color:#fff;
+      background:linear-gradient(135deg,#2F6079 0%,#4785A8 55%,#5B9CBF 100%);
+      box-shadow:0 18px 38px rgba(71,133,168,.35),inset 0 1px 0 rgba(255,255,255,.22);animation:cardPop .4s ease both}
+    .wallet-card::after{content:"";position:absolute;width:190px;height:190px;right:-72px;top:-84px;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,255,255,.28),transparent 65%);pointer-events:none}
+    .wallet-card::before{content:"";position:absolute;width:140px;height:140px;left:-60px;bottom:-70px;border-radius:50%;
+      background:radial-gradient(circle,rgba(255,255,255,.14),transparent 68%);pointer-events:none}
+    .wallet-card-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .wallet-brand{display:inline-flex;align-items:center;gap:7px;font-size:.63rem;font-weight:800;letter-spacing:.16em;
+      text-transform:uppercase;color:rgba(255,255,255,.92)}
+    .wallet-brand svg{width:17px;height:17px}
+    .wallet-demo{font-size:.54rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border-radius:999px;
+      background:rgba(255,255,255,.20);border:1px solid rgba(255,255,255,.42);white-space:nowrap}
+    .wallet-label{position:relative;z-index:1;display:block;margin-top:15px;font-size:.58rem;font-weight:800;
+      letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.78)}
+    .wallet-saldo{position:relative;z-index:1;font-size:2rem;font-weight:800;line-height:1.05;letter-spacing:-.02em}
+    .wallet-saldo small{font-size:.9rem;font-weight:700;opacity:.85;margin-left:3px}
+    .wallet-meta{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:12px;margin-top:11px;
+      font-size:.61rem;font-weight:700;color:rgba(255,255,255,.86)}
+    .wallet-meta span{display:inline-flex;align-items:center;gap:4px}
+    .wallet-meta svg{width:12px;height:12px}
+    .wallet-acciones{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:14px}
+    .wallet-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+      padding:10px 8px;border-radius:13px;border:1px solid rgba(71,133,168,.42);background:rgba(71,133,168,.10);
+      color:var(--primary-color);font-size:.72rem;font-weight:800;cursor:pointer;transition:background .2s,border-color .2s,transform .15s}
+    .wallet-btn:hover{background:rgba(71,133,168,.20);border-color:var(--primary-color)}
+    .wallet-btn:active{transform:scale(.98)}
+    .wallet-btn svg{width:17px;height:17px}
+    .wallet-btn small{font-size:.55rem;font-weight:700;color:var(--muted-text);letter-spacing:.02em}
+    .wallet-seccion{margin:14px 0 7px;font-size:.62rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--muted-text)}
+    .wallet-lista{display:flex;flex-direction:column;gap:7px}
+    .wallet-item{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border-radius:13px;
+      background:var(--field-bg);border:1px solid var(--field-border)}
+    .wallet-item-icono{flex-shrink:0;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;
+      background:rgba(71,133,168,.14);color:var(--primary-color)}
+    .wallet-item-icono svg{width:14px;height:14px}
+    .wallet-item-txt{flex:1;min-width:0}
+    .wallet-item-tit{display:block;font-size:.76rem;font-weight:800;color:var(--text-color);line-height:1.25}
+    .wallet-item-sub{display:block;margin-top:2px;font-size:.65rem;font-weight:500;line-height:1.4;color:var(--muted-text)}
+    .wallet-item-estado{flex-shrink:0;font-size:.52rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+      padding:3px 7px;border-radius:999px;background:rgba(214,139,31,.14);border:1px solid rgba(214,139,31,.4);color:#d68b1f;
+      align-self:center;white-space:nowrap}
+    .wallet-vacio{padding:18px 14px;border-radius:14px;text-align:center;background:var(--field-bg);
+      border:1px dashed var(--field-border);color:var(--muted-text);font-size:.74rem;line-height:1.5}
+    .wallet-vacio svg{width:26px;height:26px;color:var(--primary-color);opacity:.8;margin-bottom:6px}
+    .wallet-aviso{display:flex;gap:8px;padding:10px 11px;border-radius:12px;margin-top:12px;
+      background:rgba(71,133,168,.10);border:1px solid rgba(71,133,168,.3);text-align:left}
+    .wallet-aviso svg{flex-shrink:0;width:15px;height:15px;color:var(--primary-color);margin-top:1px}
+    .wallet-aviso div{font-size:.64rem;line-height:1.45;color:var(--muted-text)}
+    .wallet-aviso b{color:var(--text-color)}
+    /* ============================================================
        BIKAR · PERIODO DE GRATUIDAD EN EL PERFIL
        ============================================================ */
     .perfil-gratuito{margin:2px 0 14px;padding:13px 14px;border-radius:16px;
@@ -893,6 +947,10 @@
     <button type="button" class="menu-perfil-item" id="menu-item-historial">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
       <span class="mi-txt">Mis viajes</span>
+    </button>
+    <button type="button" class="menu-perfil-item" id="menu-item-billetera">
+      <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 9h-5a3 3 0 0 0 0 6h5V9z"/></svg></span>
+      <span class="mi-txt">Mi Billetera BIKAR</span>
     </button>
     <button type="button" class="menu-perfil-item oculto" id="menu-item-disponibles">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg></span>
@@ -1082,6 +1140,10 @@
           <button type="button" class="btn-mini" id="btn-perfil-historial">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
             Mis viajes
+          </button>
+          <button type="button" class="btn-mini" id="btn-perfil-billetera" title="Mi Billetera BIKAR">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 9h-5a3 3 0 0 0 0 6h5V9z"/></svg>
+            Mi Billetera BIKAR
           </button>
           <button type="button" class="btn-mini oculto" id="btn-perfil-vehiculo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
@@ -1279,6 +1341,110 @@
       <div class="modal-bikar-scroll" id="disponibles-lista" style="flex:1;min-height:0"></div>
     </div>
   </div>
+  <!-- MI BILLETERA BIKAR (demostración · espacio para la integración real) -->
+  <div id="modal-billetera-bikar" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="billetera-bikar-titulo">
+    <div class="modal-bikar-dialog">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-billetera-bikar" aria-label="Cerrar">×</button>
+      <span class="modal-kicker">BIKAR · Finanzas</span>
+      <h2 class="modal-titulo" id="billetera-bikar-titulo">Mi Billetera BIKAR</h2>
+      <div class="modal-bikar-scroll" style="flex:1;min-height:0">
+
+        <div class="wallet-card">
+          <div class="wallet-card-top">
+            <span class="wallet-brand">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 9h-5a3 3 0 0 0 0 6h5V9z"/></svg>
+              BIKAR Wallet
+            </span>
+            <span class="wallet-demo">Demostración</span>
+          </div>
+          <span class="wallet-label">Saldo disponible</span>
+          <div class="wallet-saldo" id="wallet-saldo">S/ 0.00<small>PEN</small></div>
+          <div class="wallet-meta">
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Cuenta BIKAR</span>
+            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>Protegida</span>
+          </div>
+        </div>
+
+        <div class="wallet-acciones">
+          <button type="button" class="wallet-btn" data-wallet="recargar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Recargar saldo
+            <small>Próximamente</small>
+          </button>
+          <button type="button" class="wallet-btn" data-wallet="comisiones">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+            Pagar comisiones
+            <small>Próximamente</small>
+          </button>
+        </div>
+
+        <div class="wallet-seccion">Cómo funcionará</div>
+        <div class="wallet-lista">
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></span>
+            <div class="wallet-item-txt">
+              <span class="wallet-item-tit">Recargas seguras</span>
+              <span class="wallet-item-sub">Con tarjeta, Yape o banca móvil a través de una pasarela certificada PCI DSS. BIKAR nunca guarda los datos de tu tarjeta.</span>
+            </div>
+          </div>
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17h2l2-6h10l2 6h2"/><circle cx="7" cy="18" r="1.6"/><circle cx="17" cy="18" r="1.6"/></svg></span>
+            <div class="wallet-item-txt">
+              <span class="wallet-item-tit">Paga viajes o comisiones</span>
+              <span class="wallet-item-sub">Usa tu saldo sin efectivo ni transferencias. Los conductores podrán cubrir sus comisiones desde aquí.</span>
+            </div>
+          </div>
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+            <div class="wallet-item-txt">
+              <span class="wallet-item-tit">Movimientos auditados</span>
+              <span class="wallet-item-sub">Cada recarga, pago y comisión quedará registrado con su comprobante y número de operación.</span>
+            </div>
+          </div>
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg></span>
+            <div class="wallet-item-txt">
+              <span class="wallet-item-tit">Retiros a tu cuenta</span>
+              <span class="wallet-item-sub">Con tu identidad verificada y una cuenta bancaria a tu nombre, cuando la integración esté habilitada.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="wallet-seccion">Estado de la integración</div>
+        <div class="wallet-lista">
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+            <div class="wallet-item-txt"><span class="wallet-item-tit">Cuenta de comercio</span><span class="wallet-item-sub">Aprobación de la pasarela y validación de RUC / DNI.</span></div>
+            <span class="wallet-item-estado">Pendiente</span>
+          </div>
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m21 2-2 2"/><path d="M12.5 8.5 5 16v3h3l7.5-7.5"/><path d="M16 4 20 8"/></svg></span>
+            <div class="wallet-item-txt"><span class="wallet-item-tit">Llaves y webhooks</span><span class="wallet-item-sub">Credenciales seguras en el servidor y confirmación firmada de cada pago.</span></div>
+            <span class="wallet-item-estado">Pendiente</span>
+          </div>
+          <div class="wallet-item">
+            <span class="wallet-item-icono"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span>
+            <div class="wallet-item-txt"><span class="wallet-item-tit">Validación legal y contable</span><span class="wallet-item-sub">Comprobantes, conciliación y tratamiento de saldos de terceros.</span></div>
+            <span class="wallet-item-estado">Pendiente</span>
+          </div>
+        </div>
+
+        <div class="wallet-seccion">Movimientos</div>
+        <div class="wallet-vacio">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg>
+          Aún no hay movimientos.<br>Cuando se conecte la pasarela verás aquí tus recargas, pagos y comisiones.
+        </div>
+
+        <div class="wallet-aviso">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+          <div><b>Modo demostración.</b> El saldo y los botones están deshabilitados: no se procesa dinero real. Las recargas se activarán al integrar una pasarela de pago autorizada.</div>
+        </div>
+
+        <button type="button" class="btn-main" id="wallet-entendido" style="margin-top:14px">Entendido</button>
+      </div>
+    </div>
+  </div>
+
   <!-- BENEFICIOS DEL VEHÍCULO (conductor) -->
   <div id="modal-beneficios" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="beneficios-titulo">
     <div class="modal-bikar-dialog">
@@ -2945,6 +3111,33 @@
     });
     $('menu-item-perfil').addEventListener('click', () => { cerrarMenuPerfil(); abrirModalPerfil(); });
     $('menu-item-historial').addEventListener('click', () => { cerrarMenuPerfil(); abrirModalHistorial(); });
+    /* ============================ MI BILLETERA BIKAR (demostración) ============================ */
+    function abrirBilleteraBikar() {
+      const modal = $('modal-billetera-bikar');
+      if (!modal) return;
+      const saldo = Number((usuarioActual || {}).saldo_billetera);
+      const valor = $('wallet-saldo');
+      if (valor) {
+        valor.innerHTML = formatoMoneda(isFinite(saldo) && saldo > 0 ? saldo : 0) + '<small>PEN</small>';
+      }
+      modal.classList.remove('oculto');
+    }
+    function cerrarBilleteraBikar() {
+      $('modal-billetera-bikar').classList.add('oculto');
+    }
+    $('menu-item-billetera').addEventListener('click', () => { cerrarMenuPerfil(); abrirBilleteraBikar(); });
+    $('btn-perfil-billetera').addEventListener('click', () => { modalPerfil.classList.add('oculto'); abrirBilleteraBikar(); });
+    $('cerrar-billetera-bikar').addEventListener('click', cerrarBilleteraBikar);
+    $('wallet-entendido').addEventListener('click', cerrarBilleteraBikar);
+    $('modal-billetera-bikar').addEventListener('click', (e) => { if (e.target === $('modal-billetera-bikar')) cerrarBilleteraBikar(); });
+    $('modal-billetera-bikar').querySelectorAll('[data-wallet]').forEach((b) => {
+      b.addEventListener('click', () => {
+        const accion = b.dataset.wallet;
+        mostrarToast(accion === 'recargar'
+          ? 'Recargas disponibles al conectar la pasarela de pago'
+          : 'El pago de comisiones se habilitará con la billetera real', 'i');
+      });
+    });
     $('menu-item-ayuda').addEventListener('click', () => { cerrarMenuPerfil(); abrirModalAyuda(); });
     $('menu-item-salir').addEventListener('click', async () => {
       cerrarMenuPerfil();
