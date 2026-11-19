@@ -291,6 +291,17 @@
     .doc-placa-linea{margin:9px 4px 0;font-size:.78rem;font-weight:600;color:var(--muted-text)}
     .doc-placa-linea b{color:var(--primary-color);letter-spacing:.09em}
     @media (max-width:360px){.doc-foto-acciones{gap:6px}.doc-foto-acciones .doc-drop-text{font-size:.72rem}}
+    /* BENEFICIOS DEL VEHÍCULO (checklist Sí / No) */
+    .beneficios-lista{display:flex;flex-direction:column;gap:7px;margin-top:2px}
+    .beneficio-fila{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:12px;
+      background:var(--field-bg);border:1px solid var(--field-border)}
+    .beneficio-nombre{flex:1;min-width:0;font-size:.78rem;font-weight:600;color:var(--text-color);line-height:1.25}
+    .beneficio-opciones{display:flex;gap:5px;flex-shrink:0}
+    .btn-beneficio{min-width:46px;padding:6px 9px;border-radius:9px;border:1px solid var(--field-border);
+      background:var(--card-bg);color:var(--muted-text);font-size:.72rem;font-weight:800;cursor:pointer;transition:all .18s}
+    .btn-beneficio:hover{border-color:var(--primary-color);color:var(--primary-color)}
+    .btn-beneficio.si{background:rgba(71,133,168,.18);border-color:rgba(71,133,168,.7);color:#4785A8}
+    .btn-beneficio.no{background:rgba(231,76,60,.14);border-color:rgba(231,76,60,.6);color:#e74c3c}
     .doc-item.cargado .doc-drop{border-style:solid;border-color:rgba(71,133,168,.60)}
     .doc-preview{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;border-radius:12px;border:1px solid rgba(71,133,168,.40);
       background:rgba(0,0,0,.25);animation:fadeIn .35s ease both}
@@ -763,6 +774,12 @@
           </button>
         </div>
         <p class="doc-nota" style="margin:6px 4px 0">Si aceptas envíos, los pasajeros podrán elegir BIKAR ENVÍOS contigo sin importar tu tipo de servicio.</p>
+      </div>
+
+      <div class="pet-friendly-grupo" id="bloque-beneficios">
+        <span class="doc-label">Beneficios de tu vehículo</span>
+        <p class="doc-nota" style="margin:0 4px 8px">Marca Sí o No en cada beneficio. El pasajero los verá cuando aceptes su viaje.</p>
+        <div class="beneficios-lista" id="lista-beneficios"></div>
       </div>
 
       <p class="doc-seccion">Documentos (foto o PDF · máx. 5 MB)</p>
@@ -1278,7 +1295,7 @@
     const docContador = $('doc-contador');
     const docAnio = $('doc-anio');
     const docItemRevision = $('doc-item-revision');
-    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null, acepta_envios: null, capacidad_pasajeros: null };
+    const documentacionVehiculo = { completa: false, archivos: {}, pet_friendly: null, acepta_envios: null, beneficios: {}, capacidad_pasajeros: null };
     function requiereRevisionTecnica() {
       const anio = parseInt(docAnio.value, 10);
       return !isNaN(anio) && (new Date().getFullYear() - anio) > 3;
@@ -1314,6 +1331,7 @@
       actualizarRevisionTecnica();
       actualizarPreguntaMascotas();
       if (typeof aplicarEstadoEnvios === 'function') aplicarEstadoEnvios(documentacionVehiculo.acepta_envios);
+      renderizarBeneficios();
     }
     function cerrarModalDocumentacion() {
       modalDocumentacion.classList.add('oculto');
@@ -1353,6 +1371,48 @@
     }
     $('btn-envios-si').addEventListener('click', () => { aplicarEstadoEnvios(true); marcarDocumentacionPendiente(); });
     $('btn-envios-no').addEventListener('click', () => { aplicarEstadoEnvios(false); marcarDocumentacionPendiente(); });
+    /* BENEFICIOS DEL VEHÍCULO */
+    const BENEFICIOS_CATALOGO = [
+      ['aire', 'Aire acondicionado'],
+      ['musica', 'Música en el vehículo'],
+      ['pedir_musica', 'El pasajero puede pedir música'],
+      ['equipaje', 'Ayuda con el equipaje'],
+      ['cargador', 'Cargador para el celular'],
+      ['asientos', 'Asientos cómodos / amplios'],
+      ['silencio', 'Viaje en silencio, sin conversación'],
+      ['mascotas', 'Apto para llevar mascotas']
+    ];
+    function renderizarBeneficios() {
+      const cont = $('lista-beneficios');
+      if (!cont) return;
+      const actuales = documentacionVehiculo.beneficios || {};
+      cont.innerHTML = BENEFICIOS_CATALOGO.map(([clave, nombre]) => {
+        const valor = actuales[clave];
+        const si = valor === true ? ' si' : '';
+        const no = valor === false ? ' no' : '';
+        return '<div class="beneficio-fila" data-beneficio="' + clave + '">' +
+          '<span class="beneficio-nombre">' + nombre + '</span>' +
+          '<span class="beneficio-opciones">' +
+            '<button type="button" class="btn-beneficio' + si + '" data-valor="si">Sí</button>' +
+            '<button type="button" class="btn-beneficio' + no + '" data-valor="no">No</button>' +
+          '</span></div>';
+      }).join('');
+      cont.querySelectorAll('.btn-beneficio').forEach((b) => {
+        b.addEventListener('click', () => {
+          const fila = b.closest('.beneficio-fila');
+          const clave = fila.dataset.beneficio;
+          const marcado = b.dataset.valor === 'si';
+          documentacionVehiculo.beneficios = Object.assign({}, documentacionVehiculo.beneficios || {});
+          documentacionVehiculo.beneficios[clave] = marcado;
+          fila.querySelectorAll('.btn-beneficio').forEach((x) => {
+            x.classList.toggle('si', x === b && marcado);
+            x.classList.toggle('no', x === b && !marcado);
+            if (x !== b) { x.classList.remove('si'); x.classList.remove('no'); }
+          });
+          marcarDocumentacionPendiente();
+        });
+      });
+    }
     /* «¿Acepta Mascotas?» aparece SOLO para BIKAR TAXI y BIKAR AUTO */
     function esServicioTaxi() {
       const sel = $('doc-tipo-servicio');
@@ -1494,6 +1554,7 @@
       documentacionVehiculo.licencia = $('doc-licencia').value.trim();
       documentacionVehiculo.capacidad_pasajeros = capacidad;
       documentacionVehiculo.requiere_revision_tecnica = requiereRevisionTecnica();
+      documentacionVehiculo.beneficios = Object.assign({}, documentacionVehiculo.beneficios || {});
       marcarDocumentacionCompleta();
       cerrarModalDocumentacion();
       mostrarAlerta('Documentación del vehículo guardada.', 'exito');
@@ -1524,6 +1585,7 @@
         capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
         pet_friendly: documentacionVehiculo.pet_friendly === true,
         acepta_envios: documentacionVehiculo.acepta_envios === true,
+        beneficios: documentacionVehiculo.beneficios || {},
         requiere_revision_tecnica: !!documentacionVehiculo.requiere_revision_tecnica,
         dni_ce: urlsDocumentos.dni_ce || null,
         antecedente_policial: urlsDocumentos.antecedente_policial || null,
@@ -1541,9 +1603,10 @@
       try {
         let { error } = await supabaseClient.from('documentos_conductor').insert([registro]);
         /* Si la columna acepta_envios aún no existe en Supabase, se guarda la documentación sin ella */
-        if (error && /acepta_envios/i.test(String(error.message || ''))) {
+        if (error && /acepta_envios|beneficios/i.test(String(error.message || ''))) {
           const respaldo = Object.assign({}, registro);
-          delete respaldo.acepta_envios;
+          if (/acepta_envios/i.test(String(error.message || ''))) delete respaldo.acepta_envios;
+          if (/beneficios/i.test(String(error.message || ''))) delete respaldo.beneficios;
           ({ error } = await supabaseClient.from('documentos_conductor').insert([respaldo]));
         }
         if (error) console.warn("No se pudo guardar la documentación en Supabase (tabla 'documentos_conductor'):", error.message);
@@ -1888,13 +1951,15 @@
     color: documentacionVehiculo.color || null,
     capacidad_pasajeros: documentacionVehiculo.capacidad_pasajeros || null,
     pet_friendly: documentacionVehiculo.pet_friendly === true,
-    acepta_envios: documentacionVehiculo.acepta_envios === true
+    acepta_envios: documentacionVehiculo.acepta_envios === true,
+    beneficios: documentacionVehiculo.beneficios || {}
   };
           let { error: errVehiculo } = await supabaseClient.from('vehiculos').insert([filaVehiculo]);
           /* Si la columna acepta_envios aún no existe en Supabase, se guarda el vehículo sin ella */
-          if (errVehiculo && /acepta_envios/i.test(String(errVehiculo.message || ''))) {
+          if (errVehiculo && /acepta_envios|beneficios/i.test(String(errVehiculo.message || ''))) {
             const filaRespaldo = Object.assign({}, filaVehiculo);
-            delete filaRespaldo.acepta_envios;
+            if (/acepta_envios/i.test(String(errVehiculo.message || ''))) delete filaRespaldo.acepta_envios;
+            if (/beneficios/i.test(String(errVehiculo.message || ''))) delete filaRespaldo.beneficios;
             ({ error: errVehiculo } = await supabaseClient.from('vehiculos').insert([filaRespaldo]));
           }
 if (errVehiculo) {
