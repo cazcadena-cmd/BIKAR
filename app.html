@@ -1242,7 +1242,8 @@
       { clave:'moto_taxi',     etiqueta:'BIKAR MOTO',    desc:'Económico y ágil · 1 pasajero',           base:2450,  porKm:980,  minTarifa:4400,  espera:'2 min' },
       { clave:'moto_delivery', etiqueta:'BIKAR ENVÍOS',  desc:'Envíos de paquetes, comida y documentos',  base:2940,  porKm:1176, minTarifa:5400,  espera:'3 min' },
       { clave:'taxi_auto',     etiqueta:'BIKAR TAXI',    desc:'Auto sedán cómodo · hasta 4 pasajeros',    base:3920,  porKm:1372, minTarifa:6400,  espera:'4 min' },
-      { clave:'auto_particular', etiqueta:'BIKAR AUTO', desc:'Auto particular cómodo · hasta 4 pasajeros', base:3920, porKm:1372, minTarifa:6400, espera:'4 min' }
+      { clave:'auto_particular', etiqueta:'BIKAR AUTO', desc:'Auto particular cómodo · hasta 4 pasajeros', base:3920, porKm:1372, minTarifa:6400, espera:'4 min' },
+      { clave:'taxi_carga',    etiqueta:'BIKAR TAXI CARGA', desc:'Carga, bultos y mudanzas pequeñas',      base:4900,  porKm:1680, minTarifa:8200,  espera:'6 min' }
     ];
     function normalizarClaveServicio(raw) {
       if (raw === null || raw === undefined || raw === '') return null;
@@ -1251,8 +1252,9 @@
       c = c.replace(/[_\-.]+/g, ' ').replace(/\s+/g, ' ').trim();
       if (/moto\s*deliver|delivery|domicili|paqueter|mensajer|reparto|envio/.test(c)) return 'moto_delivery';
       if (/moto\s*taxi|\bmoto\b/.test(c)) return 'moto_taxi';
-      // BIKAR AUTO (auto particular). Los registros antiguos de «Taxi Carga» también pasan a BIKAR AUTO.
-      if (/bikar\s*auto|particular|carga|mudanza|camion|furgon|encomienda/.test(c)) return 'auto_particular';
+      // BIKAR TAXI CARGA se detecta antes que AUTO para que «carga» no lo confunda.
+      if (/taxi\s*carga|\bcarga\b|mudanza|camion|furgon|encomienda/.test(c)) return 'taxi_carga';
+      if (/bikar\s*auto|particular/.test(c)) return 'auto_particular';
       if (/taxi\s*auto|\bauto\b|\btaxi\b|\bcarro\b|\bcoche\b|sedan/.test(c)) return 'taxi_auto';
       return null;
     }
@@ -1410,7 +1412,7 @@
       (f.acepta_envios === true || f.acepta_envios === 'true' || f.envios === true || f.envios === 'true'));
     const OPCION_ENVIOS = 'envios';
     const envioDeViaje = (v) => !!v && (v.categoria_envio != null || v.detalle_envio != null || /env[ií]o/i.test(String(v.nombre_servicio || '')) || normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === 'moto_delivery');
-    const viajeConMascota = (v) => !!v && (v.con_mascota === true || /mascota/i.test(String(v.nombre_servicio || '')));
+    const viajeConMascota = (v) => !!v && (v.con_mascota === true || /mascota|\bpet\b/i.test(String(v.nombre_servicio || '')));
     /* ---- MÉTODOS DE PAGO: el pasajero elige Efectivo o Billetera digital; solo lo reciben conductores que lo aceptan ---- */
     const ETIQUETA_PAGO = { efectivo: '💵 Efectivo', billetera: '📱 Billetera digital' };
     // Lista de billeteras del conductor (columna 'billeteras'; si no existe, la billetera única de las columnas anteriores)
@@ -2789,7 +2791,7 @@
       $('btn-perfil-pagos').classList.toggle('oculto', !esCond);
       // Aceptar o no viajes con mascota (solo conductores de BIKAR TAXI)
       const botonMascotas = $('btn-perfil-mascotas');
-      botonMascotas.classList.toggle('oculto', !esCond);
+      botonMascotas.classList.toggle('oculto', !(esCond && (claveServicioConductor === 'taxi_auto' || claveServicioConductor === 'auto_particular')));
       botonMascotas.classList.toggle('mascotas-no', !aceptaMascotasConductor);
       $('txt-perfil-mascotas').textContent = 'Acepta mascotas: ' + (aceptaMascotasConductor ? 'Sí' : 'No');
       // Aceptar envíos: disponible para TODOS los tipos de servicio del conductor
@@ -3399,8 +3401,8 @@
           conteo[opcion] = (conteo[opcion] || 0) + 1;
           sumarPagoOpcion(opcion, pago);
           const fuentesPago = [filaVehCond.get(String(cid)), filaDocUsuario.get(String(u.id)), filaDocCond.get(String(cid)), filaCondUsuario.get(String(u.id)), u];
-          // BIKAR PET: cualquier conductor (de cualquier servicio) que acepte mascotas
-          if (aceptaMascotasDe.apply(null, fuentesPago)) {
+          // BIKAR PET: solo BIKAR TAXI y BIKAR AUTO, si el conductor acepta mascotas
+          if ((clave === 'taxi_auto' || clave === 'auto_particular') && aceptaMascotasDe.apply(null, fuentesPago)) {
             const opcionMascota = clave + '_mascota';
             conteo[opcionMascota] = (conteo[opcionMascota] || 0) + 1;
             sumarPagoOpcion(opcionMascota, pago);
@@ -3421,19 +3423,19 @@
       const disponibles = [];
       CATALOGO.forEach((s) => {
         if (conteoActivos[s.clave] > 0) disponibles.push(Object.assign({}, s, { opcion:s.clave }));
-        // BIKAR PET · «Con mascota»: para cualquier servicio cuyos conductores acepten mascotas (+10%)
+        // BIKAR PET: solo para BIKAR TAXI y BIKAR AUTO cuyos conductores acepten mascotas (+10%)
         const opcionMascota = s.clave + '_mascota';
-        if (s.clave !== 'moto_delivery' && conteoActivos[opcionMascota] > 0) {
+        if ((s.clave === 'taxi_auto' || s.clave === 'auto_particular') && conteoActivos[opcionMascota] > 0) {
           disponibles.push(Object.assign({}, s, {
-            opcion:opcionMascota, conMascota:true, etiqueta:s.etiqueta + ' · Con mascota',
-            desc:'🐾 Viaja con tu mascota · Incluye 10% adicional'
+            opcion:opcionMascota, conMascota:true, esPet:true, etiqueta:'BIKAR PET',
+            desc:'🐾 Viaja con tu mascota · ' + (s.clave === 'taxi_auto' ? 'Taxi' : 'Auto') + ' con espacio pet · +10%'
           }));
         }
-        // ENVÍO · para cualquier servicio cuyos conductores acepten envíos (20% menos de la tarifa normal)
+        // BIKAR ENVÍOS: cualquier servicio cuyos conductores acepten envíos (20% menos de la tarifa normal)
         const opcionEnvio = s.clave + '_envio';
         if (s.clave !== 'moto_delivery' && conteoActivos[opcionEnvio] > 0) {
           disponibles.push(Object.assign({}, s, {
-            opcion:opcionEnvio, esEnvio:true, etiqueta:s.etiqueta + ' · Envío',
+            opcion:opcionEnvio, esEnvio:true, etiqueta:'BIKAR ENVÍOS',
             desc:'📦 Envía un paquete · 20% menos de la tarifa normal'
           }));
         }
