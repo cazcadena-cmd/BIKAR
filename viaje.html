@@ -587,6 +587,13 @@
           <span>El paquete está cerrado y no contiene artículos prohibidos: drogas, armas, explosivos, inflamables, dinero en efectivo, joyas, animales vivos ni documentos ajenos. BIKAR puede rechazar el envío si detecta contenido no permitido.</span>
         </div>
       </div>
+      <div class="envio-seguridad" id="envio-descuento" style="display:none;background:rgba(71,133,168,.12);border-color:rgba(71,133,168,.4);margin-top:10px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:#4785A8"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3H4a1 1 0 0 0-1 1v5.59A2 2 0 0 0 3.59 11l9.58 9.59a2 2 0 0 0 2.83 0l4.59-4.59a2 2 0 0 0 0-2.83z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>
+        <div>
+          <b style="color:#4785A8">Tarifa con descuento</b>
+          <span>Este servicio de envío tiene un 20% menos sobre la tarifa normal del servicio.</span>
+        </div>
+      </div>
     </section>
     <!-- MÉTODO DE PAGO (efectivo o billetera digital del conductor) -->
     <section class="card" id="card-pago" style="display:none">
@@ -1337,6 +1344,10 @@
       const tipo = $('envio-tipo'), desc = $('envio-descripcion');
       tipo.textContent = v.categoria_envio || 'Paquete / encomienda';
       desc.textContent = v.detalle_envio || 'El pasajero no agregó una descripción adicional.';
+      const claveBase = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio);
+      const notaDescuento = $('envio-descuento');
+      const aplicaDescuento = claveBase !== 'moto_delivery' && /env[ií]o/i.test(String(v.nombre_servicio || ''));
+      if (notaDescuento) notaDescuento.style.display = aplicaDescuento ? 'flex' : 'none';
       card.style.display = 'block';
     }
     function renderizarUI() {
@@ -1358,9 +1369,10 @@
       const clave = normalizarClaveServicio(viajeActual.tipo_servicio || viajeActual.nombre_servicio);
       // Servicio con mascota: se muestra «BIKAR TAXI · Con mascota» con la huella
       const conMascota = viajeActual.con_mascota === true || /mascota/i.test(String(viajeActual.nombre_servicio || ''));
+      const nombreRegistrado = String(viajeActual.nombre_servicio || '');
       const nombreServicio = conMascota
-        ? (/mascota/i.test(String(viajeActual.nombre_servicio || '')) ? viajeActual.nombre_servicio : (viajeActual.tipo_servicio || 'BIKAR TAXI') + ' · Con mascota')
-        : (viajeActual.tipo_servicio || viajeActual.nombre_servicio || etiquetaServicio(clave));
+        ? (/mascota/i.test(nombreRegistrado) ? nombreRegistrado : (viajeActual.tipo_servicio || 'BIKAR TAXI') + ' · Con mascota')
+        : (esViajeEnvio(viajeActual) && nombreRegistrado ? nombreRegistrado : (viajeActual.tipo_servicio || nombreRegistrado || etiquetaServicio(clave)));
       $('txt-servicio').innerHTML = (conMascota ? SVG.mascota : (ICONO_SERVICIO[clave] || SVG.ruta)) + '<span>' + esc(nombreServicio) + '</span>';
       $('txt-tarifa').textContent = formatoMoneda(tarifaDelViaje(viajeActual));
       $('txt-distancia').textContent = viajeActual.distancia_km ? viajeActual.distancia_km + ' km' : '—';
