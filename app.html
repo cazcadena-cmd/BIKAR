@@ -708,6 +708,90 @@
     /* Perfil del conductor: aceptar o no viajes con mascota */
     .btn-mini.mascotas-no{color:var(--muted-text);background:var(--field-bg);border-color:var(--field-border)}
     /* ============================================================
+       BIKAR · PERIODO DE GRATUIDAD EN EL PERFIL
+       ============================================================ */
+    .perfil-gratuito{margin:2px 0 14px;padding:13px 14px;border-radius:16px;
+      background:linear-gradient(135deg,rgba(71,133,168,.16),rgba(71,133,168,.06));
+      border:1px solid rgba(71,133,168,.42);box-shadow:inset 0 1px 0 var(--glass-highlight);animation:cardPop .4s ease both}
+    .pg-cabecera{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+    .pg-titulo{display:inline-flex;align-items:center;gap:7px;font-size:.72rem;font-weight:800;letter-spacing:.1em;
+      text-transform:uppercase;color:var(--primary-color)}
+    .pg-titulo svg{width:15px;height:15px}
+    .pg-insignia{font-size:.58rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;
+      background:rgba(71,133,168,.18);border:1px solid rgba(71,133,168,.5);color:var(--primary-color)}
+    .pg-contador{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+    .pg-celda{padding:8px 4px;border-radius:11px;text-align:center;background:var(--glass-bg-strong);border:1px solid var(--field-border)}
+    .pg-num{display:block;font-size:1.16rem;font-weight:800;line-height:1;color:var(--text-color);
+      font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+    .pg-lbl{display:block;margin-top:3px;font-size:.52rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted-text)}
+    .pg-barra{margin-top:9px;height:6px;border-radius:999px;background:var(--field-border);overflow:hidden}
+    .pg-barra span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#3A6E8C,#4785A8);
+      transition:width .6s ease}
+    .pg-nota{margin-top:7px;font-size:.64rem;line-height:1.4;color:var(--muted-text)}
+    .pg-nota b{color:var(--primary-color)}
+    .pg-gratis .pg-insignia{background:rgba(71,133,168,.22)}
+    .pg-vencido .pg-insignia{background:rgba(214,139,31,.16);border-color:rgba(214,139,31,.5);color:#d68b1f}
+    /* PARADAS ADICIONALES */
+    .paradas-box{margin-bottom:10px;padding:10px;border-radius:14px;background:var(--field-bg);border:1px solid var(--field-border)}
+    .paradas-titulo{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+    .paradas-titulo span{font-size:.58rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--primary-color)}
+    .paradas-titulo small{font-size:.6rem;font-weight:700;color:var(--muted-text)}
+    .parada-fila{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+    .parada-fila input{flex:1;min-width:0;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--field-border);
+      background:var(--glass-bg-strong);color:var(--text-color);font-size:.76rem;outline:none}
+    .parada-fila input:focus{border-color:var(--primary-color)}
+    .parada-quitar{flex-shrink:0;width:32px;height:32px;border-radius:9px;border:1px solid rgba(231,76,60,.45);
+      background:rgba(231,76,60,.1);color:#e74c3c;font-size:12px;cursor:pointer}
+    .paradas-agregar{width:100%;padding:9px;border-radius:10px;border:1px dashed rgba(71,133,168,.6);
+      background:rgba(71,133,168,.08);color:var(--primary-color);font-size:.72rem;font-weight:800;cursor:pointer}
+    .paradas-agregar:hover{background:rgba(71,133,168,.16)}
+    .paradas-total{margin-top:7px;font-size:.66rem;font-weight:800;color:var(--text-color);display:none}
+    .paradas-total.visible{display:block}
+    .paradas-total b{color:var(--primary-color)}
+    /* AVISO FUERA DE LA CIUDAD / PEAJE */
+    .aviso-ciudad{display:none;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:12px;margin-bottom:9px;
+      background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.45);text-align:left}
+    .aviso-ciudad.visible{display:flex}
+    .aviso-ciudad svg{flex-shrink:0;width:15px;height:15px;color:#f59e0b;margin-top:1px}
+    .aviso-ciudad div{font-size:.66rem;line-height:1.42;color:var(--text-color)}
+    .aviso-ciudad b{display:block;color:#f59e0b;font-size:.7rem;margin-bottom:2px}
+    /* BENEFICIOS DEL CONDUCTOR (chips) */
+    .beneficios-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+    .beneficio-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:999px;
+      background:rgba(71,133,168,.12);border:1px solid rgba(71,133,168,.35);color:var(--text-color);
+      font-size:.6rem;font-weight:700}
+    .beneficio-chip svg{width:11px;height:11px;color:var(--primary-color);flex-shrink:0}
+    .beneficios-form{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+    .beneficios-form .beneficio-fila{padding:9px 10px}
+    .beneficios-form .btn-beneficio{min-width:44px;padding:6px 10px;font-weight:800}
+    .beneficios-form .btn-beneficio.activo{background:rgba(71,133,168,.2);border-color:rgba(71,133,168,.75);color:var(--primary-color)}
+    .beneficios-form .btn-beneficio[data-valor="no"].activo{background:rgba(231,76,60,.16);border-color:rgba(231,76,60,.6);color:#e74c3c}
+    .parada-viaje-linea{display:flex;align-items:flex-start;gap:7px;margin:0 0 7px;padding:6px 8px;border-radius:10px;
+      background:rgba(214,139,31,.10);border:1px dashed rgba(214,139,31,.45)}
+    .parada-viaje-linea .pnum{flex-shrink:0;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;
+      font-size:.54rem;font-weight:800;color:#fff;background:#d68b1f;margin-top:1px}
+    .parada-viaje-linea .ptxt{flex:1;min-width:0;font-size:.72rem;font-weight:700;line-height:1.3;word-break:break-word}
+    .parada-viaje-linea .ptxt small{display:block;font-size:.58rem;font-weight:600;color:var(--muted-text)}
+    /* MODAL BENEFICIOS */
+    #modal-beneficios .modal-bikar-dialog{width:min(100%,400px)}
+    /* DETALLE DEL INGRESO */
+    .detalle-ingreso{margin-top:10px}
+    .di-ruta{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+    .di-punto{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border-radius:12px;background:var(--field-bg);border:1px solid var(--field-border)}
+    .di-punto .di-letra{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.6rem;font-weight:800;color:#fff;background:var(--primary-color)}
+    .di-punto.parada .di-letra{background:#d68b1f;font-size:.56rem}
+    .di-punto .di-txt{flex:1;min-width:0;font-size:.76rem;font-weight:700;line-height:1.35;word-break:break-word}
+    .di-punto .di-txt small{display:block;margin-top:2px;font-size:.62rem;font-weight:600;color:var(--muted-text)}
+    .di-tabla{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border-radius:12px;background:var(--field-bg);border:1px solid var(--field-border)}
+    .di-linea{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.78rem}
+    .di-linea span{color:var(--muted-text);font-weight:600}
+    .di-linea b{color:var(--text-color);font-weight:800;white-space:nowrap}
+    .di-linea.total{padding-top:7px;border-top:1px dashed var(--field-border);font-size:.9rem}
+    .di-linea.total b{color:var(--primary-color)}
+    .di-linea.descuento b{color:#10b981}
+    .pago-fila{cursor:pointer}
+    .pago-fila:active{transform:scale(.995)}
+    /* ============================================================
        BIKAR · VIDEO DE PRESENTACIÓN DEL SERVICIO (pantalla completa)
        ============================================================ */
     #modal-video-servicio{position:fixed;inset:0;z-index:9600;display:flex;align-items:center;justify-content:center;background:rgba(6,12,18,.94);
@@ -934,6 +1018,17 @@
     </div>
     <div id="servicios-lista" class="servicios-lista"></div>
     <div class="servicios-footer">
+      <div id="aviso-fuera-ciudad" class="aviso-ciudad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div><b>Viaje fuera de la ciudad</b>El recorrido sale de tu ciudad. Los <b>peajes corren por cuenta del pasajero</b> y se pagan aparte de la tarifa.</div>
+      </div>
+      <!-- PARADAS ADICIONALES (+20% de la tarifa por cada una) -->
+      <div id="paradas-box" class="paradas-box oculto">
+        <div class="paradas-titulo"><span>Paradas adicionales</span><small>Cada parada +20%</small></div>
+        <div id="paradas-lista"></div>
+        <button type="button" class="paradas-agregar" id="btn-agregar-parada">+ Añadir parada</button>
+        <div class="paradas-total" id="paradas-total"></div>
+      </div>
       <!-- MÉTODO DE PAGO DEL PASAJERO (aparece al elegir un servicio) -->
       <div id="metodo-pago-pasajero" class="metodo-pago-box oculto">
         <span class="metodo-pago-titulo">Método de pago</span>
@@ -960,6 +1055,7 @@
             <span class="perfil-rol" id="perfil-rol-badge">Pasajero</span>
           </div>
         </div>
+        <div id="perfil-gratuito" class="perfil-gratuito oculto"></div>
         <div id="perfil-datos" class="perfil-datos"></div>
         <div id="perfil-extra"></div>
         <div class="perfil-zona-acciones">
@@ -974,6 +1070,10 @@
           <button type="button" class="btn-mini oculto" id="btn-perfil-pagos">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M21 9h-5a3 3 0 0 0 0 6h5V9z"/></svg>
             Métodos de pago
+          </button>
+          <button type="button" class="btn-mini oculto" id="btn-perfil-beneficios" title="Editar los beneficios de tu vehículo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m9 11 2 2 4-4"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Beneficios
           </button>
           <button type="button" class="btn-mini oculto" id="btn-perfil-mascotas" title="Activar o desactivar los viajes con mascota">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="9.5" r="1.8"/><circle cx="9.5" cy="5.5" r="1.8"/><circle cx="14.5" cy="5.5" r="1.8"/><circle cx="18.5" cy="9.5" r="1.8"/><path d="M8 15.5c.8-2 2.3-3.2 4-3.2s3.2 1.2 4 3.2c.9 2.1-.2 4.2-2.3 4.2-.7 0-1.1-.3-1.7-.3s-1 .3-1.7.3c-2.1 0-3.2-2.1-2.3-4.2z"/></svg>
@@ -1159,6 +1259,28 @@
       <div class="modal-bikar-scroll" id="disponibles-lista" style="flex:1;min-height:0"></div>
     </div>
   </div>
+  <!-- BENEFICIOS DEL VEHÍCULO (conductor) -->
+  <div id="modal-beneficios" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="beneficios-titulo">
+    <div class="modal-bikar-dialog">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-modal-beneficios" aria-label="Cerrar">×</button>
+      <span class="modal-kicker">BIKAR · Conductor</span>
+      <h2 class="modal-titulo" id="beneficios-titulo">Beneficios de tu vehículo</h2>
+      <p class="modal-instrucciones">Marca <b>Sí</b> o <b>No</b> en cada beneficio. El pasajero los verá cuando aceptes su viaje.</p>
+      <div class="beneficios-form" id="beneficios-form"></div>
+      <button type="button" class="btn-main" id="guardar-beneficios" style="margin-top:14px">Guardar beneficios</button>
+    </div>
+  </div>
+
+  <!-- DETALLE DE UN INGRESO -->
+  <div id="modal-detalle-ingreso" class="modal-bikar oculto" role="dialog" aria-modal="true" aria-labelledby="detalle-ingreso-titulo">
+    <div class="modal-bikar-dialog">
+      <button type="button" class="modal-bikar-cerrar" id="cerrar-detalle-ingreso" aria-label="Cerrar">×</button>
+      <span class="modal-kicker">BIKAR · Conductor</span>
+      <h2 class="modal-titulo" id="detalle-ingreso-titulo">Detalle del ingreso</h2>
+      <div class="modal-bikar-scroll" id="detalle-ingreso-cuerpo"></div>
+    </div>
+  </div>
+
   <!-- VIDEO DE PRESENTACIÓN DEL SERVICIO (pantalla completa) -->
   <div id="modal-video-servicio" class="oculto" role="dialog" aria-modal="true" aria-label="Video del servicio BIKAR">
     <div class="video-servicio-caja">
@@ -1187,6 +1309,12 @@
       </select>
       <label class="envio-label" for="envio-detalle">Descripción y comentario</label>
       <textarea id="envio-detalle" class="envio-area" maxlength="240" placeholder="Ej: Sobre con documentos, cerrar bien la caja, llamar al llegar…"></textarea>
+      <label class="envio-label" for="envio-remitente">Remitente (quien envía)</label>
+      <input id="envio-remitente" class="envio-select" type="text" maxlength="60" placeholder="Nombre del remitente">
+      <input id="envio-remitente-tel" class="envio-select" type="tel" maxlength="20" placeholder="Teléfono del remitente">
+      <label class="envio-label" for="envio-destinatario">Destinatario (quien recibe)</label>
+      <input id="envio-destinatario" class="envio-select" type="text" maxlength="60" placeholder="Nombre de quien recibe">
+      <input id="envio-destinatario-tel" class="envio-select" type="tel" maxlength="20" placeholder="Teléfono de quien recibe">
       <div class="envio-alerta">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         <div class="envio-alerta-txt"><b>Responsabilidad y seguridad:</b> declaro que el paquete está cerrado y no contiene artículos prohibidos ni restringidos: drogas, armas, municiones, explosivos, materiales inflamables o corrosivos, dinero en efectivo, joyas, animales vivos, documentos de identidad originales ajenos ni ningún elemento que infrinja la ley. BIKAR puede rechazar o retener el envío si detecta contenido no permitido.</div>
@@ -1296,6 +1424,10 @@
     let aceptaMascotasConductor = false; // true si el vehículo del conductor está registrado como «Acepta mascotas»
     let aceptaEnviosConductor = false;   // true si el conductor acepta envíos (cualquier tipo de servicio)
     let envioSolicitud = null;           // datos del formulario de envío elegido por el pasajero
+    let paradasServicio = [];            // paradas adicionales de la solicitud (+20% cada una)
+    let beneficiosConductor = {};        // beneficios del vehículo (checklist)
+    let beneficiosConfigurado = false;   // el conductor ya respondió el checklist
+    let timerGratuito = null;            // contador regresivo del perfil
     let pagosPorOpcion = {};              // por opción de servicio: conductores activos que aceptan efectivo / billetera
     let metodoPagoSeleccionado = null;    // método elegido por el pasajero: 'efectivo' | 'billetera'
     let pagoConductor = { efectivo: true, billetera: false, nombre: '', numero: '', qr: '', configurado: false, columnas: false };
@@ -2613,6 +2745,7 @@
         sincronizarEstadoConductorDB();
         await resolverServicioDelConductor();
         await cargarPagoConductor();   // métodos de pago del conductor (si no los tiene, se le piden)
+        await cargarBeneficiosConductor();   // beneficios del vehículo (modal si aún no los marcó)
         servicioConductorListo = true;
         iniciarPushConductor(false);
         if (conductorActivo) {
@@ -2638,6 +2771,78 @@
       actualizarChipUsuario();
     }
     /* ============================ MENÚ DE PERFIL ============================ */
+    /* ============================ PERIODO DE GRATUIDAD ============================ */
+    function esConductorSesionActual() {
+      return String((usuarioActual || {}).tipo_usuario || '').toLowerCase() === 'conductor' || modoActual === 'conductor';
+    }
+    function fechaFinGratuito() {
+      const u = usuarioActual || {};
+      if (u.gratis_hasta) {
+        const d = new Date(u.gratis_hasta);
+        if (!isNaN(d)) return d;
+      }
+      const base = u.created_at ? new Date(u.created_at) : new Date();
+      const d = new Date(isNaN(base) ? Date.now() : base.getTime());
+      d.setMonth(d.getMonth() + 2);
+      return d;
+    }
+    function comisionConductorPorcentaje() {
+      const p = Number((usuarioActual || {}).comision_porcentaje);
+      return isNaN(p) || p <= 0 ? 10 : p;
+    }
+    function comisionDeViaje(v) {
+      const tarifa = Number((v && v.tarifa) || 0);
+      const enGracia = fechaFinGratuito().getTime() > Date.now();
+      const pct = enGracia ? 0 : comisionConductorPorcentaje();
+      const comision = Math.round(tarifa * pct) / 100;
+      return { tarifa, pct, comision, ganancia: Math.round((tarifa - comision) * 100) / 100, enGracia };
+    }
+    function renderizarContadorGratuito() {
+      const caja = $('perfil-gratuito');
+      if (!caja) return;
+      clearInterval(timerGratuito);
+      if (!esConductorSesionActual()) { caja.classList.add('oculto'); return; }
+      caja.classList.remove('oculto');
+
+      const fin = fechaFinGratuito();
+      const inicio = new Date(fin.getTime());
+      inicio.setMonth(inicio.getMonth() - 2);
+      const total = Math.max(1, fin.getTime() - inicio.getTime());
+      const icono = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+
+      const pintar = () => {
+        let ms = fin.getTime() - Date.now();
+        const vencido = ms <= 0;
+        if (vencido) ms = 0;
+        const dias = Math.floor(ms / 86400000);
+        const horas = Math.floor((ms % 86400000) / 3600000);
+        const minutos = Math.floor((ms % 3600000) / 60000);
+        const segundos = Math.floor((ms % 60000) / 1000);
+        const pct = Math.max(0, Math.min(100, ((total - ms) / total) * 100));
+        const dos = (n) => String(n).padStart(2, '0');
+        caja.classList.toggle('pg-gratis', !vencido);
+        caja.classList.toggle('pg-vencido', vencido);
+        caja.innerHTML =
+          '<div class="pg-cabecera">' +
+            '<span class="pg-titulo">' + icono + ' Periodo de gratuidad</span>' +
+            '<span class="pg-insignia">' + (vencido ? 'Finalizado' : 'Sin comisiones') + '</span>' +
+          '</div>' +
+          '<div class="pg-contador">' +
+            '<div class="pg-celda"><span class="pg-num">' + dias + '</span><span class="pg-lbl">Días</span></div>' +
+            '<div class="pg-celda"><span class="pg-num">' + dos(horas) + '</span><span class="pg-lbl">Horas</span></div>' +
+            '<div class="pg-celda"><span class="pg-num">' + dos(minutos) + '</span><span class="pg-lbl">Min</span></div>' +
+            '<div class="pg-celda"><span class="pg-num">' + dos(segundos) + '</span><span class="pg-lbl">Seg</span></div>' +
+          '</div>' +
+          '<div class="pg-barra"><span style="width:' + pct.toFixed(2) + '%"></span></div>' +
+          '<p class="pg-nota">' + (vencido
+            ? 'Tu periodo gratuito terminó. Se aplica la comisión de <b>' + comisionConductorPorcentaje() + '%</b> sobre cada viaje.'
+            : 'Te quedan <b>' + dias + ' días</b> sin comisiones. Después se aplicará la comisión de <b>' + comisionConductorPorcentaje() + '%</b>.') + '</p>';
+      };
+
+      pintar();
+      timerGratuito = setInterval(pintar, 1000);
+    }
+
     function actualizarChipUsuario() {
       btnCambiarModo.textContent = nombreUsuario(usuarioActual);
       btnCambiarModo.title = 'Sesión activa: ' + (usuarioActual && usuarioActual.tipo_usuario ? usuarioActual.tipo_usuario.toUpperCase() : 'BIKAR');
@@ -2786,9 +2991,11 @@
       }
       $('perfil-rol-badge').textContent = textoRol;
       const esCond = rol === 'conductor';
+      renderizarContadorGratuito();
       $('btn-perfil-vehiculo').classList.toggle('oculto', !esCond);
       $('btn-perfil-tema').classList.toggle('oculto', esCond);
       $('btn-perfil-pagos').classList.toggle('oculto', !esCond);
+      $('btn-perfil-beneficios').classList.toggle('oculto', !esCond);
       // Aceptar o no viajes con mascota (solo conductores de BIKAR TAXI)
       const botonMascotas = $('btn-perfil-mascotas');
       botonMascotas.classList.toggle('oculto', !(esCond && (claveServicioConductor === 'taxi_auto' || claveServicioConductor === 'auto_particular')));
@@ -2827,10 +3034,30 @@
         delete datosDoc.tipo_servicio;
         extra.appendChild(construirGrupo('Datos del vehículo', datosDoc));
       }
+      if (esCond) {
+        const activosBeneficios = BENEFICIOS_CATALOGO.filter(([k]) => beneficiosConductor[k] === true);
+        if (activosBeneficios.length) {
+          const tituloB = document.createElement('div');
+          tituloB.className = 'perfil-seccion-titulo';
+          tituloB.textContent = 'Beneficios del vehículo';
+          const chipsB = document.createElement('div');
+          chipsB.className = 'beneficios-chips';
+          chipsB.innerHTML = activosBeneficios
+            .map(([, nombre]) => '<span class="beneficio-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' + esc(nombre) + '</span>')
+            .join('');
+          extra.appendChild(tituloB);
+          extra.appendChild(chipsB);
+        }
+      }
       modalPerfil.classList.remove('oculto');
     }
-    $('cerrar-modal-perfil').addEventListener('click', () => modalPerfil.classList.add('oculto'));
-    modalPerfil.addEventListener('click', (e) => { if (e.target === modalPerfil) modalPerfil.classList.add('oculto'); });
+    function cerrarModalPerfil() {
+      clearInterval(timerGratuito);
+      timerGratuito = null;
+      modalPerfil.classList.add('oculto');
+    }
+    $('cerrar-modal-perfil').addEventListener('click', cerrarModalPerfil);
+    modalPerfil.addEventListener('click', (e) => { if (e.target === modalPerfil) cerrarModalPerfil(); });
     $('btn-perfil-historial').addEventListener('click', () => { modalPerfil.classList.add('oculto'); abrirModalHistorial(); });
     fotoHeader.addEventListener('error', () => { fotoHeader.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
     $('perfil-foto-grande').addEventListener('error', function () { this.src = avatarPorDefecto(nombreUsuario(usuarioActual)); });
@@ -2989,6 +3216,11 @@
               ' · #' + esc(v.id) + '</div><div class="pago-fila-sub">' + textoFecha(fechaDeViaje(v)) + ' · ' +
               esc(String(v.estado || 'solicitado')) + '</div></div>' +
               '<div class="pago-fila-valor">' + (con ? '+' : '-') + ' ' + formatoMoneda(valorViaje(v)) + '</div>';
+            fila.dataset.id = String(v.id);
+            if (con) {
+              fila.title = 'Ver detalle del ingreso';
+              fila.addEventListener('click', () => abrirDetalleIngreso(v));
+            }
             filas.appendChild(fila);
           });
           wrap.appendChild(filas);
@@ -3247,6 +3479,197 @@
     tabPagos.addEventListener('click', () => cambiarVista('pagos'));
     filtroPeriodo.addEventListener('change', renderizarHistorial);
     $('btn-descargar-historial').addEventListener('click', descargarHistorial);
+    /* ============================ CIUDAD / PEAJES ============================ */
+    function ciudadDe(detalle) {
+      const partes = String(detalle || '').split(',').map((x) => x.trim()).filter(Boolean);
+      return partes.length ? partes[partes.length - 1].toLowerCase() : '';
+    }
+    function esViajeFueraCiudad() {
+      const a = ciudadDe(origenDetalle);
+      const b = ciudadDe(destinoDetalle);
+      return !!a && !!b && a !== b;
+    }
+    function actualizarAvisoCiudad() {
+      const aviso = $('aviso-fuera-ciudad');
+      if (aviso) aviso.classList.toggle('visible', esViajeFueraCiudad());
+    }
+    /* ============================ PARADAS ADICIONALES ============================ */
+    function tarifaConParadas() {
+      const s = servicioSeleccionado;
+      if (!s) return 0;
+      const base = Number(s.tarifaBase || s.tarifa || 0);
+      const n = paradasServicio.filter((p) => String(p || '').trim()).length;
+      return Math.round(base * (1 + 0.20 * n));
+    }
+    function actualizarTotalParadas() {
+      const total = $('paradas-total');
+      if (!total) return;
+      const n = paradasServicio.filter((p) => String(p || '').trim()).length;
+      if (!n) { total.classList.remove('visible'); total.innerHTML = ''; return; }
+      const base = Number((servicioSeleccionado || {}).tarifaBase || 0);
+      const recargo = Math.round(base * 0.20 * n);
+      total.classList.add('visible');
+      total.innerHTML = n + ' parada' + (n > 1 ? 's' : '') + ' · Recargo <b>' + formatoMoneda(recargo) +
+        '</b> · Total <b>' + formatoMoneda(base + recargo) + '</b>';
+    }
+    function renderizarParadas() {
+      const box = $('paradas-box'), lista = $('paradas-lista');
+      if (!box || !lista) return;
+      box.classList.toggle('oculto', !servicioSeleccionado);
+      if (!servicioSeleccionado) { paradasServicio = []; return; }
+      lista.innerHTML = paradasServicio.map((p, i) =>
+        '<div class="parada-fila">' +
+          '<input type="text" maxlength="90" data-parada="' + i + '" value="' + esc(p) + '" placeholder="Dirección de la parada ' + (i + 1) + '">' +
+          '<button type="button" class="parada-quitar" data-quitar="' + i + '" aria-label="Quitar parada">✕</button>' +
+        '</div>').join('');
+      lista.querySelectorAll('[data-parada]').forEach((inp) => {
+        inp.addEventListener('input', () => {
+          paradasServicio[Number(inp.dataset.parada)] = inp.value;
+          actualizarTotalParadas();
+          actualizarBotonConfirmar();
+        });
+      });
+      lista.querySelectorAll('[data-quitar]').forEach((b) => {
+        b.addEventListener('click', () => {
+          paradasServicio.splice(Number(b.dataset.quitar), 1);
+          renderizarParadas();
+          actualizarBotonConfirmar();
+        });
+      });
+      actualizarTotalParadas();
+    }
+    $('btn-agregar-parada').addEventListener('click', () => {
+      if (!servicioSeleccionado) return;
+      if (paradasServicio.length >= 5) { mostrarToast('Puedes agregar hasta 5 paradas', '!'); return; }
+      paradasServicio.push('');
+      renderizarParadas();
+    });
+    /* ============================ BENEFICIOS DEL VEHÍCULO ============================ */
+    const BENEFICIOS_CATALOGO = [
+      ['aire', 'Aire acondicionado'],
+      ['musica', 'Música en el vehículo'],
+      ['pedir_musica', 'El pasajero puede pedir música'],
+      ['equipaje', 'Ayuda con el equipaje'],
+      ['cargador', 'Cargador para el celular'],
+      ['asientos', 'Asientos cómodos / amplios'],
+      ['silencio', 'Viaje en silencio, sin conversación'],
+      ['mascotas', 'Apto para llevar mascotas']
+    ];
+    function renderizarBeneficiosForm() {
+      const cont = $('beneficios-form');
+      if (!cont) return;
+      cont.innerHTML = BENEFICIOS_CATALOGO.map(([clave, nombre]) => {
+        const v = beneficiosConductor[clave];
+        return '<div class="beneficio-fila" data-beneficio="' + clave + '">' +
+          '<span class="beneficio-nombre">' + nombre + '</span>' +
+          '<span class="beneficio-opciones">' +
+            '<button type="button" class="btn-mini btn-beneficio' + (v === true ? ' activo' : '') + '" data-valor="si">Sí</button>' +
+            '<button type="button" class="btn-mini btn-beneficio' + (v === false ? ' activo' : '') + '" data-valor="no">No</button>' +
+          '</span></div>';
+      }).join('');
+      cont.querySelectorAll('[data-valor]').forEach((b) => {
+        b.addEventListener('click', () => {
+          const fila = b.closest('.beneficio-fila');
+          const clave = fila.dataset.beneficio;
+          beneficiosConductor[clave] = b.dataset.valor === 'si';
+          fila.querySelectorAll('[data-valor]').forEach((x) => x.classList.toggle('activo', x === b));
+        });
+      });
+    }
+    function abrirModalBeneficios(obligatorio) {
+      renderizarBeneficiosForm();
+      const cerrar = $('cerrar-modal-beneficios');
+      if (cerrar) cerrar.classList.toggle('oculto', !!obligatorio);
+      $('modal-beneficios').classList.remove('oculto');
+    }
+    async function cargarBeneficiosConductor() {
+      if (!esConductorSesionActual() || !usuarioActual) return;
+      try {
+        const u = usuarioActual;
+        const cid = await resolverConductorId(u);
+        const veh = cid != null ? masReciente(await consultarFilas('vehiculos', '*', 'conductor_id', cid)) : null;
+        const doc = u.id != null ? masReciente(await consultarFilas('documentos_conductor', '*', 'usuario_id', u.id)) : null;
+        const fila = await filaUsuarioPorId(u);
+        let fuente = (veh && veh.beneficios) || (doc && doc.beneficios) || (fila && fila.beneficios) || u.beneficios || {};
+        if (typeof fuente === 'string') { try { fuente = JSON.parse(fuente); } catch (e) { fuente = {}; } }
+        beneficiosConductor = (fuente && typeof fuente === 'object') ? Object.assign({}, fuente) : {};
+        beneficiosConfigurado = !!(fila && fila.beneficios_configurado) || Object.keys(beneficiosConductor).length > 0;
+        if (!beneficiosConfigurado) setTimeout(() => abrirModalBeneficios(true), 1200);
+      } catch (e) { console.warn('Beneficios:', e); }
+    }
+    async function guardarBeneficios() {
+      if (!usuarioActual) return;
+      const boton = $('guardar-beneficios');
+      boton.disabled = true; boton.textContent = 'Guardando…';
+      const u = usuarioActual;
+      const datos = Object.assign({}, beneficiosConductor);
+      const errores = [];
+      try {
+        const cid = await resolverConductorId(u);
+        const tareas = [];
+        if (u.id != null) tareas.push(db.from('usuarios').update({ beneficios: datos, beneficios_configurado: true }).eq('id', u.id));
+        if (cid != null) tareas.push(db.from('vehiculos').update({ beneficios: datos }).eq('conductor_id', cid));
+        if (u.id != null) tareas.push(db.from('documentos_conductor').update({ beneficios: datos }).eq('usuario_id', u.id));
+        (await Promise.all(tareas)).forEach((r) => { if (r && r.error) errores.push(r.error.message); });
+      } catch (e) { errores.push(e && e.message); }
+      boton.disabled = false; boton.textContent = 'Guardar beneficios';
+      if (errores.length) { mostrarToast('No se pudo guardar: ' + errores[0], '!'); return; }
+      beneficiosConfigurado = true;
+      usuarioActual.beneficios = datos;
+      guardarSesion();
+      $('modal-beneficios').classList.add('oculto');
+      mostrarToast('Beneficios actualizados', '✓');
+      if (abierto(modalPerfil)) abrirModalPerfil();
+    }
+    $('guardar-beneficios').addEventListener('click', guardarBeneficios);
+    $('cerrar-modal-beneficios').addEventListener('click', () => {
+      if (!beneficiosConfigurado) { mostrarToast('Marca tus beneficios para continuar', '!'); return; }
+      $('modal-beneficios').classList.add('oculto');
+    });
+    $('btn-perfil-beneficios').addEventListener('click', () => {
+      modalPerfil.classList.add('oculto');
+      abrirModalBeneficios(false);
+    });
+    /* ============================ DETALLE DE UN INGRESO ============================ */
+    function abrirDetalleIngreso(v) {
+      const c = comisionDeViaje(v);
+      const paradas = Array.isArray(v.paradas) ? v.paradas : [];
+      const metodo = metodoPagoDeViaje(v);
+      const fecha = fechaDeViaje(v);
+      const dos = (n) => String(n).padStart(2, '0');
+      const filas = [
+        ['Tarifa base del servicio', formatoMoneda(v.tarifa_base || c.tarifa)],
+        ['Recargo por paradas (' + (v.paradas_total || paradas.length || 0) + ')', formatoMoneda(v.recargo_paradas || 0)],
+        ['Tarifa total cobrada', formatoMoneda(c.tarifa)],
+        ['Comisión BIKAR (' + c.pct + '%)', c.enGracia ? 'Sin comisión' : '- ' + formatoMoneda(c.comision)],
+        ['Ganancia del conductor', formatoMoneda(c.ganancia)]
+      ];
+      $('detalle-ingreso-titulo').textContent = 'Ingreso #' + (v.id != null ? v.id : '—');
+      $('detalle-ingreso-cuerpo').innerHTML =
+        '<div class="modal-kicker">' + esc(String(v.nombre_servicio || v.tipo_servicio || 'Servicio')) + '</div>' +
+        '<p class="modal-instrucciones" style="margin:0 0 10px">' +
+          (fecha ? fecha.toLocaleDateString('es-CO', { day:'2-digit', month:'long', year:'numeric' }) + ' · ' + dos(fecha.getHours()) + ':' + dos(fecha.getMinutes()) : 'Sin fecha') +
+          (metodo ? ' · ' + (metodo === 'billetera' ? 'Billetera digital' : 'Efectivo') : '') +
+          ' · ' + esc(String(v.estado || 'solicitado')) +
+        '</p>' +
+        '<div class="di-ruta">' +
+          '<div class="di-punto"><span class="di-letra">A</span><div class="di-txt">' + esc(v.origen_nombre || 'Origen') + '<small>Punto de recogida</small></div></div>' +
+          paradas.map((p, i) => '<div class="di-punto parada"><span class="di-letra">' + (i + 1) + '</span><div class="di-txt">' + esc(p.nombre || p.direccion || p) + '<small>Parada adicional</small></div></div>').join('') +
+          '<div class="di-punto"><span class="di-letra">B</span><div class="di-txt">' + esc(v.destino_nombre || 'Destino') + '<small>Punto de entrega</small></div></div>' +
+        '</div>' +
+        '<div class="di-tabla">' +
+          filas.map(([k, val], i) =>
+            '<div class="di-linea' + (i === 2 ? ' total' : '') + (i === 3 && c.enGracia ? ' descuento' : '') + '"><span>' + k + '</span><b>' + val + '</b></div>').join('') +
+          '<div class="di-linea total"><span>Ganancia neta</span><b>' + formatoMoneda(c.ganancia) + '</b></div>' +
+        '</div>' +
+        '<p class="pago-nota" style="margin-top:10px">' + (c.enGracia
+          ? 'Disfrutas de tu <b>periodo de gratuidad</b>: BIKAR no descuenta comisión en este viaje.'
+          : 'La comisión se calcula sobre la tarifa total del viaje.') + '</p>';
+      $('modal-detalle-ingreso').classList.remove('oculto');
+    }
+    $('cerrar-detalle-ingreso').addEventListener('click', () => $('modal-detalle-ingreso').classList.add('oculto'));
+    $('modal-detalle-ingreso').addEventListener('click', (e) => { if (e.target === $('modal-detalle-ingreso')) $('modal-detalle-ingreso').classList.add('oculto'); });
+
     /* ============================ SERVICIO DEL CONDUCTOR ============================ */
     async function resolverServicioDelConductor() {
       claveServicioConductor = null;
@@ -3290,6 +3713,9 @@
       panelServicios.classList.add('visible');
       panelServicios.setAttribute('aria-hidden', 'false');
       backdrop.classList.add('visible');
+      actualizarAvisoCiudad();
+      paradasServicio = [];
+      renderizarParadas();
       await cargarServiciosDisponibles();
     }
     function cerrarPanelServicios() {
@@ -3302,6 +3728,10 @@
       servicioSeleccionado = null;
       envioSolicitud = null;
       cerrarFormularioEnvio();
+      paradasServicio = [];
+      renderizarParadas();
+      const cajaParadas = $('paradas-box');
+      if (cajaParadas) cajaParadas.classList.add('oculto');
       btnConfirmarServicio.disabled = true;
       btnConfirmarServicio.textContent = 'Selecciona un servicio';
       metodoPagoSeleccionado = null;
@@ -3478,7 +3908,9 @@
         card.addEventListener('click', () => {
           serviciosLista.querySelectorAll('.servicio-card').forEach(c => c.classList.remove('seleccionado'));
           card.classList.add('seleccionado');
-          servicioSeleccionado = Object.assign({}, s, { tarifa });
+          servicioSeleccionado = Object.assign({}, s, { tarifa, tarifaBase: tarifa });
+          paradasServicio = [];
+          renderizarParadas();
           mostrarMetodosPago(s.opcion);
           if (s.esEnvio || normalizarClaveServicio(s.clave) === 'moto_delivery') {
             envioSolicitud = null;
@@ -3502,13 +3934,23 @@
         btnConfirmarServicio.textContent = 'Completa los datos del envío';
         return;
       }
+      const incompletas = paradasServicio.filter((p) => !String(p || '').trim()).length;
+      if (incompletas) {
+        btnConfirmarServicio.disabled = true;
+        btnConfirmarServicio.textContent = 'Completa la dirección de la parada';
+        return;
+      }
       btnConfirmarServicio.disabled = false;
-      btnConfirmarServicio.textContent = 'Confirmar ' + s.etiqueta + ' · ' + formatoMoneda(s.tarifa);
+      btnConfirmarServicio.textContent = 'Confirmar ' + s.etiqueta + ' · ' + formatoMoneda(tarifaConParadas());
     }
     /* ---- FORMULARIO DE ENVÍO (seguridad y responsabilidad) ---- */
     function abrirFormularioEnvio() {
       $('envio-categoria').value = '';
       $('envio-detalle').value = '';
+      $('envio-remitente').value = '';
+      $('envio-remitente-tel').value = '';
+      $('envio-destinatario').value = '';
+      $('envio-destinatario-tel').value = '';
       $('envio-acepto').checked = false;
       $('envio-error').classList.remove('visible');
       $('modal-envio-form').classList.remove('oculto');
@@ -3529,14 +3971,25 @@
       const categoria = $('envio-categoria').value;
       const detalle = $('envio-detalle').value.trim();
       const acepto = $('envio-acepto').checked;
-      if (!categoria || !detalle || !acepto) {
-        $('envio-error').classList.add('visible');
-        if (!categoria) $('envio-categoria').focus();
-        else if (!detalle) $('envio-detalle').focus();
-        return;
-      }
-      envioSolicitud = { categoria, detalle, aceptado: true };
-      $('envio-error').classList.remove('visible');
+      const remitente = $('envio-remitente').value.trim();
+      const remitenteTel = $('envio-remitente-tel').value.trim();
+      const destinatario = $('envio-destinatario').value.trim();
+      const destinatarioTel = $('envio-destinatario-tel').value.trim();
+      const error = $('envio-error');
+      const marcar = (texto, campo) => {
+        error.textContent = texto;
+        error.classList.add('visible');
+        if (campo) campo.focus();
+      };
+      if (!categoria) return marcar('Selecciona qué vas a enviar.', $('envio-categoria'));
+      if (!detalle) return marcar('Describe el contenido del envío.', $('envio-detalle'));
+      if (!remitente) return marcar('Escribe el nombre del remitente.', $('envio-remitente'));
+      if (!/^[0-9+\-\s]{7,20}$/.test(remitenteTel)) return marcar('Escribe un teléfono válido del remitente.', $('envio-remitente-tel'));
+      if (!destinatario) return marcar('Escribe el nombre del destinatario.', $('envio-destinatario'));
+      if (!/^[0-9+\-\s]{7,20}$/.test(destinatarioTel)) return marcar('Escribe un teléfono válido del destinatario.', $('envio-destinatario-tel'));
+      if (!acepto) return marcar('Debes aceptar la responsabilidad y las normas del envío.', $('envio-acepto'));
+      envioSolicitud = { categoria, detalle, aceptado: true, remitente, remitenteTel, destinatario, destinatarioTel };
+      error.classList.remove('visible');
       cerrarFormularioEnvio();
       mostrarToast('Datos del envío guardados');
       actualizarBotonConfirmar();
@@ -3584,7 +4037,18 @@
       if (promesaPushPasajero) {
         try { await Promise.race([promesaPushPasajero, new Promise((r) => setTimeout(r, 6000))]); } catch (e) {}
       }
-      await solicitarViaje(Object.assign({}, servicioSeleccionado, { metodoPago: metodoPagoSeleccionado }));
+      const paradasLimpias = paradasServicio
+        .map((p, i) => ({ orden: i + 1, nombre: String(p || '').trim() }))
+        .filter((p) => p.nombre);
+      const base = Number(servicioSeleccionado.tarifaBase || servicioSeleccionado.tarifa || 0);
+      await solicitarViaje(Object.assign({}, servicioSeleccionado, {
+        metodoPago: metodoPagoSeleccionado,
+        tarifa: tarifaConParadas(),
+        tarifaBase: base,
+        paradas: paradasLimpias,
+        paradasTotal: paradasLimpias.length,
+        recargoParadas: Math.round(base * 0.20 * paradasLimpias.length)
+      }));
     });
     /* ============================ SOLICITAR VIAJE ============================ */
     async function solicitarViaje(servicio) {
@@ -3603,20 +4067,31 @@
       };
       if (servicio.conMascota) registro.con_mascota = true;
       if (servicio.metodoPago) registro.metodo_pago = servicio.metodoPago;   // 'efectivo' | 'billetera'
+      registro.tarifa_base = Number(servicio.tarifaBase || servicio.tarifa || 0);
+      registro.paradas = Array.isArray(servicio.paradas) ? servicio.paradas : [];
+      registro.paradas_total = Number(servicio.paradasTotal || 0);
+      registro.recargo_paradas = Number(servicio.recargoParadas || 0);
+      registro.fuera_ciudad = esViajeFueraCiudad();
+      registro.aviso_peaje = registro.fuera_ciudad;
+      registro.origen_ciudad = ciudadDe(origenDetalle) || null;
+      registro.destino_ciudad = ciudadDe(destinoDetalle) || null;
       const esEnvio = servicio.esEnvio || normalizarClaveServicio(servicio.clave) === 'moto_delivery';
       if (esEnvio && envioSolicitud) {
         registro.categoria_envio = envioSolicitud.categoria;
         registro.detalle_envio = envioSolicitud.detalle;
         registro.envio_prohibidos_aceptado = true;
+        registro.remitente_nombre = envioSolicitud.remitente;
+        registro.remitente_telefono = envioSolicitud.remitenteTel;
+        registro.destinatario_nombre = envioSolicitud.destinatario;
+        registro.destinatario_telefono = envioSolicitud.destinatarioTel;
       }
       let { data, error } = await db.from('viajes').insert([registro]).select();
       // Si aún no se ejecutó el SQL de mascotas, envíos o métodos de pago, el viaje se guarda igual sin esas columnas
-      if (error && /con_mascota|metodo_pago|categoria_envio|detalle_envio|envio_prohibidos/i.test(String(error.message || ''))) {
-        delete registro.con_mascota;
-        delete registro.metodo_pago;
-        delete registro.categoria_envio;
-        delete registro.detalle_envio;
-        delete registro.envio_prohibidos_aceptado;
+      if (error && /con_mascota|metodo_pago|categoria_envio|detalle_envio|envio_prohibidos|paradas|recargo_paradas|tarifa_base|fuera_ciudad|aviso_peaje|origen_ciudad|destino_ciudad|remitente|destinatario/i.test(String(error.message || ''))) {
+        ['con_mascota','metodo_pago','categoria_envio','detalle_envio','envio_prohibidos_aceptado',
+         'paradas','paradas_total','recargo_paradas','tarifa_base','fuera_ciudad','aviso_peaje',
+         'origen_ciudad','destino_ciudad','remitente_nombre','remitente_telefono',
+         'destinatario_nombre','destinatario_telefono'].forEach((k) => { delete registro[k]; });
         ({ data, error } = await db.from('viajes').insert([registro]).select());
       }
       if (error) {
@@ -3797,6 +4272,22 @@
           '<div class="viaje-punto"><span class="viaje-punto-dot destino">B</span><div class="viaje-punto-text">' +
             esc(viaje.destino_nombre || 'Destino') + '<span class="viaje-punto-sub">Punto de entrega</span></div></div>' +
         '</div>' +
+        (function () {
+          let ps = viaje.paradas;
+          if (typeof ps === 'string') { try { ps = JSON.parse(ps); } catch (e) { ps = []; } }
+          if (!Array.isArray(ps) || !ps.length) return '';
+          return ps.map((p, i) => {
+            const n = (p && (p.nombre || p.direccion)) || String(p || '');
+            if (!n) return '';
+            return '<div class="parada-viaje-linea"><span class="pnum">' + (i + 1) + '</span><div class="ptxt">' +
+              esc(n) + '<small>Parada adicional</small></div></div>';
+          }).join('');
+        })() +
+        ((viaje.fuera_ciudad === true || viaje.aviso_peaje === true)
+          ? '<div class="parada-viaje-linea" style="background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.5)">' +
+              '<span class="pnum" style="background:#f59e0b">!</span>' +
+              '<div class="ptxt">Viaje fuera de la ciudad<small>Los peajes los asume el pasajero</small></div></div>'
+          : '') +
         '<div class="viaje-metricas">' +
           '<div class="viaje-metrica-item">' + SVG_DISTANCIA +
             '<div><span>' + (distNum ? distNum.toFixed(1) + ' km' : 'Distancia N/D') + '</span><span class="viaje-metrica-sub">Distancia total</span></div>' +
