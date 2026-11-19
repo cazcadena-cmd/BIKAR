@@ -1216,7 +1216,7 @@
        1) Genera las llaves con:  npx web-push generate-vapid-keys
        2) Pega aquí SOLO la llave PÚBLICA (la privada va en los secretos de Supabase) */
     const URL_SW = "sw.js";
-    const VAPID_PUBLIC_KEY = "BJr14xMvK4KAmPifUS1Z3Mmy1ZyDnELwfdhE1YzGZxM85gjbHGDNrs0xy12tBWxAfXJUSwRyjSwMEPI5GsyP-24";
+    const VAPID_PUBLIC_KEY = "BGDFHKQ8ZiiHOiWJk47Rw2fFAxjQLayhIowsYPNSb7eAEc85eR78o5AAjiYDoVTWSAP-Q-Ev5kFpembTpP_YObg";
     const K_SESION = "bikar_usuario";
     const K_DOC = "bikar_documentacion_vehiculo";
     const K_TEMA = "bikar_theme_pref";
@@ -1272,6 +1272,11 @@
     function formatoMoneda(v) {
       const n = Math.round(Number(v || 0));
       return '$ ' + n.toLocaleString('es-CO');
+    }
+    /* Tarifa de la opción «Envío»: 20% menos que la tarifa normal del servicio */
+    function tarifaEnvio(s) {
+      const normal = tarifaDe(s);
+      return Math.max(100, Math.round((normal * 0.80) / 100) * 100);
     }
     /* ============================ ESTADO ============================ */
     let modoActual = 'pasajero', origen = null, destino = null;
@@ -2784,7 +2789,7 @@
       $('btn-perfil-pagos').classList.toggle('oculto', !esCond);
       // Aceptar o no viajes con mascota (solo conductores de BIKAR TAXI)
       const botonMascotas = $('btn-perfil-mascotas');
-      botonMascotas.classList.toggle('oculto', !(esCond && claveServicioConductor === 'taxi_auto'));
+      botonMascotas.classList.toggle('oculto', !esCond);
       botonMascotas.classList.toggle('mascotas-no', !aceptaMascotasConductor);
       $('txt-perfil-mascotas').textContent = 'Acepta mascotas: ' + (aceptaMascotasConductor ? 'Sí' : 'No');
       // Aceptar envíos: disponible para TODOS los tipos de servicio del conductor
@@ -3103,7 +3108,7 @@
         const cancelado = (v) => /cancel|rechaz|anul/.test(String(v.estado || '').toLowerCase());
         const finalizado = (v) => /finaliz|complet|termin|conclu/.test(String(v.estado || '').toLowerCase());
         const valor = (v) => cancelado(v) ? 0 : Number(v.tarifa || 0);
-        const nombreServicio = (v) => ((viajeDeSeisPasajeros(v) || viajeConMascota(v)) ? v.nombre_servicio : v.tipo_servicio) || v.nombre_servicio || 'Servicio';
+        const nombreServicio = (v) => ((viajeDeSeisPasajeros(v) || viajeConMascota(v) || envioDeViaje(v)) ? v.nombre_servicio : v.tipo_servicio) || v.nombre_servicio || 'Servicio';
         const total = lista.reduce((a, v) => a + valor(v), 0);
         const nValidos = lista.filter((v) => !cancelado(v)).length;
         const nCancelados = lista.length - nValidos;
@@ -3293,6 +3298,8 @@
       panelServicios.setAttribute('aria-hidden', 'true');
       setTimeout(() => panelServicios.classList.remove('cerrando'), 420);
       servicioSeleccionado = null;
+      envioSolicitud = null;
+      cerrarFormularioEnvio();
       btnConfirmarServicio.disabled = true;
       btnConfirmarServicio.textContent = 'Selecciona un servicio';
       metodoPagoSeleccionado = null;
@@ -3391,16 +3398,18 @@
           const pago = metodosPagoDe(filaCondUsuario.get(String(u.id)));
           conteo[opcion] = (conteo[opcion] || 0) + 1;
           sumarPagoOpcion(opcion, pago);
-          // BIKAR TAXI con mascota: conductores de taxi (no de 6 pasajeros) que aceptan mascotas
           const fuentesPago = [filaVehCond.get(String(cid)), filaDocUsuario.get(String(u.id)), filaDocCond.get(String(cid)), filaCondUsuario.get(String(u.id)), u];
-          if (clave === 'taxi_auto' && capacidad !== 6 && aceptaMascotasDe.apply(null, fuentesPago)) {
-            conteo[OPCION_MASCOTA] = (conteo[OPCION_MASCOTA] || 0) + 1;
-            sumarPagoOpcion(OPCION_MASCOTA, pago);
+          // BIKAR PET: cualquier conductor (de cualquier servicio) que acepte mascotas
+          if (aceptaMascotasDe.apply(null, fuentesPago)) {
+            const opcionMascota = clave + '_mascota';
+            conteo[opcionMascota] = (conteo[opcionMascota] || 0) + 1;
+            sumarPagoOpcion(opcionMascota, pago);
           }
           // ENVÍOS: cualquier conductor activo que tenga activada la opción de aceptar envíos
           if (aceptaEnviosDe.apply(null, fuentesPago)) {
-            conteo[OPCION_ENVIOS] = (conteo[OPCION_ENVIOS] || 0) + 1;
-            sumarPagoOpcion(OPCION_ENVIOS, pago);
+            const opcionEnvio = clave + '_envio';
+            conteo[opcionEnvio] = (conteo[opcionEnvio] || 0) + 1;
+            sumarPagoOpcion(opcionEnvio, pago);
           }
         }
       });
@@ -3412,11 +3421,20 @@
       const disponibles = [];
       CATALOGO.forEach((s) => {
         if (conteoActivos[s.clave] > 0) disponibles.push(Object.assign({}, s, { opcion:s.clave }));
-        // BIKAR TAXI · Con mascota (aparece justo debajo de BIKAR TAXI cuando hay conductores que aceptan mascotas)
-        if (s.clave === 'taxi_auto' && conteoActivos[OPCION_MASCOTA] > 0) {
+        // BIKAR PET · «Con mascota»: para cualquier servicio cuyos conductores acepten mascotas (+10%)
+        const opcionMascota = s.clave + '_mascota';
+        if (s.clave !== 'moto_delivery' && conteoActivos[opcionMascota] > 0) {
           disponibles.push(Object.assign({}, s, {
-            opcion:OPCION_MASCOTA, conMascota:true, etiqueta:s.etiqueta + ' · Con mascota',
+            opcion:opcionMascota, conMascota:true, etiqueta:s.etiqueta + ' · Con mascota',
             desc:'🐾 Viaja con tu mascota · Incluye 10% adicional'
+          }));
+        }
+        // ENVÍO · para cualquier servicio cuyos conductores acepten envíos (20% menos de la tarifa normal)
+        const opcionEnvio = s.clave + '_envio';
+        if (s.clave !== 'moto_delivery' && conteoActivos[opcionEnvio] > 0) {
+          disponibles.push(Object.assign({}, s, {
+            opcion:opcionEnvio, esEnvio:true, etiqueta:s.etiqueta + ' · Envío',
+            desc:'📦 Envía un paquete · 20% menos de la tarifa normal'
           }));
         }
         const opcionSeis = claveOpcionServicio(s.clave, 6);
@@ -3424,13 +3442,6 @@
           disponibles.push(Object.assign({}, s, {
             opcion:opcionSeis, capacidadPasajeros:6, etiqueta:s.etiqueta + ' · 6 pasajeros',
             desc:'Vehículo para 6 pasajeros · Incluye 30% adicional'
-          }));
-        }
-        // ENVÍOS: aparece cuando hay conductores activos (de cualquier servicio) que aceptan envíos
-        if (s.clave === 'moto_delivery' && conteoActivos[OPCION_ENVIOS] > 0 && !(conteoActivos[s.clave] > 0)) {
-          disponibles.push(Object.assign({}, s, {
-            opcion:OPCION_ENVIOS, esEnvio:true, etiqueta:'BIKAR ENVÍOS',
-            desc:'Conductores que aceptan envíos · paquetes, comida y documentos'
           }));
         }
       });
@@ -3445,7 +3456,7 @@
         return;
       }
       disponibles.forEach((s) => {
-        const tarifa = tarifaDe(s);
+        const tarifa = s.esEnvio ? tarifaEnvio(s) : tarifaDe(s);
         const n = conteoActivos[s.opcion];
         const textoConductores = '● ' + n + ' conductor' + (n > 1 ? 'es' : '') + ' activo' + (n > 1 ? 's' : '');
         const card = document.createElement('button');
@@ -3453,7 +3464,7 @@
         card.className = 'servicio-card';
         card.dataset.clave = s.opcion;
         card.innerHTML =
-          '<div class="servicio-icono">' + iconoServicio(s.conMascota ? 'mascota' : s.clave) + '</div>' +
+          '<div class="servicio-icono">' + iconoServicio(s.esEnvio ? 'encomienda' : (s.conMascota ? 'mascota' : s.clave)) + '</div>' +
           '<div class="servicio-info"><div class="servicio-nombre">' + esc(s.etiqueta) + '</div>' +
           '<div class="servicio-desc">' + esc(s.desc) + '</div><div>' +
           '<span class="servicio-tiempo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ' +
@@ -3767,7 +3778,7 @@
       card.innerHTML =
         '<div class="viaje-header">' +
           '<div class="viaje-header-izq">' +
-            '<span class="viaje-tipo-badge">' + iconoServicio(viajeConMascota(viaje) ? 'mascota' : clave) + ' ' + esc(((viajeDeSeisPasajeros(viaje) || viajeConMascota(viaje)) ? viaje.nombre_servicio : viaje.tipo_servicio) || 'Servicio') + '</span>' +
+            '<span class="viaje-tipo-badge">' + iconoServicio(viajeConMascota(viaje) ? 'mascota' : (envioDeViaje(viaje) ? 'encomienda' : clave)) + ' ' + esc(((viajeDeSeisPasajeros(viaje) || viajeConMascota(viaje) || envioDeViaje(viaje)) ? viaje.nombre_servicio : viaje.tipo_servicio) || 'Servicio') + '</span>' +
             (esNuevo ? '<span class="viaje-nuevo-chip">NUEVO</span>' : '') +
             (metodoPagoDeViaje(viaje) ? '<span class="viaje-pago-chip">' + ETIQUETA_PAGO[metodoPagoDeViaje(viaje)] + '</span>' : '') +
           '</div>' +
@@ -4286,7 +4297,7 @@
           return card;
         }
         const clave = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) || 'default';
-        const etiqueta = ((viajeDeSeisPasajeros(v) || viajeConMascota(v)) ? v.nombre_servicio : v.tipo_servicio) || 'Servicio';
+        const etiqueta = ((viajeDeSeisPasajeros(v) || viajeConMascota(v) || envioDeViaje(v)) ? v.nombre_servicio : v.tipo_servicio) || 'Servicio';
         const pago = metodoPagoDeViaje(v);
         card.innerHTML =
           '<div class="disp-top"><span class="disp-servicio">' + iconoServicio(viajeConMascota(v) ? 'mascota' : clave) + esc(etiqueta) + '</span>' +
