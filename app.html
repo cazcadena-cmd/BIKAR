@@ -707,6 +707,74 @@
     .disp-pill.cancelado{color:#d68b1f;border-color:rgba(214,139,31,.45);background:rgba(214,139,31,.12)}
     /* Perfil del conductor: aceptar o no viajes con mascota */
     .btn-mini.mascotas-no{color:var(--muted-text);background:var(--field-bg);border-color:var(--field-border)}
+    /* ============================================================
+       BIKAR · VIDEO DE PRESENTACIÓN DEL SERVICIO (pantalla completa)
+       ============================================================ */
+    #modal-video-servicio{position:fixed;inset:0;z-index:9600;display:flex;align-items:center;justify-content:center;background:rgba(6,12,18,.94);
+      -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);padding:0;animation:videoFade .32s ease both}
+    #modal-video-servicio.oculto{display:none!important}
+    #modal-video-servicio .video-servicio-caja{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+      animation:videoZoom .42s cubic-bezier(.2,.8,.2,1) both;overflow:hidden}
+    #modal-video-servicio video{width:100%;height:100%;object-fit:contain;background:#000;display:block}
+    .video-servicio-titulo{position:absolute;top:calc(18px + env(safe-area-inset-top));left:16px;right:70px;z-index:3;color:#fff;
+      font-size:1rem;font-weight:800;letter-spacing:.03em;text-shadow:0 2px 14px rgba(0,0,0,.85);display:inline-flex;align-items:center;gap:9px}
+    .video-servicio-titulo .vs-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;
+      background:rgba(71,133,168,.92);color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+    .video-servicio-cerrar{position:absolute;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:4;width:46px;height:46px;border-radius:50%;
+      border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:#fff;font-size:20px;line-height:1;cursor:pointer;
+      display:grid;place-items:center;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:transform .2s,background .2s}
+    .video-servicio-cerrar:hover{background:rgba(255,255,255,.26);transform:rotate(90deg)}
+    .video-servicio-pie{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:26px 20px calc(20px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,transparent,rgba(0,0,0,.82));color:#fff;text-align:center}
+    .video-servicio-pie b{display:block;font-size:1.02rem;font-weight:800;margin-bottom:4px}
+    .video-servicio-pie span{font-size:.78rem;line-height:1.45;color:rgba(255,255,255,.85)}
+    .video-servicio-pie .vs-fit{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-size:.66rem;font-weight:800;letter-spacing:.14em;
+      text-transform:uppercase;color:#4785A8}
+    @keyframes videoFade{from{opacity:0}to{opacity:1}}
+    @keyframes videoZoom{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+    /* ============================================================
+       BIKAR · FORMULARIO DE ENVÍO (seguridad y responsabilidad)
+       ============================================================ */
+    #modal-envio-form{position:fixed;inset:0;z-index:7200;display:flex;align-items:flex-end;justify-content:center;padding:16px;
+      background:rgba(8,22,34,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:fadeIn .22s ease both}
+    #modal-envio-form.oculto{display:none!important}
+    @media (min-width:600px){#modal-envio-form{align-items:center}}
+    .envio-dialog{position:relative;width:100%;max-width:420px;max-height:92vh;overflow-y:auto;background:var(--glass-bg-strong);
+      border:1px solid var(--glass-border);border-radius:22px;padding:18px 16px 16px;color:var(--text-color);
+      box-shadow:0 24px 60px rgba(0,0,0,.45);animation:slideUp .34s cubic-bezier(.2,.9,.3,1.2) both;scrollbar-width:thin}
+    .envio-cerrar{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;border:1px solid var(--field-border);
+      background:var(--field-bg);color:var(--muted-text);cursor:pointer;font-size:15px;display:grid;place-items:center}
+    .envio-cerrar:hover{color:var(--primary-color);border-color:var(--primary-color)}
+    .envio-kicker{display:block;font-size:.58rem;font-weight:800;letter-spacing:.24em;text-transform:uppercase;color:var(--primary-color);margin-bottom:3px}
+    .envio-titulo{font-size:1.02rem;font-weight:800;margin-bottom:3px;padding-right:34px}
+    .envio-sub{font-size:.72rem;color:var(--muted-text);line-height:1.4;margin-bottom:12px}
+    .envio-label{display:block;font-size:.68rem;font-weight:800;color:var(--primary-color);margin:0 0 5px 2px}
+    .envio-select,.envio-area{width:100%;border-radius:12px;border:1px solid var(--field-border);background:var(--field-bg);
+      color:var(--text-color);font-size:.82rem;padding:11px 12px;outline:none;margin-bottom:11px}
+    .envio-select:focus,.envio-area:focus{border-color:var(--primary-color)}
+    .envio-area{resize:vertical;min-height:66px;font-family:inherit}
+    .envio-alerta{display:flex;gap:9px;padding:10px 11px;border-radius:12px;background:rgba(245,158,11,.12);
+      border:1px solid rgba(245,158,11,.4);margin-bottom:11px}
+    .envio-alerta svg{flex-shrink:0;width:17px;height:17px;color:#f59e0b;margin-top:1px}
+    .envio-alerta-txt{font-size:.68rem;line-height:1.45;color:var(--text-color)}
+    .envio-alerta-txt b{color:#f59e0b}
+    .envio-check{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border-radius:12px;background:rgba(71,133,168,.08);
+      border:1px solid rgba(71,133,168,.28);cursor:pointer;margin-bottom:12px;user-select:none}
+    .envio-check input{position:absolute;opacity:0;width:0;height:0}
+    .envio-check .ec-box{width:21px;height:21px;flex-shrink:0;border-radius:6px;border:2px solid var(--primary-color);display:grid;place-items:center;
+      background:var(--field-bg);transition:all .2s;margin-top:1px}
+    .envio-check .ec-box svg{width:13px;height:13px;stroke:#fff;stroke-width:3;fill:none;opacity:0;transform:scale(.5);transition:all .2s}
+    .envio-check input:checked + .ec-box{background:#4785A8;border-color:#4785A8}
+    .envio-check input:checked + .ec-box svg{opacity:1;transform:scale(1)}
+    .envio-check span.ec-txt{font-size:.7rem;line-height:1.42;font-weight:600}
+    .envio-error{font-size:.7rem;color:#e74c3c;font-weight:700;margin:-4px 0 8px;display:none}
+    .envio-error.visible{display:block}
+    @keyframes slideUp{from{transform:translateY(50px);opacity:0}to{transform:none;opacity:1}}
+    /* Aviso de envío dentro del panel de servicios (pasajero) */
+    .envio-resumen{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:12px;margin-bottom:9px;
+      background:rgba(71,133,168,.10);border:1px solid rgba(71,133,168,.30);font-size:.68rem;line-height:1.4;text-align:left}
+    .envio-resumen svg{width:15px;height:15px;flex-shrink:0;color:var(--primary-color);margin-top:1px}
+    .envio-resumen b{display:block;color:var(--primary-color);font-size:.7rem}
   </style>
   <script>
     (function(){
@@ -750,6 +818,8 @@
       <button type="button" class="menu-perfil-item" data-servicio-info="auto_particular"><span class="mi-ico" data-icono-servicio="auto_particular"></span><span>BIKAR AUTO</span></button>
       <button type="button" class="menu-perfil-item" data-servicio-info="moto_delivery"><span class="mi-ico" data-icono-servicio="moto_delivery"></span><span>BIKAR ENVÍOS</span></button>
       <button type="button" class="menu-perfil-item" data-servicio-info="moto_taxi"><span class="mi-ico" data-icono-servicio="moto_taxi"></span><span>BIKAR MOTO</span></button>
+      <button type="button" class="menu-perfil-item" data-servicio-info="taxi_carga"><span class="mi-ico" data-icono-servicio="taxi_carga"></span><span>BIKAR TAXI CARGA</span></button>
+      <button type="button" class="menu-perfil-item" data-servicio-info="pet"><span class="mi-ico" data-icono-servicio="pet"></span><span>BIKAR PET</span></button>
     </div>
     <button type="button" class="menu-perfil-item" id="menu-item-ayuda">
       <span class="mi-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
@@ -918,6 +988,10 @@
           <button type="button" class="btn-mini oculto" id="btn-perfil-mascotas" title="Activar o desactivar los viajes con mascota">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="9.5" r="1.8"/><circle cx="9.5" cy="5.5" r="1.8"/><circle cx="14.5" cy="5.5" r="1.8"/><circle cx="18.5" cy="9.5" r="1.8"/><path d="M8 15.5c.8-2 2.3-3.2 4-3.2s3.2 1.2 4 3.2c.9 2.1-.2 4.2-2.3 4.2-.7 0-1.1-.3-1.7-.3s-1 .3-1.7.3c-2.1 0-3.2-2.1-2.3-4.2z"/></svg>
             <span id="txt-perfil-mascotas">Acepta mascotas: Sí</span>
+          </button>
+          <button type="button" class="btn-mini" id="btn-perfil-envios" title="Activar o desactivar los envíos">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5V8z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/><path d="m7.5 5.5 9 5"/></svg>
+            <span id="txt-perfil-envios">Acepta envíos: Sí</span>
           </button>
           <button type="button" class="btn-mini" id="btn-perfil-tema">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -1095,6 +1169,54 @@
       <div class="modal-bikar-scroll" id="disponibles-lista" style="flex:1;min-height:0"></div>
     </div>
   </div>
+  <!-- VIDEO DE PRESENTACIÓN DEL SERVICIO (pantalla completa) -->
+  <div id="modal-video-servicio" class="oculto" role="dialog" aria-modal="true" aria-labelledby="video-servicio-nombre">
+    <div class="video-servicio-caja">
+      <button type="button" class="video-servicio-cerrar" id="cerrar-video-servicio" aria-label="Cerrar video">✕</button>
+      <div class="video-servicio-titulo"><span class="vs-badge">BIKAR</span><span id="video-servicio-nombre">Servicio</span></div>
+      <video id="video-servicio" src="" autoplay loop muted playsinline preload="auto"></video>
+      <div class="video-servicio-pie">
+        <b id="video-servicio-titulo">BIKAR</b>
+        <span id="video-servicio-desc"></span>
+        <div class="vs-fit">Conoce el servicio · Toca ✕ para volver</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULARIO DE ENVÍO (BIKAR ENVÍOS) -->
+  <div id="modal-envio-form" class="oculto" role="dialog" aria-modal="true" aria-labelledby="envio-titulo">
+    <div class="envio-dialog">
+      <button type="button" class="envio-cerrar" id="cerrar-envio-form" aria-label="Cerrar formulario de envío">✕</button>
+      <span class="envio-kicker">BIKAR ENVÍOS</span>
+      <h3 class="envio-titulo" id="envio-titulo">Datos de tu envío</h3>
+      <p class="envio-sub">Cuéntanos qué enviarás. Esta información la verá el conductor para transportarlo de forma segura.</p>
+      <label class="envio-label" for="envio-categoria">¿Qué vas a enviar?</label>
+      <select id="envio-categoria" class="envio-select">
+        <option value="" disabled selected>Selecciona una categoría</option>
+        <option value="Documentos y sobres">Documentos y sobres</option>
+        <option value="Paquete pequeño">Paquete pequeño</option>
+        <option value="Paquete mediano">Paquete mediano</option>
+        <option value="Comida y bebidas">Comida y bebidas</option>
+        <option value="Ropa y accesorios">Ropa y accesorios</option>
+        <option value="Flores o regalos">Flores o regalos</option>
+        <option value="Otro (describir)">Otro (describir)</option>
+      </select>
+      <label class="envio-label" for="envio-detalle">Descripción y comentario</label>
+      <textarea id="envio-detalle" class="envio-area" maxlength="240" placeholder="Ej: Sobre con documentos, cerrar bien la caja, llamar al llegar…"></textarea>
+      <div class="envio-alerta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div class="envio-alerta-txt"><b>Responsabilidad y seguridad:</b> declaro que el paquete está cerrado y no contiene artículos prohibidos ni restringidos: drogas, armas, municiones, explosivos, materiales inflamables o corrosivos, dinero en efectivo, joyas, animales vivos, documentos de identidad originales ajenos ni ningún elemento que infrinja la ley. BIKAR puede rechazar o retener el envío si detecta contenido no permitido.</div>
+      </div>
+      <label class="envio-check" for="envio-acepto">
+        <input type="checkbox" id="envio-acepto">
+        <span class="ec-box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
+        <span class="ec-txt">He leído y acepto la responsabilidad. Mi envío no contiene artículos prohibidos y cumple con las normas de envíos y carga de BIKAR.</span>
+      </label>
+      <p class="envio-error" id="envio-error">Completa la categoría, describe tu envío y acepta la responsabilidad para continuar.</p>
+      <button type="button" class="btn-main" id="envio-guardar" style="margin-top:2px">Continuar con el envío</button>
+    </div>
+  </div>
+
   <div id="toast"><span class="toast-icon">✓</span><span id="toast-text"></span></div>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
@@ -1128,6 +1250,8 @@
       moto_delivery: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/><rect x="2" y="5" width="7" height="6" rx="1"/><path d="M2 8h7"/></svg>',
       auto_particular: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.6 5H8.4a2 2 0 0 0-1.9 1.3L5 10 3 8"/><path d="M7 14h.01"/><path d="M17 14h.01"/><rect x="3" y="10" width="18" height="8" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>',
       mascota: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="9.5" r="1.8"/><circle cx="9.5" cy="5.5" r="1.8"/><circle cx="14.5" cy="5.5" r="1.8"/><circle cx="18.5" cy="9.5" r="1.8"/><path d="M8 15.5c.8-2 2.3-3.2 4-3.2s3.2 1.2 4 3.2c.9 2.1-.2 4.2-2.3 4.2-.7 0-1.1-.3-1.7-.3s-1 .3-1.7.3c-2.1 0-3.2-2.1-2.3-4.2z"/></svg>',
+      encomienda: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M20 17h2v-3.3l-1.7-3.2a1 1 0 0 0-.9-.5H14"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>',
+      pet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="9.5" r="1.8"/><circle cx="9.5" cy="5.5" r="1.8"/><circle cx="14.5" cy="5.5" r="1.8"/><circle cx="18.5" cy="9.5" r="1.8"/><path d="M8 15.5c.8-2 2.3-3.2 4-3.2s3.2 1.2 4 3.2c.9 2.1-.2 4.2-2.3 4.2-.7 0-1.1-.3-1.7-.3s-1 .3-1.7.3c-2.1 0-3.2-2.1-2.3-4.2z"/><path d="M12 21v-3"/></svg>',
       default: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>'
     };
     const CATALOGO = [
@@ -1150,7 +1274,7 @@
     }
     const servicioPorClave = (c) => CATALOGO.find(s => s.clave === c) || null;
     const etiquetaServicio = (c) => { const s = servicioPorClave(c); return s ? s.etiqueta : 'Servicio'; };
-    const iconoServicio   = (c) => ICONOS[c] || ICONOS.default;
+    const iconoServicio   = (c) => ICONOS[c] || (c === 'taxi_carga' ? ICONOS.encomienda : (c === 'pet' ? ICONOS.pet : ICONOS.default));
     function tarifaDe(s) {
       const dist = Number(distanciaKm || 0);
       const calculo = s.base + (dist * s.porKm);
@@ -1179,6 +1303,8 @@
     let sesionYaVerificada = false, vistaHistorial = 'servicios', historialViajes = [], historialCargando = false;
     let capacidadConductor = null, recurrentesMostrados = false, secuenciaRecurrentes = 0;
     let aceptaMascotasConductor = false; // true si el vehículo del conductor está registrado como «Acepta mascotas»
+    let aceptaEnviosConductor = false;   // true si el conductor acepta envíos (cualquier tipo de servicio)
+    let envioSolicitud = null;           // datos del formulario de envío elegido por el pasajero
     let pagosPorOpcion = {};              // por opción de servicio: conductores activos que aceptan efectivo / billetera
     let metodoPagoSeleccionado = null;    // método elegido por el pasajero: 'efectivo' | 'billetera'
     let pagoConductor = { efectivo: true, billetera: false, nombre: '', numero: '', qr: '', configurado: false, columnas: false };
@@ -1290,6 +1416,11 @@
     const OPCION_MASCOTA = 'taxi_auto_mascota';
     const aceptaMascotasDe = (...fuentes) => fuentes.some((f) => f && typeof f === 'object' &&
       (f.pet_friendly === true || f.pet_friendly === 'true' || f.acepta_mascotas === true || f.acepta_mascotas === 'true'));
+    /* ---- ENVÍOS: cualquier conductor, sin importar su tipo de servicio, puede aceptar envíos ---- */
+    const aceptaEnviosDe = (...fuentes) => fuentes.some((f) => f && typeof f === 'object' &&
+      (f.acepta_envios === true || f.acepta_envios === 'true' || f.envios === true || f.envios === 'true'));
+    const OPCION_ENVIOS = 'envios';
+    const envioDeViaje = (v) => !!v && (v.categoria_envio != null || v.detalle_envio != null || /env[ií]o/i.test(String(v.nombre_servicio || '')) || normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === 'moto_delivery');
     const viajeConMascota = (v) => !!v && (v.con_mascota === true || /mascota/i.test(String(v.nombre_servicio || '')));
     /* ---- MÉTODOS DE PAGO: el pasajero elige Efectivo o Billetera digital; solo lo reciben conductores que lo aceptan ---- */
     const ETIQUETA_PAGO = { efectivo: '💵 Efectivo', billetera: '📱 Billetera digital' };
@@ -2430,6 +2561,7 @@
       const { veh, doc } = await datosVehiculoDB(u, false);
       capacidadConductor = capacidadPasajerosDe(veh, doc, u);
       aceptaMascotasConductor = aceptaMascotasDe(veh, doc, u);
+      aceptaEnviosConductor = aceptaEnviosDe(veh, doc, u);
       if (!veh && !doc) return null;
       const r = {};
       ['tipo_servicio', 'marca', 'modelo', 'anio', 'placa'].forEach((k) => {
@@ -2671,6 +2803,10 @@
       botonMascotas.classList.toggle('oculto', !(esCond && claveServicioConductor === 'taxi_auto'));
       botonMascotas.classList.toggle('mascotas-no', !aceptaMascotasConductor);
       $('txt-perfil-mascotas').textContent = 'Acepta mascotas: ' + (aceptaMascotasConductor ? 'Sí' : 'No');
+      // Aceptar envíos: disponible para TODOS los tipos de servicio del conductor
+      $('btn-perfil-envios').classList.toggle('oculto', !esCond);
+      $('btn-perfil-envios').classList.toggle('mascotas-no', !aceptaEnviosConductor);
+      $('txt-perfil-envios').textContent = 'Acepta envíos: ' + (aceptaEnviosConductor ? 'Sí' : 'No');
       const cont = $('perfil-datos'), extra = $('perfil-extra');
       cont.innerHTML = ''; extra.innerHTML = '';
       const grid = document.createElement('div');
@@ -3224,8 +3360,8 @@
           'id,tipo_usuario'
         ], ['tipo_usuario', 'conductor']),
         leerTablaConCapacidad('conductores', ['id,usuario_id,acepta_efectivo,acepta_billetera,billetera_nombre,billeteras', 'id,usuario_id,acepta_efectivo,acepta_billetera,billetera_nombre', 'id,usuario_id']),
-        leerTablaConCapacidad('vehiculos', ['conductor_id,tipo_servicio,pet_friendly', 'conductor_id,tipo_servicio']),
-        leerTablaConCapacidad('documentos_conductor', ['usuario_id,conductor_id,tipo_servicio,pet_friendly', 'usuario_id,conductor_id,tipo_servicio'])
+        leerTablaConCapacidad('vehiculos', ['conductor_id,tipo_servicio,pet_friendly,acepta_envios', 'conductor_id,tipo_servicio,pet_friendly', 'conductor_id,tipo_servicio']),
+        leerTablaConCapacidad('documentos_conductor', ['usuario_id,conductor_id,tipo_servicio,pet_friendly,acepta_envios', 'usuario_id,conductor_id,tipo_servicio,pet_friendly', 'usuario_id,conductor_id,tipo_servicio'])
       ]);
       const ru = res[0], rc = res[1], rv = res[2], rd = res[3];
       const condDeUsuario = new Map();
@@ -3272,10 +3408,15 @@
           conteo[opcion] = (conteo[opcion] || 0) + 1;
           sumarPagoOpcion(opcion, pago);
           // BIKAR TAXI con mascota: conductores de taxi (no de 6 pasajeros) que aceptan mascotas
-          if (clave === 'taxi_auto' && capacidad !== 6 && aceptaMascotasDe(filaVehCond.get(String(cid)), filaDocUsuario.get(String(u.id)),
-            filaDocCond.get(String(cid)), filaCondUsuario.get(String(u.id)), u)) {
+          const fuentesPago = [filaVehCond.get(String(cid)), filaDocUsuario.get(String(u.id)), filaDocCond.get(String(cid)), filaCondUsuario.get(String(u.id)), u];
+          if (clave === 'taxi_auto' && capacidad !== 6 && aceptaMascotasDe.apply(null, fuentesPago)) {
             conteo[OPCION_MASCOTA] = (conteo[OPCION_MASCOTA] || 0) + 1;
             sumarPagoOpcion(OPCION_MASCOTA, pago);
+          }
+          // ENVÍOS: cualquier conductor activo que tenga activada la opción de aceptar envíos
+          if (aceptaEnviosDe.apply(null, fuentesPago)) {
+            conteo[OPCION_ENVIOS] = (conteo[OPCION_ENVIOS] || 0) + 1;
+            sumarPagoOpcion(OPCION_ENVIOS, pago);
           }
         }
       });
@@ -3299,6 +3440,13 @@
           disponibles.push(Object.assign({}, s, {
             opcion:opcionSeis, capacidadPasajeros:6, etiqueta:s.etiqueta + ' · 6 pasajeros',
             desc:'Vehículo para 6 pasajeros · Incluye 30% adicional'
+          }));
+        }
+        // ENVÍOS: aparece cuando hay conductores activos (de cualquier servicio) que aceptan envíos
+        if (s.clave === 'moto_delivery' && conteoActivos[OPCION_ENVIOS] > 0 && !(conteoActivos[s.clave] > 0)) {
+          disponibles.push(Object.assign({}, s, {
+            opcion:OPCION_ENVIOS, esEnvio:true, etiqueta:'BIKAR ENVÍOS',
+            desc:'Conductores que aceptan envíos · paquetes, comida y documentos'
           }));
         }
       });
@@ -3335,6 +3483,13 @@
           card.classList.add('seleccionado');
           servicioSeleccionado = Object.assign({}, s, { tarifa });
           mostrarMetodosPago(s.opcion);
+          if (s.esEnvio || normalizarClaveServicio(s.clave) === 'moto_delivery') {
+            envioSolicitud = null;
+            abrirFormularioEnvio();
+          } else {
+            envioSolicitud = null;
+            cerrarFormularioEnvio();
+          }
           actualizarBotonConfirmar();
         });
         serviciosLista.appendChild(card);
@@ -3345,9 +3500,50 @@
       const s = servicioSeleccionado;
       if (!s) { btnConfirmarServicio.disabled = true; btnConfirmarServicio.textContent = 'Selecciona un servicio'; return; }
       if (!metodoPagoSeleccionado) { btnConfirmarServicio.disabled = true; btnConfirmarServicio.textContent = 'Elige un método de pago'; return; }
+      if ((s.esEnvio || normalizarClaveServicio(s.clave) === 'moto_delivery') && !envioSolicitud) {
+        btnConfirmarServicio.disabled = true;
+        btnConfirmarServicio.textContent = 'Completa los datos del envío';
+        return;
+      }
       btnConfirmarServicio.disabled = false;
       btnConfirmarServicio.textContent = 'Confirmar ' + s.etiqueta + ' · ' + formatoMoneda(s.tarifa);
     }
+    /* ---- FORMULARIO DE ENVÍO (seguridad y responsabilidad) ---- */
+    function abrirFormularioEnvio() {
+      $('envio-categoria').value = '';
+      $('envio-detalle').value = '';
+      $('envio-acepto').checked = false;
+      $('envio-error').classList.remove('visible');
+      $('modal-envio-form').classList.remove('oculto');
+    }
+    function cerrarFormularioEnvio() { $('modal-envio-form').classList.add('oculto'); }
+    $('cerrar-envio-form').addEventListener('click', () => {
+      cerrarFormularioEnvio();
+      envioSolicitud = null;
+      actualizarBotonConfirmar();
+    });
+    $('modal-envio-form').addEventListener('click', (e) => {
+      if (e.target === $('modal-envio-form')) {
+        cerrarFormularioEnvio();
+        actualizarBotonConfirmar();
+      }
+    });
+    $('envio-guardar').addEventListener('click', () => {
+      const categoria = $('envio-categoria').value;
+      const detalle = $('envio-detalle').value.trim();
+      const acepto = $('envio-acepto').checked;
+      if (!categoria || !detalle || !acepto) {
+        $('envio-error').classList.add('visible');
+        if (!categoria) $('envio-categoria').focus();
+        else if (!detalle) $('envio-detalle').focus();
+        return;
+      }
+      envioSolicitud = { categoria, detalle, aceptado: true };
+      $('envio-error').classList.remove('visible');
+      cerrarFormularioEnvio();
+      mostrarToast('Datos del envío guardados');
+      actualizarBotonConfirmar();
+    });
     function mostrarMetodosPago(opcion) {
       const caja = $('metodo-pago-pasajero');
       const p = pagosPorOpcion[opcion] || { efectivo: 1, billetera: 0, billeteras: [] };
@@ -3410,11 +3606,20 @@
       };
       if (servicio.conMascota) registro.con_mascota = true;
       if (servicio.metodoPago) registro.metodo_pago = servicio.metodoPago;   // 'efectivo' | 'billetera'
+      const esEnvio = servicio.esEnvio || normalizarClaveServicio(servicio.clave) === 'moto_delivery';
+      if (esEnvio && envioSolicitud) {
+        registro.categoria_envio = envioSolicitud.categoria;
+        registro.detalle_envio = envioSolicitud.detalle;
+        registro.envio_prohibidos_aceptado = true;
+      }
       let { data, error } = await db.from('viajes').insert([registro]).select();
-      // Si aún no se ejecutó el SQL de mascotas o de métodos de pago, el viaje se guarda igual sin esas columnas
-      if (error && /con_mascota|metodo_pago/i.test(String(error.message || ''))) {
+      // Si aún no se ejecutó el SQL de mascotas, envíos o métodos de pago, el viaje se guarda igual sin esas columnas
+      if (error && /con_mascota|metodo_pago|categoria_envio|detalle_envio|envio_prohibidos/i.test(String(error.message || ''))) {
         delete registro.con_mascota;
         delete registro.metodo_pago;
+        delete registro.categoria_envio;
+        delete registro.detalle_envio;
+        delete registro.envio_prohibidos_aceptado;
         ({ data, error } = await db.from('viajes').insert([registro]).select());
       }
       if (error) {
@@ -3696,11 +3901,14 @@
       }
       let viajes = data || [];
       if (claveServicioConductor) {
-        viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor);
+        viajes = viajes.filter(v => normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio) === claveServicioConductor ||
+          (aceptaEnviosConductor && envioDeViaje(v)));
       }
       viajes = viajes.filter(v => viajeDeSeisPasajeros(v) === (capacidadConductor === 6));
       // Viajes «con mascota»: solo los ven los conductores que aceptan mascotas
       viajes = viajes.filter(v => !viajeConMascota(v) || aceptaMascotasConductor);
+      // Viajes de envíos: solo los ven los conductores que aceptan envíos
+      viajes = viajes.filter(v => !envioDeViaje(v) || aceptaEnviosConductor);
       // Método de pago: solo los viajes cuyo pago (efectivo / billetera) acepta este conductor
       viajes = viajes.filter(v => conductorAceptaPago(v));
       const rechazados = new Set(rechazadosDelConductor());
@@ -3757,6 +3965,10 @@
       }
       if (viajeConMascota(viaje) && !aceptaMascotasConductor) {
         mostrarToast('Este viaje es con mascota y tu vehículo no está registrado para mascotas', '!');
+        return;
+      }
+      if (envioDeViaje(viaje) && !aceptaEnviosConductor) {
+        mostrarToast('Este servicio es un envío y no tienes activada la opción de aceptar envíos', '!');
         return;
       }
       if (!conductorAceptaPago(viaje)) {
@@ -3993,6 +4205,32 @@
       if (modoActual === 'conductor' && conductorActivo) { viajesIdsVistos = null; cargarViajesSolicitados(); }
     }
     $('btn-perfil-mascotas').addEventListener('click', cambiarAceptaMascotas);
+    /* ============================ ENVÍOS DESDE EL PERFIL (CONDUCTOR) ============================
+       Cualquier conductor, sin importar su servicio, puede activar o desactivar los envíos.
+       Se actualiza en vehiculos y documentos_conductor (donde lo guarda el registro). */
+    async function cambiarAceptaEnvios() {
+      const nuevo = !aceptaEnviosConductor;
+      const boton = $('btn-perfil-envios');
+      boton.disabled = true;
+      const u = usuarioActual || {};
+      const errores = [];
+      try {
+        const cid = await resolverConductorId(u);
+        const cambios = [];
+        if (cid != null) cambios.push(db.from('vehiculos').update({ acepta_envios: nuevo }).eq('conductor_id', cid));
+        if (u.id != null) cambios.push(db.from('documentos_conductor').update({ acepta_envios: nuevo }).eq('usuario_id', u.id));
+        if (cid != null) cambios.push(db.from('documentos_conductor').update({ acepta_envios: nuevo }).eq('conductor_id', cid));
+        (await Promise.all(cambios)).forEach((r) => { if (r && r.error) errores.push(r.error.message); });
+      } catch (e) { errores.push(e && e.message); }
+      boton.disabled = false;
+      if (errores.length) { mostrarToast('No se pudo actualizar: ' + errores[0], '!'); return; }
+      aceptaEnviosConductor = nuevo;
+      if (usuarioActual) { usuarioActual.acepta_envios = nuevo; guardarSesion(); }
+      mostrarToast(nuevo ? 'Ahora recibes y realizas envíos' : 'Ya no recibirás envíos', nuevo ? '✓' : '!');
+      abrirModalPerfil();
+      if (modoActual === 'conductor' && conductorActivo) { viajesIdsVistos = null; cargarViajesSolicitados(); }
+    }
+    $('btn-perfil-envios').addEventListener('click', cambiarAceptaEnvios);
     /* ============================ VIAJES DISPONIBLES (CONDUCTOR) ============================
        Lista los viajes que el conductor rechazó o canceló después de aceptarlos (guardados en este dispositivo),
        separados en «Disponibles para retomar» (siguen activos) y «Rechazados · ya no disponibles». */
@@ -4126,27 +4364,33 @@
     const SERVICIOS_INFO = {
       taxi_auto: {
         titulo:'BIKAR TAXI',
-        imagen:'https://images.pexels.com/photos/13918522/pexels-photo-13918522.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
-        alt:'Taxi circulando por una calle de la ciudad',
-        descripcion:'Viaja en auto desde tu punto de partida hasta tu destino. Elige la opción disponible que necesites; los vehículos registrados para 6 pasajeros tienen una tarifa 30% mayor que la normal.'
+        video:'https://i.imgur.com/KlfN8LO.mp4',
+        descripcion:'Viaja en auto desde tu punto de partida hasta tu destino con un conductor verificado.'
       },
       moto_delivery: {
         titulo:'BIKAR ENVÍOS',
-        imagen:'https://images.pexels.com/photos/4440774/pexels-photo-4440774.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
-        alt:'Entrega de paquetes a un destinatario',
-        descripcion:'Envía paquetes, comida o documentos de un punto a otro. Indica la dirección de recojo y la de entrega para solicitar un conductor del servicio.'
+        video:'https://i.imgur.com/pppRbfN.mp4',
+        descripcion:'Envía paquetes, comida o documentos de un punto a otro de forma ágil y segura.'
       },
       moto_taxi: {
         titulo:'BIKAR MOTO',
-        imagen:'https://images.pexels.com/photos/5192884/pexels-photo-5192884.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
-        alt:'Personas desplazándose en motocicleta',
-        descripcion:'Una alternativa ágil y económica para el traslado de un pasajero en moto. Selecciona tu destino y consulta la disponibilidad y la tarifa antes de confirmar.'
+        video:'https://i.imgur.com/vjMWZf6.mp4',
+        descripcion:'Una alternativa ágil y económica para el traslado de un pasajero en moto.'
       },
       auto_particular: {
         titulo:'BIKAR AUTO',
-        imagen:'https://images.pexels.com/photos/4606345/pexels-photo-4606345.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200',
-        alt:'Conductor de auto particular llevando a un pasajero',
-        descripcion:'Viaja en un auto particular, cómodo y con conductor verificado, desde tu punto de partida hasta tu destino. Ideal para hasta 4 pasajeros: consulta la disponibilidad y la tarifa antes de confirmar.'
+        video:'https://i.imgur.com/NgnJiV3.mp4',
+        descripcion:'Viaja en un auto particular, cómodo y con conductor verificado, hasta tu destino.'
+      },
+      taxi_carga: {
+        titulo:'BIKAR TAXI CARGA',
+        video:'https://i.imgur.com/uyLunLp.mp4',
+        descripcion:'Transporta carga, bultos y mudanzas pequeñas en un vehículo adaptado para tu envío.'
+      },
+      pet: {
+        titulo:'BIKAR PET',
+        video:'https://i.imgur.com/DscglW2.mp4',
+        descripcion:'Viaja con tu mascota de forma cómoda y segura, con conductores preparados para recibirla.'
       }
     };
     function abrirModalNuevo(modal) {
@@ -4395,21 +4639,37 @@
       }
     });
     document.querySelectorAll('[data-icono-servicio]').forEach(el => { el.innerHTML = iconoServicio(el.dataset.iconoServicio); });
+    function abrirVideoServicio(clave, info) {
+      if (!info) return;
+      const modal = $('modal-video-servicio'), video = $('video-servicio');
+      $('video-servicio-nombre').textContent = info.titulo;
+      $('video-servicio-titulo').textContent = info.titulo;
+      $('video-servicio-desc').textContent = info.descripcion || '';
+      modal.classList.remove('oculto');
+      try { video.pause(); } catch (e) {}
+      video.src = info.video;
+      video.currentTime = 0;
+      const p = video.play();
+      if (p && p.catch) p.catch(() => {});
+    }
+    function cerrarVideoServicio() {
+      const modal = $('modal-video-servicio'), video = $('video-servicio');
+      try { video.pause(); } catch (e) {}
+      video.removeAttribute('src');
+      try { video.load(); } catch (e) {}
+      modal.classList.add('oculto');
+    }
+    document.addEventListener('click', (e) => {
+      if (e.target && e.target.closest && e.target.closest('#cerrar-video-servicio')) { cerrarVideoServicio(); return; }
+      if (e.target && e.target.id === 'modal-video-servicio') cerrarVideoServicio();
+    });
     document.querySelectorAll('[data-servicio-info]').forEach(boton => {
       boton.addEventListener('click', () => {
         if (!esPasajeroActual()) return;
         const clave = boton.dataset.servicioInfo, info = SERVICIOS_INFO[clave];
         if (!info) return;
         cerrarMenuPerfil();
-        $('tipo-servicio-titulo').textContent = info.titulo;
-        $('tipo-servicio-descripcion').textContent = info.descripcion;
-        const imagen = $('tipo-servicio-imagen'), respaldo = $('tipo-servicio-fallback');
-        respaldo.classList.add('oculto'); respaldo.innerHTML = iconoServicio(clave);
-        respaldo.setAttribute('aria-label', info.alt);
-        imagen.classList.remove('oculto'); imagen.alt = info.alt;
-        imagen.onerror = () => { imagen.classList.add('oculto'); respaldo.classList.remove('oculto'); };
-        imagen.src = info.imagen;
-        abrirModalNuevo(modalTipoServicio);
+        abrirVideoServicio(clave, info);
       });
     });
     /* ============================ ARRANQUE ============================ */
