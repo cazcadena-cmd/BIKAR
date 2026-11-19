@@ -403,8 +403,12 @@
     .envio-seguridad b{display:block;font-size:.74rem;color:#f59e0b;margin-bottom:3px}
     .envio-seguridad span{display:block;font-size:.69rem;line-height:1.45;color:var(--text-color)}
     /* PARADAS Y BENEFICIOS */
-    .parada-linea{display:flex;align-items:flex-start;gap:10px;margin-top:2px;padding:8px 10px;border-radius:11px;
+    .paradas-viaje-lista{display:flex;flex-direction:column;gap:7px;margin:2px 0 2px}
+    .parada-linea{display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border-radius:11px;
       background:var(--field-bg);border:1px dashed rgba(214,139,31,.5)}
+    .parada-txt .parada-map{display:inline-flex;align-items:center;gap:4px;margin-top:4px;
+      font-size:.66rem;font-weight:800;color:var(--primary-color);text-decoration:none}
+    .parada-txt .parada-map:hover{text-decoration:underline}
     .parada-linea .parada-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
       font-size:.6rem;font-weight:800;color:#fff;background:#d68b1f}
     .parada-linea .parada-txt{flex:1;min-width:0;font-size:.78rem;font-weight:700;line-height:1.35;word-break:break-word}
@@ -577,6 +581,8 @@
             <div class="route-sub">Punto de recogida</div>
           </div>
         </div>
+        <!-- Las paradas adicionales se muestran ANTES del destino -->
+        <div id="paradas-viaje" class="paradas-viaje-lista"></div>
         <div class="route-point">
           <span class="dot b">B</span>
           <div>
@@ -584,7 +590,6 @@
             <div class="route-sub">Punto de entrega</div>
           </div>
         </div>
-        <div id="paradas-viaje"></div>
         <a class="route-map" id="link-maps" href="#" target="_blank" rel="noopener">Ver ruta en Google Maps →</a>
       </div>
       <div class="ruta-total">
@@ -594,7 +599,7 @@
         </div>
         <div class="kpi-tarifa">
           <span class="kpi-label">Tarifa total</span>
-          <div class="kpi-valor" id="txt-tarifa">$ 0</div>
+          <div class="kpi-valor" id="txt-tarifa">S/ 0.00</div>
         </div>
       </div>
       <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap">
@@ -856,7 +861,13 @@
     const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
     const mismoId = (a, b) => a != null && b != null && String(a) === String(b);
     const lsJSON = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
-    const formatoMoneda = (v) => { const n = Math.round(Number(v)); return '$ ' + (isFinite(n) ? n : 0).toLocaleString('es-CO'); };
+    /* Moneda oficial: SOLES PERUANOS */
+    const formatoMoneda = (v) => {
+      let n = Number(v || 0);
+      if (!isFinite(n)) n = 0;
+      if (n >= 2000) n = n / 1000; // registros antiguos en otra moneda
+      return 'S/ ' + n.toFixed(2);
+    };
     const tarifaDelViaje = (v) => {
       if (!v) return 0;
       const campos = ['tarifa', 'tarifa_total', 'precio', 'precio_total', 'monto', 'costo'];
@@ -1420,6 +1431,19 @@
       card.style.display = 'block';
     }
     /* PARADAS DEL VIAJE */
+    function enlaceRutaParada(parada) {
+      const v = viajeActual || {};
+      const nombre = (parada && (parada.nombre || parada.direccion)) || String(parada || '');
+      const lat = parada && parada.lat != null ? Number(parada.lat) : NaN;
+      const lng = parada && parada.lng != null ? Number(parada.lng) : NaN;
+      const destino = isFinite(lat) && isFinite(lng) ? (lat + ',' + lng) : nombre;
+      let origen = '';
+      if (v.origen_lat != null && v.origen_lon != null) origen = v.origen_lat + ',' + v.origen_lon;
+      else if (v.origen_nombre) origen = String(v.origen_nombre);
+      let url = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=' + encodeURIComponent(destino);
+      if (origen) url += '&origin=' + encodeURIComponent(origen);
+      return url;
+    }
     function pintarParadasViaje() {
       const cont = $('paradas-viaje'), v = viajeActual || {};
       if (!cont) return;
@@ -1429,11 +1453,15 @@
       cont.innerHTML = paradas.map((p, i) => {
         const nombre = (p && (p.nombre || p.direccion)) || String(p || '');
         if (!nombre) return '';
-        return '<div class="route-point" style="margin-top:8px">' +
-          '<span class="dot" style="background:#d68b1f">' + (i + 1) + '</span>' +
-          '<div><div class="route-detail">' + esc(nombre) + '</div><div class="route-sub">Parada adicional</div></div>' +
+        return '<div class="parada-linea">' +
+          '<span class="parada-num">' + (i + 1) + '</span>' +
+          '<div class="parada-txt">' + esc(nombre) +
+            '<small>Parada adicional</small>' +
+            '<a class="parada-map" href="' + enlaceRutaParada(p) + '" target="_blank" rel="noopener">Ver ruta en Google Maps →</a>' +
+          '</div>' +
         '</div>';
       }).join('');
+      cont.style.display = paradas.some((p) => (p && (p.nombre || p.direccion)) || String(p || '').trim()) ? 'flex' : 'none';
     }
     /* AVISO DE PEAJE FUERA DE LA CIUDAD */
     function pintarAvisoPeaje() {
