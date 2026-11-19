@@ -402,6 +402,35 @@
     .envio-seguridad svg{flex-shrink:0;width:18px;height:18px;color:#f59e0b;margin-top:1px}
     .envio-seguridad b{display:block;font-size:.74rem;color:#f59e0b;margin-bottom:3px}
     .envio-seguridad span{display:block;font-size:.69rem;line-height:1.45;color:var(--text-color)}
+    /* PARADAS Y BENEFICIOS */
+    .parada-linea{display:flex;align-items:flex-start;gap:10px;margin-top:2px;padding:8px 10px;border-radius:11px;
+      background:var(--field-bg);border:1px dashed rgba(214,139,31,.5)}
+    .parada-linea .parada-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;
+      font-size:.6rem;font-weight:800;color:#fff;background:#d68b1f}
+    .parada-linea .parada-txt{flex:1;min-width:0;font-size:.78rem;font-weight:700;line-height:1.35;word-break:break-word}
+    .parada-linea .parada-txt small{display:block;margin-top:1px;font-size:.62rem;font-weight:600;color:var(--muted-text)}
+    .beneficios-viaje{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+    .beneficio-viaje{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:999px;
+      background:var(--field-bg);border:1px solid var(--border-color);font-size:.63rem;font-weight:700;color:var(--text-color)}
+    .beneficio-viaje svg{width:11px;height:11px;color:var(--primary-color);flex-shrink:0}
+    /* AVISO DE PEAJE */
+    .peaje-aviso{padding:12px;border-radius:14px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.45);
+      display:flex;gap:9px;align-items:flex-start}
+    .peaje-aviso svg{flex-shrink:0;width:18px;height:18px;color:#f59e0b;margin-top:1px}
+    .peaje-aviso b{display:block;font-size:.8rem;color:#f59e0b;margin-bottom:3px}
+    .peaje-aviso span{display:block;font-size:.73rem;line-height:1.45;color:var(--text-color)}
+    /* MAPA EN VIVO DENTRO DEL ESTADO */
+    .mapa-viaje{position:relative;height:210px;margin-top:16px;border-radius:16px;overflow:hidden;
+      border:1px solid var(--border-color);background:var(--field-bg);z-index:1;animation:fadeIn .35s ease both}
+    .mapa-viaje.oculto{display:none!important}
+    .mapa-viaje-info{position:absolute;left:9px;top:9px;z-index:2;display:inline-flex;align-items:center;gap:6px;
+      padding:5px 10px;border-radius:999px;background:var(--card-bg);border:1px solid var(--border-color);
+      font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--primary-color);
+      box-shadow:0 6px 16px rgba(0,0,0,.25)}
+    .mapa-viaje-info .punto-live{width:7px;height:7px;border-radius:50%;background:var(--primary-color);animation:pulse 1.4s infinite}
+    .mapa-viaje-cargando{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      font-size:.76rem;font-weight:700;color:var(--muted-text);background:var(--field-bg);z-index:2
+    }
     @media (max-width:420px){main{padding:14px}.card,.status-card{padding:16px}.pin-digitos span,.pin-inputs input{width:52px}}
   </style>
 </head>
@@ -480,6 +509,11 @@
         <div class="step"><div class="step-icon">3</div><span class="step-text">En curso</span></div>
         <div class="step"><div class="step-icon">4</div><span class="step-text">Finalizado</span></div>
       </div>
+      <!-- MAPA EN VIVO: solo mientras el viaje está EN PROGRESO -->
+      <div id="mapa-viaje" class="mapa-viaje oculto">
+        <div class="mapa-viaje-info"><span class="punto-live"></span> En vivo</div>
+        <div class="mapa-viaje-cargando" id="mapa-viaje-cargando">Cargando mapa…</div>
+      </div>
     </section>
     <!-- CONTRAPARTE -->
     <section class="card" id="card-persona">
@@ -550,6 +584,7 @@
             <div class="route-sub">Punto de entrega</div>
           </div>
         </div>
+        <div id="paradas-viaje"></div>
         <a class="route-map" id="link-maps" href="#" target="_blank" rel="noopener">Ver ruta en Google Maps →</a>
       </div>
       <div class="ruta-total">
@@ -579,6 +614,14 @@
           <span class="envio-detalle-etiqueta">Descripción del paquete</span>
           <span class="envio-detalle-valor" id="envio-descripcion">—</span>
         </div>
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">Remitente</span>
+          <span class="envio-detalle-valor" id="envio-remitente">—</span>
+        </div>
+        <div class="envio-detalle-fila">
+          <span class="envio-detalle-etiqueta">Destinatario</span>
+          <span class="envio-detalle-valor" id="envio-destinatario">—</span>
+        </div>
       </div>
       <div class="envio-seguridad">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
@@ -592,6 +635,17 @@
         <div>
           <b style="color:#4785A8">Tarifa con descuento</b>
           <span>Este servicio de envío tiene un 20% menos sobre la tarifa normal del servicio.</span>
+        </div>
+      </div>
+    </section>
+    <!-- AVISO DE PEAJE (viaje fuera de la ciudad) -->
+    <section class="card" id="card-peaje" style="display:none">
+      <div class="card-title">Aviso importante del recorrido</div>
+      <div class="peaje-aviso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <div>
+          <b>Viaje fuera de la ciudad</b>
+          <span id="peaje-texto">Este recorrido puede incluir peajes. Los peajes corren por cuenta del pasajero y se pagan aparte de la tarifa acordada.</span>
         </div>
       </div>
     </section>
@@ -748,6 +802,8 @@
     const FOTO_REPO_GITHUB = 'https://raw.githubusercontent.com/bikar-app/perfil/main/index.svg';
     const INTERVALO_REFRESCO = 8000;                 /* respaldo si Realtime no está disponible */
     const URL_SW = 'sw.js';                          /* service worker de notificaciones push (misma carpeta) */
+    const GOOGLE_MAPS_API_KEY = 'AIzaSyAjIECrPNcpw4rEJhsPqqa1zxv-qYGOgRM';
+    let mapaViaje = null, marcadorViaje = null, rutaViaje = null, mapaCargando = false, geoWatch = null;
     /* ============================================================
        ESTADO
        ============================================================ */
@@ -1224,6 +1280,14 @@
           chipRating() +
           '</div>');
       }
+      if (info.beneficios && typeof info.beneficios === 'object') {
+        const activos = Object.keys(info.beneficios).filter((k) => info.beneficios[k] === true);
+        if (activos.length) {
+          chips.push('<div class="beneficios-viaje">' + activos.map((k) =>
+            '<span class="beneficio-viaje"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' +
+            esc(BENEFICIOS_ETIQUETAS[k] || k) + '</span>').join('') + '</div>');
+        }
+      }
       personaExtra.innerHTML = chips.filter(Boolean).join('');
       /* Evento para ver la foto ampliada del vehículo */
       const btnVerFoto = $('btn-ver-foto-vehiculo');
@@ -1272,6 +1336,8 @@
       const modelo = (doc && doc.modelo) || (veh && veh.modelo) || '';
       const anio = (doc && doc.anio) || (veh && veh.anio) || '';
       const tipoServ = (doc && doc.tipo_servicio) || (viajeActual && (viajeActual.tipo_servicio || viajeActual.nombre_servicio)) || '';
+      let beneficios = (doc && doc.beneficios) || (veh && veh.beneficios) || (u && u.beneficios) || {};
+      if (typeof beneficios === 'string') { try { beneficios = JSON.parse(beneficios); } catch (e) { beneficios = {}; } }
       logDebug('perfil conductor', { usuario: u, vehiculo: veh, documento: doc, placa: placa, fotoVehiculo: fotoVehiculo, stats: st });
       pintarPersona({
         rol: 'conductor',
@@ -1282,6 +1348,7 @@
         vehiculo: [marca, modelo, anio].filter(Boolean).join(' '),
         placa: placa,
         foto_vehiculo: fotoVehiculo,
+        beneficios: beneficios,
         calificacion: st.promedio != null ? st.promedio.toFixed(1) : null,
         totalCalif: st.total
       });
@@ -1342,17 +1409,45 @@
     function pintarDetalleEnvio() {
       const card = $('card-envio'), v = viajeActual || {};
       if (!esViajeEnvio(v)) { card.style.display = 'none'; return; }
-      const tipo = $('envio-tipo'), desc = $('envio-descripcion');
-      tipo.textContent = v.categoria_envio || 'Paquete / encomienda';
-      desc.textContent = v.detalle_envio || 'El pasajero no agregó una descripción adicional.';
+      $('envio-tipo').textContent = v.categoria_envio || 'Paquete / encomienda';
+      $('envio-descripcion').textContent = v.detalle_envio || 'El pasajero no agregó una descripción adicional.';
+      $('envio-remitente').textContent = [v.remitente_nombre, v.remitente_telefono].filter(Boolean).join(' · ') || 'No indicado';
+      $('envio-destinatario').textContent = [v.destinatario_nombre, v.destinatario_telefono].filter(Boolean).join(' · ') || 'No indicado';
       const claveBase = normalizarClaveServicio(v.tipo_servicio || v.nombre_servicio);
       const notaDescuento = $('envio-descuento');
       const aplicaDescuento = claveBase !== 'moto_delivery' && /env[ií]o/i.test(String(v.nombre_servicio || ''));
       if (notaDescuento) notaDescuento.style.display = aplicaDescuento ? 'flex' : 'none';
       card.style.display = 'block';
     }
+    /* PARADAS DEL VIAJE */
+    function pintarParadasViaje() {
+      const cont = $('paradas-viaje'), v = viajeActual || {};
+      if (!cont) return;
+      let paradas = v.paradas;
+      if (typeof paradas === 'string') { try { paradas = JSON.parse(paradas); } catch (e) { paradas = []; } }
+      if (!Array.isArray(paradas)) paradas = [];
+      cont.innerHTML = paradas.map((p, i) => {
+        const nombre = (p && (p.nombre || p.direccion)) || String(p || '');
+        if (!nombre) return '';
+        return '<div class="route-point" style="margin-top:8px">' +
+          '<span class="dot" style="background:#d68b1f">' + (i + 1) + '</span>' +
+          '<div><div class="route-detail">' + esc(nombre) + '</div><div class="route-sub">Parada adicional</div></div>' +
+        '</div>';
+      }).join('');
+    }
+    /* AVISO DE PEAJE FUERA DE LA CIUDAD */
+    function pintarAvisoPeaje() {
+      const card = $('card-peaje'), v = viajeActual || {};
+      const fuera = v.fuera_ciudad === true || v.aviso_peaje === true;
+      card.style.display = fuera ? 'block' : 'none';
+      if (!fuera) return;
+      $('peaje-texto').textContent = rolUsuario === 'conductor'
+        ? 'Este recorrido sale de la ciudad. Recuerda al pasajero que los peajes corren por su cuenta y se pagan aparte de la tarifa.'
+        : 'Este recorrido sale de la ciudad. Los peajes del trayecto corren por tu cuenta y se pagan aparte de la tarifa acordada.';
+    }
     function renderizarUI() {
       if (!viajeActual) return;
+      setTimeout(() => { pintarParadasViaje(); pintarAvisoPeaje(); renderMapaViaje(); }, 0);
       const estado = String(viajeActual.estado || 'solicitado').toLowerCase();
       /* El conductor que canceló este viaje ya no lo gestiona (volvió a estar disponible para otros) */
       if (rolUsuario === 'conductor' && canceladoPorEsteConductor()) {
@@ -2246,6 +2341,126 @@
       $('audio-remoto').srcObject = null;
       cerrarModal('modal-llamada');
     }
+    /* ============================================================
+       MAPA EN VIVO DEL VIAJE (solo con el viaje EN PROGRESO)
+       ============================================================ */
+    const BENEFICIOS_ETIQUETAS = {
+      aire: 'Aire acondicionado',
+      musica: 'Música',
+      pedir_musica: 'Puedes pedir música',
+      equipaje: 'Ayuda con equipaje',
+      cargador: 'Cargador',
+      asientos: 'Asientos cómodos',
+      silencio: 'Viaje en silencio',
+      mascotas: 'Apto para mascotas'
+    };
+    const recorridoViaje = [];
+
+    function cargarMapaViaje(cb) {
+      if (window.google && window.google.maps) { cb(); return; }
+      if (mapaCargando) { setTimeout(() => cargarMapaViaje(cb), 400); return; }
+      mapaCargando = true;
+      const s = document.createElement('script');
+      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_MAPS_API_KEY +
+              '&libraries=geometry&language=es&region=PE';
+      s.async = true; s.defer = true;
+      s.onload = () => { mapaCargando = false; cb(); };
+      s.onerror = () => { mapaCargando = false; mostrarToast('No se pudo cargar el mapa'); };
+      document.head.appendChild(s);
+    }
+
+    function puntoDelViaje() {
+      const v = viajeActual || {};
+      const lat = Number(v.conductor_lat), lng = Number(v.conductor_lon);
+      if (isFinite(lat) && isFinite(lng) && lat !== 0 && lng !== 0) return { lat, lng };
+      const oLat = Number(v.origen_lat), oLng = Number(v.origen_lon);
+      if (isFinite(oLat) && isFinite(oLng) && oLat !== 0) return { lat: oLat, lng: oLng };
+      return { lat: -12.0464, lng: -77.0428 };
+    }
+
+    function actualizarRutaMapa(punto) {
+      if (!mapaViaje || !marcadorViaje) return;
+      marcadorViaje.setPosition(punto);
+      if (rutaViaje) {
+        const path = rutaViaje.getPath();
+        const ultimo = path.getLength() ? path.getAt(path.getLength() - 1) : null;
+        if (!ultimo || Math.abs(ultimo.lat() - punto.lat) > 0.00002 || Math.abs(ultimo.lng() - punto.lng) > 0.00002) {
+          path.push(punto);
+        }
+      }
+      mapaViaje.panTo(punto);
+    }
+
+    function renderMapaViaje() {
+      const cont = $('mapa-viaje');
+      if (!cont) return;
+      const estado = String((viajeActual && viajeActual.estado) || '').toLowerCase();
+      const activo = estado === 'en_progreso';
+      cont.classList.toggle('oculto', !activo);
+      if (!activo) { detenerUbicacionConductor(); return; }
+      iniciarUbicacionConductor();
+
+      cargarMapaViaje(() => {
+        const punto = puntoDelViaje();
+        const v = viajeActual || {};
+        const oLat = Number(v.origen_lat), oLng = Number(v.origen_lon);
+        const dLat = Number(v.destino_lat), dLng = Number(v.destino_lon);
+
+        if (!mapaViaje) {
+          mapaViaje = new google.maps.Map(cont, {
+            center: punto, zoom: 15, disableDefaultUI: true, zoomControl: true,
+            clickableIcons: false, gestureHandling: 'greedy'
+          });
+          rutaViaje = new google.maps.Polyline({
+            strokeColor: '#4785A8', strokeWeight: 5, strokeOpacity: 0.9, map: mapaViaje
+          });
+          marcadorViaje = new google.maps.Marker({
+            map: mapaViaje,
+            position: punto,
+            title: 'Vehículo BIKAR',
+            icon: {
+              url: new URL('icon-192.png', location.href).href,
+              scaledSize: new google.maps.Size(42, 42),
+              anchor: new google.maps.Point(21, 21)
+            },
+            zIndex: 30
+          });
+          if (isFinite(oLat) && isFinite(oLng) && oLat !== 0) {
+            new google.maps.Marker({ map: mapaViaje, position: { lat: oLat, lng: oLng }, label: 'A', title: 'Origen' });
+          }
+          if (isFinite(dLat) && isFinite(dLng) && dLat !== 0) {
+            new google.maps.Marker({ map: mapaViaje, position: { lat: dLat, lng: dLng }, label: 'B', title: 'Destino' });
+          }
+        }
+        const cargando = $('mapa-viaje-cargando');
+        if (cargando) cargando.style.display = 'none';
+        actualizarRutaMapa(punto);
+        setTimeout(() => { if (mapaViaje) google.maps.event.trigger(mapaViaje, 'resize'); }, 220);
+      });
+    }
+
+    function iniciarUbicacionConductor() {
+      if (rolUsuario !== 'conductor' || !db || !viajeId || geoWatch != null) return;
+      if (!navigator.geolocation) return;
+      geoWatch = navigator.geolocation.watchPosition(async (pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        if (viajeActual) { viajeActual.conductor_lat = lat; viajeActual.conductor_lon = lng; }
+        actualizarRutaMapa({ lat, lng });
+        try {
+          await db.from('viajes')
+            .update({ conductor_lat: lat, conductor_lon: lng, conductor_ubicacion_en: new Date().toISOString() })
+            .eq('id', viajeId);
+        } catch (e) { console.warn('Ubicación conductor:', e); }
+      }, () => {}, { enableHighAccuracy: true, maximumAge: 4000, timeout: 20000 });
+    }
+
+    function detenerUbicacionConductor() {
+      if (geoWatch != null && navigator.geolocation) {
+        try { navigator.geolocation.clearWatch(geoWatch); } catch (e) {}
+      }
+      geoWatch = null;
+    }
+
     /* ============================================================
        TIEMPO REAL
        ============================================================ */
